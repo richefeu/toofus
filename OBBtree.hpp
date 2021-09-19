@@ -217,10 +217,10 @@ public:
     return fittedObb;
   }
 
-  // never call the following recursive function with empty OBBs
+  // Warning: never call the following recursive function with empty OBBs
   // Usage:
   // OBBtree obbtree;
-  // obbtree.root = OBBtree::recursiveBuild(obbtree.root, OBBs);
+  // obbtree.root = OBBtree::recursiveBuild(obbtree.root, OBBbundles, radius);
   static OBBnode *recursiveBuild(OBBnode *node, std::vector<OBBbundle> &OBBs, double radius = 0.0) {
     node = new OBBnode();
     node->boundary = OBBtree::fitOBB(OBBs);
@@ -244,8 +244,9 @@ public:
 
   // Usage:
   // std::vector<std::pair<size_t, size_t>> intersections;
-  // OBBtree::getIntersectionsIds(obbtree1.root, obbtree2.root, intersections, posB_relativeTo_posA, QB_relativeTo_QA);
-  static void getIntersectionsIds(OBBnode *nodeA, OBBnode *nodeB, std::vector<std::pair<size_t, size_t>> &intersections,
+  // OBBtree::TreeIntersectionIds(obbtree1.root, obbtree2.root, intersections,
+  //                              homothety, posB_relativeTo_posA, QB_relativeTo_QA);
+  static void TreeIntersectionIds(OBBnode *nodeA, OBBnode *nodeB, std::vector<std::pair<size_t, size_t>> &intersections,
                                   double scaleFactor, vec3r &posB_relativeTo_posA, quat &QB_relativeTo_QA) {
     if (nodeA == nullptr || nodeB == nullptr) {
       return;
@@ -266,107 +267,42 @@ public:
     }
 
     if (nodeA->isLeaf() && nodeB->isLeaf()) {
-      intersections.push_back(std::pair<size_t, size_t>(nodeA->refId, nodeB->refId));
+      intersections.push_back(std::pair<size_t, size_t>((size_t)nodeA->refId, (size_t)nodeB->refId));
     } else if (!nodeA->isLeaf() && !nodeB->isLeaf()) {
-      getIntersectionsIds(nodeA->first, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA,
+      TreeIntersectionIds(nodeA->first, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA,
                           QB_relativeTo_QA);
-      getIntersectionsIds(nodeA->first, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA,
+      TreeIntersectionIds(nodeA->first, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA,
                           QB_relativeTo_QA);
-      getIntersectionsIds(nodeA->second, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA,
+      TreeIntersectionIds(nodeA->second, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA,
                           QB_relativeTo_QA);
-      getIntersectionsIds(nodeA->second, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA,
+      TreeIntersectionIds(nodeA->second, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA,
                           QB_relativeTo_QA);
     } else if (nodeA->isLeaf() && !nodeB->isLeaf()) {
-      getIntersectionsIds(nodeA, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
-      getIntersectionsIds(nodeA, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA, nodeB->first, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA, nodeB->second, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
     } else if (!nodeA->isLeaf() && nodeB->isLeaf()) {
-      getIntersectionsIds(nodeA->first, nodeB, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
-      getIntersectionsIds(nodeA->second, nodeB, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA->first, nodeB, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA->second, nodeB, intersections, scaleFactor, posB_relativeTo_posA, QB_relativeTo_QA);
+    }
+  }
+
+  static void OBBIntersectionIds(OBB &obb, OBBnode *node, std::vector<size_t> &intersections) {
+    if (node == nullptr) {
+      return;
+    }
+
+    if (obb.intersect(node->boundary) == false) {
+      return;
+    }
+
+    if (node->isLeaf()) {
+      intersections.push_back((size_t)node->refId);
+    } else if (!node->isLeaf()) {
+      OBBIntersectionIds(obb, node->first, intersections);
+      OBBIntersectionIds(obb, node->second, intersections);
     }
   }
 };
 
 #endif /* end of include guard: OBB_TREE_HPP */
-//===========================================================================
 
-#if 0
-
-#include <cstdlib>
-#include <iostream>
-
-// add fake points for devel
-void add6Points(OBBbundle &leaf) {
-  leaf.points.push_back(leaf.obb.center - leaf.obb.extent.x * leaf.obb.e[0]);
-  leaf.points.push_back(leaf.obb.center + leaf.obb.extent.x * leaf.obb.e[0]);
-  leaf.points.push_back(leaf.obb.center - leaf.obb.extent.y * leaf.obb.e[1]);
-  leaf.points.push_back(leaf.obb.center + leaf.obb.extent.y * leaf.obb.e[1]);
-  leaf.points.push_back(leaf.obb.center - leaf.obb.extent.z * leaf.obb.e[2]);
-  leaf.points.push_back(leaf.obb.center + leaf.obb.extent.z * leaf.obb.e[2]);
-}
-
-int main(int argc, char const *argv[]) {
-
-  std::cout << "Test of OBB tree\n";
-
-  std::vector<OBBbundle> OBBs1;
-  std::vector<OBBbundle> OBBs2;
-
-  OBB obb;
-
-  // -----
-  obb.center.set(0, 0, 0);
-  obb.extent.set(1, 1, 1);
-  OBBs1.push_back(OBBbundle(obb, 0));
-  add6Points(OBBs1.back());
-
-  obb.center.set(2, 2, 0);
-  obb.extent.set(0.5, 0.5, 1);
-  OBBs1.push_back(OBBbundle(obb, 1));
-  add6Points(OBBs1.back());
-
-  obb.center.set(3, 3, 0);
-  obb.extent.set(1, 1, 1);
-  OBBs1.push_back(OBBbundle(obb, 2));
-  add6Points(OBBs1.back());
-
-  obb.center.set(1, 4, 0);
-  obb.extent.set(0.5, 0.5, 1);
-  OBBs1.push_back(OBBbundle(obb, 3));
-  add6Points(OBBs1.back());
-
-  // -----
-
-  obb.center.set(3, 4, 0);
-  obb.extent.set(0.5, 0.5, 1);
-  OBBs2.push_back(OBBbundle(obb, 0));
-  add6Points(OBBs2.back());
-
-  obb.center.set(5, 2, 0);
-  // obb.center.set(1, 1, 0);
-  obb.extent.set(0.5, 0.5, 1);
-  OBBs2.push_back(OBBbundle(obb, 1));
-  add6Points(OBBs2.back());
-  // -----
-
-  OBBtree obbtree1;
-  obbtree1.root = OBBtree::recursiveBuild(obbtree1.root, OBBs1, 0.0);
-  std::cout << "obbtree1.root->boundary = " << obbtree1.root->boundary << '\n';
-
-  OBBtree obbtree2;
-  obbtree2.root = OBBtree::recursiveBuild(obbtree2.root, OBBs2, 0.0);
-  std::cout << "obbtree2.root->boundary = " << obbtree2.root->boundary << '\n';
-
-  std::vector<std::pair<size_t, size_t>> intersections;
-  vec3r L(-1, 0, 0);
-  quat Q;
-  OBBtree::getIntersectionsIds(obbtree1.root, obbtree2.root, intersections, 1.0, L, Q);
-  std::cout << "intersections.size() = " << intersections.size() << '\n';
-
-  for (size_t i = 0; i < intersections.size(); i++) {
-    std::cout << intersections[i].first << " <-> " << intersections[i].second << '\n';
-  }
-
-  return 0;
-}
-
-#endif

@@ -16,16 +16,25 @@
 
 #include "vec2.hpp"
 
-class mat4 {
+template <typename T> class mat4 {
 
 public:
-  double xx, xy;
-  double yx, yy;
+  T xx, xy;
+  T yx, yy;
 
   mat4() : xx(0), xy(0), yx(0), yy(0) {}
   // mat4(mat4sym & m): xx(m.xx), xy(m.xy), yx(m.xy), yy(m.yy) { }
-  mat4(double XX, double XY, double YX, double YY) : xx(XX), xy(XY), yx(YX), yy(YY) {}
-  mat4(const double M[]) : xx(M[0]), xy(M[1]), yx(M[2]), yy(M[3]) {}
+  mat4(const T XX, const T XY, const T YX, const T YY) : xx(XX), xy(XY), yx(YX), yy(YY) {}
+  mat4(const T M[]) : xx(M[0]), xy(M[1]), yx(M[2]), yy(M[3]) {}
+  mat4(const mat4 &M) : xx(M.xx), xy(M.xy), yx(M.yx), yy(M.yy) {}
+
+  mat4 &operator=(const mat4 &M) {
+    xx = M.xx;
+    xy = M.xy;
+    yx = M.yx;
+    yy = M.yy;
+    return (*this);
+  }
 
   // Constants
   static mat4 unit() { return mat4(1, 0, 0, 1); }
@@ -44,7 +53,14 @@ public:
     yy = YY;
   }
 
-  mat4 transpose() { return mat4(xx, yx, xy, yy); }
+  T &operator[](int i) { return (&xx)[i]; }
+
+  const T &operator[](int i) const { return (&xx)[i]; }
+
+  T *c_mtx() { return &xx; }
+
+  mat4 transposed() { return mat4(xx, yx, xy, yy); }
+  void transpose() { std::swap(xy, yx); }
 
   void eigenvalues(double &v1, double &v2, bool &swapped) const {
     /// @fixme seems to ok only for symmetric matrix
@@ -58,12 +74,13 @@ public:
     }
   }
 
-  // works for non-symmetric matrices as well. Has problems. Maybe a tolerance should be included
+  // works for non-symmetric matrices as well. Has problems. Maybe a tolerance
+  // should be included
   void eigen(mat4 &V, mat4 &D) {
-    double T = xx + yy;
+    double TT = xx + yy;
     double det = xx * yy - xy * yx;
-    double L1 = T / 2 + sqrt(T * T / 4 - det); // eigenval
-    double L2 = T / 2 - sqrt(T * T / 4 - det); // eigenval
+    double L1 = TT / 2 + sqrt(TT * TT / 4 - det); // eigenval
+    double L2 = TT / 2 - sqrt(TT * TT / 4 - det); // eigenval
     D.xx = L1;
     D.xy = D.yx = 0.0;
     D.yy = L2;
@@ -198,7 +215,7 @@ public:
     return true;
   }
 
-  mat4 inverse2() {
+  mat4 get_inverse() {
 
     double det = xx * yy - xy * yx;
     // if (fabs(det) < 1.0e-20) return false; // inverse cannot be calculated
@@ -349,8 +366,14 @@ public:
   }
 
   friend std::ostream &operator<<(std::ostream &pStr, const mat4 &pV) {
-    return (pStr << pV.xx << CommBox().sep << pV.xy << CommBox().sep << pV.yx << CommBox().sep << pV.yy << '\n');
+    return (pStr << pV.xx << ' ' << pV.xy << ' ' << pV.yx << ' ' << pV.yy);
   }
 };
+
+typedef mat4<double> mat4r;
+typedef mat4<float> mat4f;
+typedef mat4<int> mat4i;
+typedef mat4<unsigned int> mat4ui;
+typedef mat4<bool> mat4b;
 
 #endif /* end of include guard: MAT4_HPP */
