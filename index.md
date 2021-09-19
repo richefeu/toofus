@@ -4,7 +4,9 @@
 
 A brief description of the different headers and the basic principles of their use is given below.
 
-### vec2.hpp and vec3.hpp
+### Algebra
+
+#### `vec2.hpp` and `vec3.hpp`
 
 They are easy-to-use classes for 2D and 3D vectors. Here is example of usage:
 
@@ -20,8 +22,20 @@ int main() {
 }
 ```
 
-For all other operations, see directly in the file which is self-documented.
+For all other operations, see directly in the files that are self-documented.
 
-### quat.hpp
+#### `mat4.hpp` and `mat9.hpp`
 
+#### `quat.hpp`
+
+
+### Bounding volumes and Space partition
+
+#### `AABB.hpp`
+
+#### `OBB.hpp`
+
+#### `quadtree.hpp` and `octree.hpp`
+
+#### `OBBtree.hpp`
 
