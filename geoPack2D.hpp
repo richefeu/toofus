@@ -346,7 +346,7 @@ int main(int argc, char const *argv[]) {
   GP.reActivate();
   GP.execPeriodic();
   
-  GP. parameters(0.05, 0.15, 5000, 0, 20, 0, 20, 0.0, 0);
+  GP.parameters(0.05, 0.15, 5000, 0, 20, 0, 20, 0.0, 0);
   GP.reActivate();
   GP.execPeriodic();
   
