@@ -101,8 +101,7 @@ Note that the last point in the returned vector is the same as the first one.
 #include <iostream>
 #include "convexHull.hpp"
 
-int main (int argc, char const *argv[])
-{
+int main (int argc, char const *argv[]) {
         std::vector<vec2r> points;
         points.push_back(vec2r(0,0));
         points.push_back(vec2r(1,1));
