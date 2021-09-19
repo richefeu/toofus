@@ -42,6 +42,8 @@ An Axis Aligned Bounding Box.
 
 An Oriented Bounding Box.
 
+#### `linkCells.hpp`
+
 #### `quadtree.hpp` and `octree.hpp`
 
 2D and 3D version of the strategy of partitionning the space with a binary tree. It can fastly query for points inside a box or a disk/sphere. The space-box can also be periodic.
@@ -62,11 +64,38 @@ Space partition with a binary tree of OBBs
 
 #### `geoPack2D.hpp` and `geoPack3D.hpp`
 
+#### `convexHull.hpp`
+
+See  [this reference](https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain)
+
+The function `std::vector<vec2r> convexHull(std::vector<vec2r> &P)` returns a list of points on the convex hull in counter-clockwise order.
+Note that the last point in the returned vector is the same as the first one.
+
+```c++
+#include <iostream>
+#include "convexHull.hpp"
+
+int main (int argc, char const *argv[])
+{
+        std::vector<vec2r> points;
+        points.push_back(vec2r(0,0));
+        points.push_back(vec2r(1,1));
+        points.push_back(vec2r(1,0));
+        points.push_back(vec2r(-1,0));
+
+        std::vector<vec2r> ch = convexHull(points);
+        for (size_t i = 0 ; i < ch.size() ; i++) {
+                std::cout << ch[i] << std::endl;
+        }
+        return 0;
+}
+```
+
 ## Maths
 
 #### `Mth.hpp`
 
-#### `Mth.hpp`
+#### `histo.hpp`
 
 #### `linreg.hpp`
 
@@ -79,3 +108,16 @@ Space partition with a binary tree of OBBs
 #### `message.hpp`
 
 #### `fileTool.hpp`
+
+#### `ioDataTable.hpp`
+
+#### `nextToken.hpp`
+
+#### `kwParser.hpp`
+
+## xxx
+
+#### `factory.hpp`
+
+#### `ExecChrono.hpp`
+
