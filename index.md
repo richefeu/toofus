@@ -64,6 +64,32 @@ Space partition with a binary tree of OBBs
 
 #### `geoPack2D.hpp` and `geoPack3D.hpp`
 
+Geometric packing of disks or spheres by means of the Poisson Disk Sampling technique.
+
+```c++
+int main(int argc, char const *argv[]) {
+  GeoPack2D GP(0.15, 0.15, 5000, 0, 20, 0, 20, 0.0, 0);
+  GP.seedTime();
+  
+  GP.appendDisk(10, 10, 5);
+  GP.appendDisk(4, 4, 2);
+  GP.appendDisk(16, 4, 2);
+  GP.appendDisk(16, 16, 2);
+  GP.appendDisk(4, 16, 2);  
+  
+  GP.reActivate();
+  GP.execPeriodic();
+  
+  GP.parameters(0.05, 0.15, 5000, 0, 20, 0, 20, 0.0, 0);
+  GP.reActivate();
+  GP.execPeriodic();
+  
+  GP.save("disks.txt", 5);
+  
+  return 0;
+}
+```
+
 #### `convexHull.hpp`
 
 See  [this reference](https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain)
@@ -96,6 +122,17 @@ int main (int argc, char const *argv[])
 #### `Mth.hpp`
 
 #### `histo.hpp`
+
+```c++
+int main (int argc, char const *argv[]) {
+  std::vector<double> v;
+  for (size_t i = 0 ; i < 1000 ; i++) v.push_back(i/1000.);
+  histo H = histo::pdfMaxPerBin(v, 200);
+  for (size_t i = 0 ; i < H.data.size() ; i++) 
+    std::cout << H.data[i].X << ' ' << H.data[i].ProbDensity << ' ' << H.data[i].Width << '\n';
+  return 0;
+}
+```
 
 #### `linreg.hpp`
 
