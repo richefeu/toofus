@@ -584,25 +584,39 @@ public:
     col->a = UNPACK_ALPHA(table[i]);
   }
 
-  /*
+  // returns one color among 6 well distinguishable colors
   void getRandomRGB8(colorRGBA *col) {
-    static std::vector<unsigned int> tb = {
-        PACK_COLOR(85, 107, 47, 255), PACK_COLOR(25, 25, 112, 255),
-        PACK_COLOR(255, 69, 0, 255),  PACK_COLOR(255, 215, 0, 255),
-        PACK_COLOR(0, 255, 127, 255), PACK_COLOR(0, 191, 255, 255),
-        PACK_COLOR(0, 0, 255, 255),   PACK_COLOR(255, 20, 147, 255),
+    static const std::vector<unsigned int> tb = {
+      PACK_COLOR(225, 205, 90, 255),  PACK_COLOR(170, 114, 160, 255),
+      PACK_COLOR(230, 116, 98, 255),  PACK_COLOR(94, 129, 148, 255),
+      PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
+      PACK_COLOR(208, 143, 72, 255),  PACK_COLOR(118, 169, 155, 255),
     };
     unsigned int i = (unsigned int)floor(rand() / (double)RAND_MAX * 8);
-    if (i < 0)
-      i = 0;
-    else if (i >= 8)
+    if (i >= 8)
       i = 7;
     col->r = UNPACK_RED(tb[i]);
     col->g = UNPACK_GREEN(tb[i]);
     col->b = UNPACK_BLUE(tb[i]);
     col->a = UNPACK_ALPHA(tb[i]);
   }
-  */
+
+  void getCyclicRGB8(colorRGBA *col) {
+    static const std::vector<unsigned int> tb = {
+        PACK_COLOR(225, 205, 90, 255),  PACK_COLOR(170, 114, 160, 255),
+        PACK_COLOR(230, 116, 98, 255),  PACK_COLOR(94, 129, 148, 255),
+        PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
+        PACK_COLOR(208, 143, 72, 255),  PACK_COLOR(118, 169, 155, 255),
+    };
+    static unsigned int count = 0;
+    col->r = UNPACK_RED(tb[count]);
+    col->g = UNPACK_GREEN(tb[count]);
+    col->b = UNPACK_BLUE(tb[count]);
+    col->a = UNPACK_ALPHA(tb[count]);
+    count++;
+    if (count >= 8)
+      count = 0;
+  }
 
   void Print() {
     int i, r, g, b, a;

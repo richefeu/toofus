@@ -221,7 +221,6 @@ public:
       node = new OBBnode<T>();
       node->boundary = OBBtree<T>::fitOBB(OBBs, radius);
     } else {
-      // std::cout << "grgrgrgr\n";
       return nullptr;
     }
 
