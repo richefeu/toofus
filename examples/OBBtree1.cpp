@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
 
   for (size_t i = 0; i < intersections.size(); i++) {
     std::cout << intersections[i].first.fake_data1 << " <-> " << intersections[i].second.fake_data1 << '\n';
-    std::cout << intersections[i].first.fake_data2 << " <-> " << intersections[i].second.fake_data2 << "\n\n";
+    std::cout << intersections[i].first.fake_data2 << "  |  " << intersections[i].second.fake_data2 << "\n\n";
   }
 
   return 0;

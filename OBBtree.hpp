@@ -64,8 +64,7 @@ public:
     node = nullptr;
   }
 
-  static void subdivide(std::vector<OBBbundle<T>> &OBBs,
-                        std::vector<OBBbundle<T>> &first_OBBs,
+  static void subdivide(std::vector<OBBbundle<T>> &OBBs, std::vector<OBBbundle<T>> &first_OBBs,
                         std::vector<OBBbundle<T>> &second_OBBs) {
     if (OBBs.size() <= 1)
       return;
@@ -183,8 +182,7 @@ public:
     vec3r minim(1e20, 1e20, 1e20), maxim(-1e20, -1e20, -1e20);
     for (size_t io = 0; io < OBBs.size(); io++) {
       for (size_t p = 0; p < OBBs[io].points.size(); p++) {
-        vec3r p_prime(r * OBBs[io].points[p], u * OBBs[io].points[p],
-                      f * OBBs[io].points[p]);
+        vec3r p_prime(r * OBBs[io].points[p], u * OBBs[io].points[p], f * OBBs[io].points[p]);
         if (minim.x > p_prime.x)
           minim.x = p_prime.x;
         if (minim.y > p_prime.y)
@@ -218,12 +216,13 @@ public:
   // Usage:
   // OBBtree obbtree;
   // obbtree.root = OBBtree::recursiveBuild(obbtree.root, OBBbundles, radius);
-  static OBBnode<T> *recursiveBuild(OBBnode<T> *node,
-                                    std::vector<OBBbundle<T>> &OBBs,
-                                    double radius = 0.0) {
+  static OBBnode<T> *recursiveBuild(OBBnode<T> *node, std::vector<OBBbundle<T>> &OBBs, double radius = 0.0) {
     if (OBBs.size() >= 1 && node == nullptr) {
       node = new OBBnode<T>();
-      node->boundary = OBBtree::fitOBB(OBBs, radius);
+      node->boundary = OBBtree<T>::fitOBB(OBBs, radius);
+    } else {
+      // std::cout << "grgrgrgr\n";
+      return nullptr;
     }
 
     if (OBBs.size() == 1) {
@@ -235,13 +234,11 @@ public:
     std::vector<OBBbundle<T>> second_subOBBs;
     OBBtree<T>::subdivide(OBBs, first_subOBBs, second_subOBBs);
 
-    if (!first_subOBBs.empty()) {
-      node->first =
-          OBBtree<T>::recursiveBuild(node->first, first_subOBBs, radius);
+    if (!first_subOBBs.empty() && node->first == nullptr) {
+      node->first = OBBtree<T>::recursiveBuild(node->first, first_subOBBs, radius);
     }
-    if (!second_subOBBs.empty()) {
-      node->second =
-          OBBtree<T>::recursiveBuild(node->second, second_subOBBs, radius);
+    if (!second_subOBBs.empty() && node->second == nullptr) {
+      node->second = OBBtree<T>::recursiveBuild(node->second, second_subOBBs, radius);
     }
     return node;
   }
@@ -251,12 +248,9 @@ public:
   // OBBtree::TreeIntersectionIds(obbtree1.root, obbtree2.root, intersections,
   //                              scaleFactorA, scaleFactorB, enlargeValue,
   //                              posB_relativeTo_posA, QB_relativeTo_QA);
-  static void TreeIntersectionIds(OBBnode<T> *nodeA, OBBnode<T> *nodeB,
-                                  std::vector<std::pair<T, T>> &intersections,
-                                  double scaleFactorA, double scaleFactorB,
-                                  double enlargeValue,
-                                  vec3r &posB_relativeTo_posA,
-                                  quat &QB_relativeTo_QA) {
+  static void TreeIntersectionIds(OBBnode<T> *nodeA, OBBnode<T> *nodeB, std::vector<std::pair<T, T>> &intersections,
+                                  double scaleFactorA, double scaleFactorB, double enlargeValue,
+                                  vec3r &posB_relativeTo_posA, quat &QB_relativeTo_QA) {
     if (nodeA == nullptr || nodeB == nullptr) {
       return;
     }
@@ -280,37 +274,28 @@ public:
     if (nodeA->isLeaf() && nodeB->isLeaf()) {
       intersections.push_back(std::pair<T, T>(nodeA->data, nodeB->data));
     } else if (!nodeA->isLeaf() && !nodeB->isLeaf()) {
-      TreeIntersectionIds(nodeA->first, nodeB->first, intersections,
-                          scaleFactorA, scaleFactorB, enlargeValue,
+      TreeIntersectionIds(nodeA->first, nodeB->first, intersections, scaleFactorA, scaleFactorB, enlargeValue,
                           posB_relativeTo_posA, QB_relativeTo_QA);
-      TreeIntersectionIds(nodeA->first, nodeB->second, intersections,
-                          scaleFactorA, scaleFactorB, enlargeValue,
+      TreeIntersectionIds(nodeA->first, nodeB->second, intersections, scaleFactorA, scaleFactorB, enlargeValue,
                           posB_relativeTo_posA, QB_relativeTo_QA);
-      TreeIntersectionIds(nodeA->second, nodeB->first, intersections,
-                          scaleFactorA, scaleFactorB, enlargeValue,
+      TreeIntersectionIds(nodeA->second, nodeB->first, intersections, scaleFactorA, scaleFactorB, enlargeValue,
                           posB_relativeTo_posA, QB_relativeTo_QA);
-      TreeIntersectionIds(nodeA->second, nodeB->second, intersections,
-                          scaleFactorA, scaleFactorB, enlargeValue,
+      TreeIntersectionIds(nodeA->second, nodeB->second, intersections, scaleFactorA, scaleFactorB, enlargeValue,
                           posB_relativeTo_posA, QB_relativeTo_QA);
     } else if (nodeA->isLeaf() && !nodeB->isLeaf()) {
-      TreeIntersectionIds(nodeA, nodeB->first, intersections, scaleFactorA,
-                          scaleFactorB, enlargeValue, posB_relativeTo_posA,
-                          QB_relativeTo_QA);
-      TreeIntersectionIds(nodeA, nodeB->second, intersections, scaleFactorA,
-                          scaleFactorB, enlargeValue, posB_relativeTo_posA,
-                          QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA, nodeB->first, intersections, scaleFactorA, scaleFactorB, enlargeValue,
+                          posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA, nodeB->second, intersections, scaleFactorA, scaleFactorB, enlargeValue,
+                          posB_relativeTo_posA, QB_relativeTo_QA);
     } else if (!nodeA->isLeaf() && nodeB->isLeaf()) {
-      TreeIntersectionIds(nodeA->first, nodeB, intersections, scaleFactorA,
-                          scaleFactorB, enlargeValue, posB_relativeTo_posA,
-                          QB_relativeTo_QA);
-      TreeIntersectionIds(nodeA->second, nodeB, intersections, scaleFactorA,
-                          scaleFactorB, enlargeValue, posB_relativeTo_posA,
-                          QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA->first, nodeB, intersections, scaleFactorA, scaleFactorB, enlargeValue,
+                          posB_relativeTo_posA, QB_relativeTo_QA);
+      TreeIntersectionIds(nodeA->second, nodeB, intersections, scaleFactorA, scaleFactorB, enlargeValue,
+                          posB_relativeTo_posA, QB_relativeTo_QA);
     }
   }
 
-  static void OBBIntersectionIds(OBB &obb, OBBnode<T> *node,
-                                 std::vector<T> &intersections) {
+  static void OBBIntersectionIds(OBB &obb, OBBnode<T> *node, std::vector<T> &intersections) {
     if (node == nullptr) {
       return;
     }
