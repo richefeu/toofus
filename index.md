@@ -30,7 +30,6 @@ They are templated classes for 2-by-2 and 3-by-3 matrices.
 
 ```c++
 template <typename T> class mat4 {
-
 public:
   T xx, xy;
   T yx, yy;
@@ -39,7 +38,6 @@ public:
   mat4(const T XX, const T XY, const T YX, const T YY);
   mat4(const T M[]);
   mat4(const mat4 &M);
-  
   mat4 &operator=(const mat4 &M);
   
   static mat4 unit();
@@ -155,7 +153,7 @@ public:
   explicit AABB(const vec3r &v);
   AABB(const vec3r &v1, const vec3r &v2);
   AABB(const AABB &aabb);
-  explicit AABB(const std::vector<vec3r> &cloud) : min(cloud[0]), max(cloud[0]);
+  explicit AABB(const std::vector<vec3r> &cloud);
   AABB &operator=(const AABB &aabb);
   double getRadius() const;
   void set_single(const vec3r &v);
