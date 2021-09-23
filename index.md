@@ -32,11 +32,85 @@ They are templated classes for 2-by-2 and 3-by-3 matrices.
 
 It is used for quaternions with the objective of using them for 3D rotations.
 
+```c++
+class quat {
+public:
+  vec3r v;
+  double s;
+  
+  quat();
+  quat(double X, double Y, double Z, double S);
+  quat(const vec3r &V, const double S);
+  quat(const quat &Q);
+  static quat identity();
+  quat &operator=(const quat &Q);
+  quat &operator+=(const quat &a);
+  quat &operator-=(const quat &a);
+  quat &operator*=(double k);
+  quat &operator/=(double k);
+  friend quat operator*(const quat &q1, const quat &q2);
+  vec3r operator*(const vec3r &V) const;
+  quat dot(const vec3r &omega);
+  quat ddot(const vec3r &omega, const vec3r &domega);
+  void conjugate();
+  quat get_conjugated() const;
+  void reset();
+  void set_axis_angle(const vec3r &V, double angle);
+  void set(double X, double Y, double Z, double S);
+  double get_angle() const;
+  double get_Pitch() const;
+  double get_Yaw() const;
+  double get_Roll() const;
+  vec3r get_axis() const;
+  void set_from_to(const vec3r &V1, const vec3r &V2);
+  void TwistSwingDecomp(const vec3r &V1, quat &twist, quat &swing);
+  void SwingTwistDecomp(const vec3r &V1, quat &swing, quat &twist);
+  double normalize();
+  void randomize(bool seedTime = false);
+  void get_rot_matrix(double M[]) const;
+  void get_rot_matrix(mat9r &M) const;
+  int set_rot_matrix(double m[]);
+  mat9<double> rotate_diag_mat(const vec3r &u) const;
+  vec3r rotate(const vec3r &u) const;
+  vec3r unrotate(const vec3r &u) const;
+  bool operator==(const quat &other) const;
+  bool operator!=(const quat &other) const;
+  friend std::ostream &operator<<(std::ostream &pStr, const quat &Q);
+  friend std::istream &operator>>(std::istream &pStr, quat &Q);
+};
+```
+
 ## Bounding volumes and Space partition
 
 #### `AABB.hpp`
 
 An Axis Aligned Bounding Box.
+
+```c++
+class AABB {
+public:
+  vec3r min, max;
+
+  AABB();
+  explicit AABB(const vec3r &v);
+  AABB(const vec3r &v1, const vec3r &v2);
+  AABB(const AABB &aabb);
+  explicit AABB(const std::vector<vec3r> &cloud) : min(cloud[0]), max(cloud[0]);
+  AABB &operator=(const AABB &aabb);
+  double getRadius() const;
+  void set_single(const vec3r &v);
+  void add(const vec3r &v);
+  void enlarge(double more);
+  void enlarge(const vec3r &more);
+  void enlarge(const AABB &more);
+  void translate(const vec3r &v);
+  bool intersect(const AABB &a) const;
+  bool intersect(const vec3r &a) const;
+  bool intersectX(const AABB &a) const;
+  bool intersectY(const AABB &a) const;
+  bool intersectZ(const AABB &a) const;
+};
+```
 
 #### `OBB.hpp`
 
