@@ -28,6 +28,66 @@ For all other operations, see directly in the files that are more or less self-d
 
 They are templated classes for 2-by-2 and 3-by-3 matrices.
 
+```c++
+template <typename T> class mat4 {
+
+public:
+  T xx, xy;
+  T yx, yy;
+  
+  mat4();
+  mat4(const T XX, const T XY, const T YX, const T YY);
+  mat4(const T M[]);
+  mat4(const mat4 &M);
+  
+  mat4 &operator=(const mat4 &M);
+  
+  static mat4 unit();
+  static mat4 zero();
+  static mat4 one();
+  
+  void reset();
+  void reset(const double val);
+  void set_diag(const double XX, const double YY);
+  T &operator[](int i);
+  const T &operator[](int i) const;
+  T *c_mtx();
+  mat4 transposed();
+  void transpose();
+  void eigenvalues(double &v1, double &v2, bool &swapped) const;
+  void eigen(mat4 &V, mat4 &D);
+  int sym_eigen(mat4 &V, mat4 &D) const;
+  bool inverse();
+  mat4 get_inverse();
+  double det() const;
+  void svd(mat4 &U, mat4 &S, mat4 &V) const;
+  bool square_root(mat4 &SqR) const;
+  mat4 &operator+=(const mat4 &a);
+  mat4 &operator-=(const mat4 &a);
+  mat4 &operator*=(double k);
+  mat4 &operator/=(double k);
+  bool operator==(const mat4 &other) const;
+  bool operator!=(const mat4 &other) const;
+  friend mat4 operator+(const mat4 &a, const mat4 &b);
+  friend mat4 operator-(const mat4 &a, const mat4 &b);
+  friend mat4 operator-(const mat4 &a);
+  friend mat4 operator*(const mat4 &a, double k);
+  friend mat4 operator*(double k, const mat4 &a);
+  friend mat4 operator/(const mat4 &a, double k);
+  friend vec2r operator*(const mat4 &a, const vec2r &b);
+  friend vec2r operator*(const vec2r &b, const mat4 &a);
+  friend mat4 operator*(const mat4 &a, const mat4 &b);
+  friend std::ostream &operator<<(std::ostream &pStr, const mat4 &pV);
+  friend std::istream &operator>>(std::istream &pStr, mat4 &M);
+};
+
+typedef mat4<double> mat4r;
+typedef mat4<float> mat4f;
+typedef mat4<int> mat4i;
+typedef mat4<unsigned int> mat4ui;
+typedef mat4<bool> mat4b;
+```
+
 #### `quat.hpp`
 
 It is used for quaternions with the objective of using them for 3D rotations.
