@@ -24,6 +24,67 @@ int main() {
 
 For all other operations, see directly in the files that are more or less self-documented.
 
+```c++
+template <typename T> class vec2 {
+public:
+  T x, y;
+
+  vec2();
+  vec2(T X, T Y);
+  vec2(const vec2 &v);
+  vec2 &operator=(const vec2 &V) ;
+  static vec2 unit_x();
+  static vec2 unit_y();
+  static vec2 one();
+  static vec2 zero();
+  void reset();
+  void set(T X, T Y);
+  void set(T val);
+  bool isnull(const T tol = 1e-20) const;
+  T *c_vec();
+  T &operator[](int i);
+  const T &operator[](int i) const;
+  const T n() const;
+  const T t() const;
+  vec2 &operator+=(const vec2 &a);
+  vec2 &operator-=(const vec2 &a);
+  vec2 &operator*=(T k);
+  vec2 &operator/=(T k);
+  friend vec2 operator+(const vec2 &a, const vec2 &b);
+  friend vec2 operator-(const vec2 &a, const vec2 &b);
+  friend vec2 operator-(const vec2 &a);
+  friend vec2 operator*(const vec2 &a, T k);
+  friend vec2 operator*(T k, const vec2 &a);
+  friend vec2 operator/(const vec2 &a, T k);
+  friend T operator*(const vec2 &a, const vec2 &b);
+  friend vec2<T> component_product(const vec2<T> &a, const vec2<T> &b);
+  friend vec2<T> component_min(const vec2<T> &a, const vec2<T> &b);
+  friend vec2<T> component_max(const vec2<T> &a, const vec2<T> &b);
+  friend vec2<T> component_abs(const vec2<T> &a);
+  friend T cross(const vec2<T> &a, const vec2<T> &b);
+  friend vec2<T> lerp(double t, const vec2<T> &a, const vec2<T> &b);
+  friend T norm2(const vec2 &a);
+  friend T norm(const vec2 &a);
+  T length() const;
+  T normalize();
+  vec2 normalized() const;
+  friend T determinant(const vec2<T> a, const vec2<T> b);
+  bool operator==(const vec2<T> &other) const;
+  bool operator!=(const vec2<T> &other) const;
+  friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV);
+  friend std::istream &operator>>(std::istream &pStr, vec2 &pV);
+};
+
+typedef vec2<double> vec2r;
+typedef vec2<int> vec2i;
+typedef vec2<unsigned int> vec2ui;
+typedef vec2<bool> vec2b;
+
+namespace std {
+template <class T> struct less<vec2<T>> { bool operator()(const vec2<T> &lhs, const vec2<T> &rhs) const; };
+}
+```
+
 #### `mat4.hpp` and `mat9.hpp`
 
 They are templated classes for 2-by-2 and 3-by-3 matrices.
@@ -175,6 +236,30 @@ public:
 An Oriented Bounding Box.
 
 #### `linkCells.hpp`
+
+```c++
+class AABB_Cell {
+public:
+  std::vector<size_t> bodies;      // Contained bodies
+  std::vector<AABB_Cell *> pcells; // Surroundind cells (+ current cell)
+};
+
+class linkCells {
+public:
+  AABB box;                                               // Overall surrounding box
+  vec3r minSizes;                                         // Wanted minimum size (along x, y and z) of the cells
+  std::vector<std::vector<std::vector<AABB_Cell>>> cells; // Cells that hold only free bodies
+  AABB_Cell oversized_bodies;                             // A particular cell that hold only 'too big' bodies
+  vec3ui N;                                               // Number of cells in each direction (x, y, and z)
+
+  linkCells(AABB &Box, vec3r &CellMinSizes);
+  ~linkCells();
+  void init();
+  void clear();
+  void add_body(size_t B, vec3r &pos, vec3r diag);
+  void add_body(size_t B, vec3r &pos, AABB &aabb);
+};
+```
 
 #### `quadtree.hpp` and `octree.hpp`
 
