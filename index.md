@@ -1,12 +1,12 @@
-# Welcome to the GitHub Pages of toofus
+# Welcome to the GitHub Pages of `toofus`
 
 `toofus` means `TO`ols `OF`ten `US`ued. It is in fact a collection of C++ header files that I personally develop and use for my own numerical calculation tools. 
 
 A brief description of the different headers and the basic principles of their use is given below.
 
-## Algebra
+# Algebra
 
-#### `vec2.hpp` and `vec3.hpp`
+## `vec2.hpp` and `vec3.hpp`
 
 They are easy-to-use classes for 2D and 3D vectors. Here is example of usage:
 
@@ -85,7 +85,7 @@ template <class T> struct less<vec2<T>> { bool operator()(const vec2<T> &lhs, co
 }
 ```
 
-#### `mat4.hpp` and `mat9.hpp`
+## `mat4.hpp` and `mat9.hpp`
 
 They are templated classes for 2-by-2 and 3-by-3 matrices.
 
