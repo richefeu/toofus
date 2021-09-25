@@ -147,7 +147,7 @@ typedef mat4<unsigned int> mat4ui;
 typedef mat4<bool> mat4b;
 ```
 
-#### `quat.hpp`
+## `quat.hpp`
 
 It is used for quaternions with the objective of using them for 3D rotations.
 
@@ -199,9 +199,9 @@ public:
 };
 ```
 
-## Bounding volumes and Space partition
+# Bounding volumes and Space partition
 
-#### `AABB.hpp`
+## `AABB.hpp`
 
 An Axis Aligned Bounding Box.
 
@@ -231,11 +231,11 @@ public:
 };
 ```
 
-#### `OBB.hpp`
+## `OBB.hpp`
 
 An Oriented Bounding Box.
 
-#### `linkCells.hpp`
+## `linkCells.hpp`
 
 ```c++
 class AABB_Cell {
@@ -261,17 +261,17 @@ public:
 };
 ```
 
-#### `quadtree.hpp` and `octree.hpp`
+## `quadtree.hpp` and `octree.hpp`
 
 2D and 3D version of the strategy of partitionning the space with a binary tree. It can fastly query for points inside a box or a disk/sphere. The space-box can also be periodic.
 
-#### `OBBtree.hpp`
+## `OBBtree.hpp`
 
 Space partition with a binary tree of OBBs
 
-## Display
+# Display
 
-#### `ColorTable.hpp`
+## `ColorTable.hpp`
 
 ```c++
 #include "../ColorTable.hpp"
@@ -293,13 +293,13 @@ int main(int argc, char const *argv[]) {
 }
 ```
 
-#### `glutTools.hpp`
+## `glutTools.hpp`
 
-## Computational Geometry
+# Computational Geometry tools
 
-#### `geoTool.hpp`
+## `geoTool.hpp`
 
-#### `geoPack2D.hpp` and `geoPack3D.hpp`
+## `geoPack2D.hpp` and `geoPack3D.hpp`
 
 Geometric packing of disks or spheres by means of the Poisson Disk Sampling technique.
 
@@ -327,7 +327,7 @@ int main(int argc, char const *argv[]) {
 }
 ```
 
-#### `convexHull.hpp`
+## `convexHull.hpp`
 
 See  [this reference](https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain)
 
@@ -353,11 +353,11 @@ int main (int argc, char const *argv[]) {
 }
 ```
 
-## Maths
+# Maths
 
-#### `Mth.hpp`
+## `Mth.hpp`
 
-#### `histo.hpp`
+## `histo.hpp`
 
 ```c++
 int main (int argc, char const *argv[]) {
@@ -370,7 +370,7 @@ int main (int argc, char const *argv[]) {
 }
 ```
 
-#### `anova.hpp`
+## `anova.hpp`
 
 ```c++
 #include "anova.hpp"
@@ -401,27 +401,27 @@ int main(int argc, char const *argv[]) {
 }
 ```
 
-#### `linreg.hpp`
+## `linreg.hpp`
 
-#### `KStest.hpp`
+## `KStest.hpp`
 
-#### `fastSort3.hpp`
+## `fastSort3.hpp`
 
-## Input / Output
+# Input / Output
 
-#### `message.hpp`
+## `message.hpp`
 
-#### `fileTool.hpp`
+## `fileTool.hpp`
 
-#### `ioDataTable.hpp`
+## `ioDataTable.hpp`
 
-#### `nextToken.hpp`
+## `nextToken.hpp`
 
-#### `kwParser.hpp`
+## `kwParser.hpp`
 
-## xxx
+# Computation tools
 
-#### `factory.hpp`
+## `factory.hpp`
 
-#### `ExecChrono.hpp`
+## `ExecChrono.hpp`
 
