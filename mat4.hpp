@@ -368,6 +368,8 @@ public:
   friend std::ostream &operator<<(std::ostream &pStr, const mat4 &pV) {
     return (pStr << pV.xx << ' ' << pV.xy << ' ' << pV.yx << ' ' << pV.yy);
   }
+
+  friend std::istream &operator>>(std::istream &pStr, mat4 &M) { return (pStr >> M.xx >> M.xy >> M.yx >> M.yy); }
 };
 
 typedef mat4<double> mat4r;

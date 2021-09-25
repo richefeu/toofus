@@ -39,6 +39,7 @@
 #include <cmath>
 #include <cstdlib> // needed for rand()
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -548,6 +549,30 @@ public:
         col.a = 255;
 
         table[c] = PACK_COLOR(col.r, col.g, col.b, col.a);
+      }
+    }
+  }
+  
+  void savePpm(const char *name) {
+    int h = size;
+    int w = (int)(h / 15 + 1);
+
+    std::ofstream file(name, std::ios::binary);
+    file << "P6" << '\n';
+    file << w << " " << h << '\n';
+    file << "255" << '\n';
+
+    unsigned char r, g, b;
+    int icol;
+    for (int y = 0; y < h; y++) {
+      icol = h - y - 1;
+      for (int x = 0; x < w; x++) {
+        r = (unsigned char)UNPACK_RED(table[icol]);
+        g = (unsigned char)UNPACK_GREEN(table[icol]);
+        b = (unsigned char)UNPACK_BLUE(table[icol]);
+        file.write((const char *)&r, sizeof(unsigned char));
+        file.write((const char *)&g, sizeof(unsigned char));
+        file.write((const char *)&b, sizeof(unsigned char));
       }
     }
   }
