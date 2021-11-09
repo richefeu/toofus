@@ -15,21 +15,21 @@
 #define GLTOOLS_HPP
 
 #include <cmath>
-#include <cstdarg>  // for va_start and va_end
-#include <cstring>  // for strcpy
+#include <cstdarg> // for va_start and va_end
+#include <cstring> // for strcpy
 
 #include "OBB.hpp"
 
 class facetSphere {
- protected:
-  static void normalize(GLfloat* a) {
+protected:
+  static void normalize(GLfloat *a) {
     GLfloat d = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
     a[0] /= d;
     a[1] /= d;
     a[2] /= d;
   }
 
-  static void drawtri(GLfloat* a, GLfloat* b, GLfloat* c, int div, float r) {
+  static void drawtri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r) {
     if (div <= 0) {
       glNormal3fv(a);
       glVertex3f(-a[0] * r, -a[1] * r, -a[2] * r);
@@ -40,9 +40,9 @@ class facetSphere {
     } else {
       GLfloat ab[3], ac[3], bc[3];
       for (int i = 0; i < 3; i++) {
-        ab[i] = (a[i] + b[i]) / 2;
-        ac[i] = (a[i] + c[i]) / 2;
-        bc[i] = (b[i] + c[i]) / 2;
+        ab[i] = 0.5 * (a[i] + b[i]);
+        ac[i] = 0.5 * (a[i] + c[i]);
+        bc[i] = 0.5 * (b[i] + c[i]);
       }
       normalize(ab);
       normalize(ac);
@@ -54,7 +54,7 @@ class facetSphere {
     }
   }
 
- public:
+public:
   static GLfloat vdata[12][3];
   static GLuint tindices[20][3];
 
@@ -66,8 +66,8 @@ class facetSphere {
   }
 };
 
-#define X .525731112119133606
-#define Z .850650808352039932
+#define X 0.525731112119133606
+#define Z 0.850650808352039932
 GLfloat facetSphere::vdata[12][3] = {{-X, 0.0, Z}, {X, 0.0, Z},  {-X, 0.0, -Z}, {X, 0.0, -Z},
                                      {0.0, Z, X},  {0.0, Z, -X}, {0.0, -Z, X},  {0.0, -Z, -X},
                                      {Z, X, 0.0},  {-Z, X, 0.0}, {Z, -X, 0.0},  {-Z, -X, 0.0}};
@@ -80,10 +80,10 @@ GLuint facetSphere::tindices[20][3] = {{0, 4, 1},  {0, 9, 4},  {9, 5, 4},  {4, 5
                                        {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5},  {7, 2, 11}};
 
 class glShape {
- public:
+public:
   static void sphere(float radius, int ndiv) { facetSphere::draw(ndiv, radius); }
 
-  static void arrow(const vec3r& orig, const vec3r& arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
+  static void arrow(const vec3r &orig, const vec3r &arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
     vec3r dest = orig + arrow;
 
     glLineWidth(2.0f);
@@ -94,8 +94,9 @@ class glShape {
 
     vec3r v = arrow;
     double len = v.normalize();
-    if (arrowSize <= 0.0) arrowSize = 0.04 * len;
-    vec3r vmz(v.x, v.y, v.z - 1.0);  // v - z
+    if (arrowSize <= 0.0)
+      arrowSize = 0.04 * len;
+    vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
     if (norm2(vmz) > 0.1)
@@ -112,25 +113,26 @@ class glShape {
     glVertex3f(dest.x, dest.y, dest.z);
     for (double angle = 0.0; angle <= 2.0 * M_PI; angle += 0.2 * M_PI) {
       c = cos(angle) * a + sin(angle) * b;
-      glNormal3f(c.x, c.y, c.z);  // Pas tout à fait juste (!)
+      glNormal3f(c.x, c.y, c.z); // Pas tout à fait juste (!)
       c = head + r * c;
       glVertex3f(c.x, c.y, c.z);
     }
     glEnd();
   }
 
-  static void tube(vec3r& orig, vec3r& arrow, double diam) {
+  static void tube(vec3r &orig, vec3r &arrow, double diam) {
     vec3r dest = orig + arrow;
     vec3r v = arrow;
     v.normalize();
-    vec3r vmz(v.x, v.y, v.z - 1.0);  // v - z
+    vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
     if (norm2(vmz) > 0.1)
       a.set(v.y, -v.x, 0.0);
     else
       a.set(-v.z, 0.0, v.x);
-    if (a.isnull()) a.set(1.0, 1.0, 0.0);  // for the rare cases v = (0, 0, -1)
+    if (a.isnull())
+      a.set(1.0, 1.0, 0.0); // for the rare cases v = (0, 0, -1)
     a.normalize();
     vec3r b = cross(v, a);
 
@@ -149,7 +151,7 @@ class glShape {
     glEnd();
   }
 
-  static void obb(OBB& obb) {
+  static void obb(OBB &obb) {
     glDisable(GL_LIGHTING);
 
     glLineWidth(1.0f);
@@ -204,7 +206,7 @@ class glShape {
 // Draw things with the coordinate (0, 0) sets at the bottom left of the window
 // switch2D::back(); // All attributes and matrix are set back
 class switch2D {
- public:
+public:
   static void go(int w, int h) {
     // (x,y) is from the bottom left of the window
     glMatrixMode(GL_PROJECTION);
@@ -230,7 +232,7 @@ class switch2D {
 };
 
 class glText {
- protected:
+public:
   static void makeRasterFont() {
     GLuint i;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -243,7 +245,6 @@ class glText {
     }
   }
 
- public:
   static GLubyte rasters[95][13];
   static GLuint fontOffset;
 
@@ -252,7 +253,7 @@ class glText {
     makeRasterFont();
   }
 
-  static void print(int x, int y, const char* fmt, ...) {
+  static void print(int x, int y, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     char buffer[128];
@@ -260,10 +261,10 @@ class glText {
     va_end(args);
 
     glRasterPos2i(x, y);
-    glPushAttrib (GL_LIST_BIT);
+    glPushAttrib(GL_LIST_BIT);
     glListBase(fontOffset);
-    glCallLists(strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *) buffer);
-    glPopAttrib ();
+    glCallLists(strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
+    glPopAttrib();
   }
 };
 
@@ -368,11 +369,11 @@ GLuint glText::fontOffset = 0;
 class glTextZone {
 #define NB_LINE_MAX 40
 
- protected:
+protected:
   char textzone[NB_LINE_MAX][128];
   int nbLine;
-  int* width;
-  int* height;
+  int *width;
+  int *height;
 
   void drawBackground() {
     glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
@@ -385,23 +386,26 @@ class glTextZone {
     glEnd();
   }
 
- public:
+public:
   // Ctors
-  glTextZone(int* W, int* H) : nbLine(NB_LINE_MAX), width(W), height(H) {}
-  glTextZone(int n, int* W, int* H) : nbLine(n), width(W), height(H) {}
+  glTextZone(int *W, int *H) : nbLine(NB_LINE_MAX), width(W), height(H) {}
+  glTextZone(int n, int *W, int *H) : nbLine(n), width(W), height(H) {}
 
   void increase_nbLine() {
     nbLine++;
-    if (nbLine >= NB_LINE_MAX) nbLine = NB_LINE_MAX - 1;
+    if (nbLine >= NB_LINE_MAX)
+      nbLine = NB_LINE_MAX - 1;
   }
 
   void decrease_nbLine() {
     nbLine--;
-    if (nbLine < 1) nbLine = 1;
+    if (nbLine < 1)
+      nbLine = 1;
   }
 
   void reset() {
-    for (size_t i = 0; i < NB_LINE_MAX; i++) textzone[i][0] = '\0';
+    for (size_t i = 0; i < NB_LINE_MAX; i++)
+      textzone[i][0] = '\0';
   }
 
   void draw() {
@@ -412,11 +416,11 @@ class glTextZone {
     for (int i = 0; i < nbLine; ++i) {
       glText::print(4, 4 + i * 16, textzone[i]);
     }
-    
+
     switch2D::back();
   }
 
-  void addLine(const char* fmt, ...) {
+  void addLine(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     char buffer[128];
@@ -424,7 +428,7 @@ class glTextZone {
     for (int i = NB_LINE_MAX - 1; i > 0; i--) {
       strcpy(textzone[i], textzone[i - 1]);
     }
-    sprintf((char*)textzone[0], "%s", buffer);
+    sprintf((char *)textzone[0], "%s", buffer);
     va_end(args);
   }
 
@@ -432,7 +436,7 @@ class glTextZone {
 };
 
 class glTools {
- public:
+public:
   // This funtion can be called before drawing anything.
   // It clears the screen with eventually a color gradient from bottom to top.
   // Default is light blue to white.
@@ -441,7 +445,8 @@ class glTools {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (!grad) return;
+    if (!grad)
+      return;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -455,10 +460,10 @@ class glTools {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_QUADS);
-    glColor3ub(bottomRed, bottomGreen, bottomBlue);  // Bottom color
+    glColor3ub(bottomRed, bottomGreen, bottomBlue); // Bottom color
     glVertex2f(-1.0f, -1.0f);
     glVertex2f(1.0f, -1.0f);
-    glColor3ub(topRed, topGreen, topBlue);  // Top color
+    glColor3ub(topRed, topGreen, topBlue); // Top color
     glVertex2f(1.0f, 1.0f);
     glVertex2f(-1.0f, 1.0f);
     glEnd();
