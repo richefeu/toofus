@@ -11,13 +11,12 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
-#ifndef DATATABLE_HPP_60C51008
-#define DATATABLE_HPP_60C51008
+#ifndef DATATABLE_HPP
+#define DATATABLE_HPP
 
-/// @file
-/// @brief Classes to store and manage parameters of groups and between groups
-/// @author Vincent Richefeu <Vincent.Richefeu@3sr-grenoble.fr>,
-/// Lab 3SR, Grenoble University
+// ===================================================================
+// Classes to store and manage parameters of groups and between groups
+// ===================================================================
 
 #include <iostream>
 #include <map>
@@ -130,4 +129,4 @@ public:
   }
 };
 
-#endif /* end of include guard: DATATABLE_HPP_60C51008 */
+#endif /* end of include guard: DATATABLE_HPP */

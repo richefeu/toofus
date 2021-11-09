@@ -21,7 +21,6 @@
 
 #include "message.hpp"
 
-
 class ExecChrono {
 private:
   std::string m_label;
@@ -39,21 +38,5 @@ public:
   }
 };
 
-
 #endif /* end of include guard: EXECCHRONO_HPP */
 
-#if 0
-#include <iostream>
-int main (int argc, char const *argv[])
-{
-	ExecChrono MM; // the chrono will start automatically (but we can use 'start' if we want)
-	// Doing something...
-	for (int i = 0 ; i < 150 ; i++) {
-		std::cout << ".";
-	}
-	std::cout << '\n';
-	MM.stop();
-	
-	return 0;
-}
-#endif

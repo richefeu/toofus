@@ -26,7 +26,7 @@
  The result is: a = 1, b = 2, c = 3
 */
 
-// Sort the 3 values so that a0 <= a1 <= a2
+// inplace-sort the 3 values so that a0 <= a1 <= a2
 template <typename T> void fastSort3(T &a0, T &a1, T &a2) {
   if (a0 < a1) {
     if (a1 < a2) {

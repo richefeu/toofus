@@ -11,16 +11,14 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
-#ifndef GLUT_TOOLS_HPP
-#define GLUT_TOOLS_HPP
-
-// FIXME: THIS FILE WILL BE REPLACED BY glTools.hpp with the aim of not using glut !!!!
+#ifndef GLTOOLS_HPP
+#define GLTOOLS_HPP
 
 #include <cmath>
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy
 
-#include "OBB.hpp"
+#include "OBB.hpp" // TODO: remove
 
 class facetSphere {
 protected:
@@ -81,11 +79,11 @@ GLuint facetSphere::tindices[20][3] = {{0, 4, 1},  {0, 9, 4},  {9, 5, 4},  {4, 5
                                        {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6},
                                        {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5},  {7, 2, 11}};
 
-class glutShape {
+class glShape {
 public:
   static void sphere(float radius, int ndiv) { facetSphere::draw(ndiv, radius); }
 
-  static void drawArrow(const vec3r &orig, const vec3r &arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
+  static void arrow(const vec3r &orig, const vec3r &arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
     vec3r dest = orig + arrow;
 
     glLineWidth(2.0f);
@@ -122,7 +120,7 @@ public:
     glEnd();
   }
 
-  static void drawTube(vec3r &orig, vec3r &arrow, double diam) {
+  static void tube(vec3r &orig, vec3r &arrow, double diam) {
     vec3r dest = orig + arrow;
     vec3r v = arrow;
     v.normalize();
@@ -153,7 +151,7 @@ public:
     glEnd();
   }
 
-  static void drawObb(OBB &obb) {
+  static void obb(OBB &obb) {
     glDisable(GL_LIGHTING);
 
     glLineWidth(1.0f);
@@ -341,7 +339,7 @@ public:
 #undef NB_LINE_MAX
 };
 
-class glutTools {
+class glTools {
 public:
   // This funtion can be called before drawing anything.
   // It clears the screen with eventually a color gradient from bottom to top.
@@ -382,4 +380,4 @@ public:
   }
 };
 
-#endif /* end of include guard: GLUT_TOOLS_HPP */
+#endif /* end of include guard: GLTOOLS_HPP */

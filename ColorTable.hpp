@@ -38,8 +38,8 @@
 
 #include <cmath>
 #include <cstdlib> // needed for rand()
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -103,13 +103,13 @@ private:
       return (((X) >> 24) & 0xff);
   }
 
-  double gray(double s) { return s < 0. ? 0. : (s < 1. ? s : 1.); }
+  double gray(double s) { return s < 0.0 ? 0.0 : (s < 1.0 ? s : 1.0); }
 
-  double hot_r(double s) { return s < 0. ? 0. : (s < 3. / 8. ? 8. / 3. * s : 1.); }
+  double hot_r(double s) { return s < 0.0 ? 0.0 : (s < 3.0 / 8.0 ? 8.0 / 3.0 * s : 1.0); }
 
-  double hot_g(double s) { return s < 3. / 8. ? 0. : (s < 6. / 8. ? 8. / 3. * (s - 3. / 8.) : 1.); }
+  double hot_g(double s) { return s < 3.0 / 8.0 ? 0.0 : (s < 6.0 / 8.0 ? 8.0 / 3.0 * (s - 3.0 / 8.0) : 1.0); }
 
-  double hot_b(double s) { return s < 6. / 8. ? 0. : (s < 1. ? 8. / 2. * (s - 6. / 8.) : 1.); }
+  double hot_b(double s) { return s < 6.0 / 8.0 ? 0.0 : (s < 1.0 ? 8.0 / 2.0 * (s - 6.0 / 8.0) : 1.0); }
 
   double cubic(double a, double b, double c, double d, double x) { return a + b * x + c * x * x + d * x * x * x; }
 
@@ -536,12 +536,12 @@ public:
         double H = (1.0 - w) * H1 + w * H2;
         double S = (1.0 - w) * S1 + w * S2;
         double V = (1.0 - w) * V1 + w * V2;
-        double R,G,B;
+        double R, G, B;
         HSV_to_RGB(H, S, V, &R, &G, &B);
         col.r = (int)(255 * R);
         col.g = (int)(255 * G);
         col.b = (int)(255 * B);
-        
+
         // clamp to [0,255]
         col.r = col.r < 0 ? 0 : (col.r > 255 ? 255 : col.r);
         col.g = col.g < 0 ? 0 : (col.g > 255 ? 255 : col.g);
@@ -552,7 +552,7 @@ public:
       }
     }
   }
-  
+
   void savePpm(const char *name) {
     int h = size;
     int w = (int)(h / 15 + 1);
@@ -612,10 +612,9 @@ public:
   // returns one color among 6 well distinguishable colors
   void getRandomRGB8(colorRGBA *col) {
     static const std::vector<unsigned int> tb = {
-      PACK_COLOR(225, 205, 90, 255),  PACK_COLOR(170, 114, 160, 255),
-      PACK_COLOR(230, 116, 98, 255),  PACK_COLOR(94, 129, 148, 255),
-      PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
-      PACK_COLOR(208, 143, 72, 255),  PACK_COLOR(118, 169, 155, 255),
+        PACK_COLOR(225, 205, 90, 255), PACK_COLOR(170, 114, 160, 255), PACK_COLOR(230, 116, 98, 255),
+        PACK_COLOR(94, 129, 148, 255), PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
+        PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
     };
     unsigned int i = (unsigned int)floor(rand() / (double)RAND_MAX * 8);
     if (i >= 8)
@@ -628,10 +627,9 @@ public:
 
   void getCyclicRGB8(colorRGBA *col) {
     static const std::vector<unsigned int> tb = {
-        PACK_COLOR(225, 205, 90, 255),  PACK_COLOR(170, 114, 160, 255),
-        PACK_COLOR(230, 116, 98, 255),  PACK_COLOR(94, 129, 148, 255),
-        PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
-        PACK_COLOR(208, 143, 72, 255),  PACK_COLOR(118, 169, 155, 255),
+        PACK_COLOR(225, 205, 90, 255), PACK_COLOR(170, 114, 160, 255), PACK_COLOR(230, 116, 98, 255),
+        PACK_COLOR(94, 129, 148, 255), PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
+        PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
     };
     static unsigned int count = 0;
     col->r = UNPACK_RED(tb[count]);

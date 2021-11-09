@@ -14,7 +14,9 @@
 #ifndef GRID2_HPP
 #define GRID2_HPP
 
+// =============================================
 // A two-dimentional grid (Simplified 2D matrix)
+// =============================================
 
 // Grid nrows x ncols
 template <class T> class grid2 {
