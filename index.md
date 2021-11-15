@@ -6,7 +6,7 @@ A brief description of the different headers and the basic principles of their u
 
 # Algebra
 
-### `vec2.hpp` and `vec3.hpp`
+**`vec2.hpp` and `vec3.hpp`**
 
 They are easy-to-use classes for 2D and 3D vectors. Here is example of usage:
 
