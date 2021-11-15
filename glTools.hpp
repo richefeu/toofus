@@ -151,6 +151,24 @@ public:
     glEnd();
   }
 
+  static void frame(const vec3r &pos, double lx = 1.0, double ly = 1.0, double lz = 1.0) {
+    glDisable(GL_LIGHTING);
+
+    double arrowSize = lx;
+    if (ly > arrowSize) arrowSize = ly;
+    if (lz > arrowSize) arrowSize = lz;
+    arrowSize *= 0.05;
+
+    glColor4ub(255, 0, 0, 255);
+    glShape::arrow(pos, lx * vec3r::unit_x(), arrowSize);
+
+    glColor4ub(0, 255, 0, 255);
+    glShape::arrow(pos, ly * vec3r::unit_y(), arrowSize);
+
+    glColor4ub(0, 0, 255, 255);
+    glShape::arrow(pos, lz * vec3r::unit_z(), arrowSize);
+  }
+
   static void obb(OBB &obb) {
     glDisable(GL_LIGHTING);
 

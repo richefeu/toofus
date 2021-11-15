@@ -55,15 +55,52 @@ template <typename T> void fastSort3(T &a0, T &a1, T &a2) {
   }
 }
 
+
+template <typename T> void getOrder3(const T a0, const T a1, const T a2, int &i0, int &i1, int &i2) {
+  i0 = 0;
+  i1 = 1;
+  i2 = 2;
+  if (a0 < a1) {
+    if (a1 < a2) {
+      return;
+    } else {
+      if (a0 < a2) {
+        std::swap(i1, i2);
+      } else {
+        std::swap(i0, i2);
+        std::swap(i1, i2);
+      }
+    }
+  } else {
+    if (a0 < a2) {
+      std::swap(i0, i1);
+    } else {
+      if (a1 < a2) {
+        int temp = i0;
+        i0 = i1;
+        i1 = i2;
+        i2 = temp;
+      } else {
+        std::swap(i0, i2);
+      }
+    }
+  }
+}
+
 #endif /* end of include guard: FASTSORT3_HPP */
 
 #if 0
 #include <iostream>
 int main(int argc, char const *argv[]) {
-  int a = 10, b = 1, c = 2;
+  int a = 10, b = 5, c = 1;
   std::cout << "BEFORE SORTING\na = " << a << ", b = " << b << ", c = " << c << '\n';
+  int i0,i1,i2;
+  getOrder3(a,b,c,i0,i1,i2);
+  std::cout << "INDICES\nindex(a) = " << i0 << ", index(b) = " << i1 << ", index(c) = " << i2 << '\n';
+  
   fastSort3<int>(a, b, c);
   std::cout << "AFTER SORTING\na = " << a << ", b = " << b << ", c = " << c << '\n';
+  
   return 0;
 }
 #endif
