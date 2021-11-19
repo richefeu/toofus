@@ -46,13 +46,20 @@ using namespace std;
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+const float inv255 = 1.0 / 255.0;
+
 struct colorRGBA {
   int r, g, b, a;
+  float rr, gg, bb, aa;
   void set(int R, int G, int B, int A) {
     r = R;
     g = G;
     b = B;
     a = A;
+    rr = r * inv255;
+    gg = g * inv255;
+    bb = b * inv255;
+    aa = a * inv255;
   }
 };
 

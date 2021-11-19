@@ -54,8 +54,10 @@ public:
   }
 
   T &operator[](int i) { return (&xx)[i]; }
-
   const T &operator[](int i) const { return (&xx)[i]; }
+  
+  T &at(int line, int column) { return (&xx)[2 * line + column]; }
+  const T &at(int line, int column) const { return (&xx)[2 * line + column]; }
 
   T *c_mtx() { return &xx; }
 
@@ -79,8 +81,8 @@ public:
   void eigen(mat4 &V, mat4 &D) {
     double TT = xx + yy;
     double det = xx * yy - xy * yx;
-    double L1 = TT / 2 + sqrt(TT * TT / 4 - det); // eigenval
-    double L2 = TT / 2 - sqrt(TT * TT / 4 - det); // eigenval
+    double L1 = 0.5 * TT + sqrt(0.25 * TT * TT - det); // eigenval
+    double L2 = 0.5 * TT - sqrt(0.25 * TT * TT - det); // eigenval
     D.xx = L1;
     D.xy = D.yx = 0.0;
     D.yy = L2;
@@ -216,7 +218,6 @@ public:
   }
 
   mat4 get_inverse() {
-
     double det = xx * yy - xy * yx;
     // if (fabs(det) < 1.0e-20) return false; // inverse cannot be calculated
     double xx1(xx), xy1(xy), yx1(yx), yy1(yy);

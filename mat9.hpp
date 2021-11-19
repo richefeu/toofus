@@ -101,8 +101,10 @@ public:
   }
 
   T &operator[](int i) { return (&xx)[i]; }
-
   const T &operator[](int i) const { return (&xx)[i]; }
+
+  T &at(int line, int column) { return (&xx)[3 * line + column]; }
+  const T &at(int line, int column) const { return (&xx)[3 * line + column]; }
 
   T *c_mtx() { return &xx; }
 
@@ -226,6 +228,8 @@ public:
     std::swap(xz, zx);
     std::swap(yz, zy);
   }
+
+  mat9<T> transposed() { return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz); }
 
   vec3<T> get_xcol() const { return vec3<T>(xx, yx, zx); }
 

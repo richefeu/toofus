@@ -117,7 +117,7 @@ public:
     }
 
     if (nbP == 0) {
-      std::cerr << "@getCovarianceMatrix, no points in the OBBs!!\n";
+      std::cerr << "@OBBtree::getCovarianceMatrix, no points in the OBBs!!\n";
       return C;
     }
     mu /= (double)nbP;
@@ -158,7 +158,7 @@ public:
   static OBB fitOBB(std::vector<OBBbundle<T>> &OBBs, double radius = 0.0) {
     OBB fittedObb;
     if (OBBs.empty()) {
-      std::cerr << "@fitOBB, OBBs is empty!!\n";
+      std::cerr << "@OBBtree::fitOBB, OBBs is empty!!\n";
       return fittedObb;
     }
 
