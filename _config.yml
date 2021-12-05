@@ -3,5 +3,5 @@ theme: jekyll-theme-leap-day
 show_downloads: true
 
 github:
-  zip_url: xxx
-  tar_url: xxx
+  zip_url: https://github.com/richefeu/toofus/archive/refs/heads/main.zip
+  tar_url: https://github.com/richefeu/toofus/archive/refs/heads/main.tgz
