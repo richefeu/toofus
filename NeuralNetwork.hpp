@@ -1,3 +1,19 @@
+// Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
+//
+// This file is part of TOOFUS (TOols OFten USued)
+//
+// It can not be copied and/or distributed without the express
+// permission of the authors.
+// It is coded for academic purposes.
+//
+// Note
+// Without a license, the code is copyrighted by default.
+// People can read the code, but they have no legal right to use it.
+// To use the code, you must contact the author directly and ask permission.
+//
+// This is a stand-alone header file that implement a Neural Network
+// with a single hidden layer (Non-deep Neural Network)
+ 
 #ifndef NN_HPP
 #define NN_HPP
 
@@ -248,6 +264,7 @@ public:
     cvector_randomize_gaussian_inplace(bias_o, pow((double)nbOutputs, -0.5));
   }
 
+  // construct the Neural Network by reading a text file
   NeuralNetwork(const char *filename) {
     std::ifstream file(filename);
     int actId = 0;
@@ -397,6 +414,7 @@ public:
     // todo
   }
 
+  // save the current Neural Network (may be already trained) into a text file
   void save(const char *filename) {
     std::ofstream file(filename);
     file << activatorId << '\n';
