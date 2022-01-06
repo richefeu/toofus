@@ -140,8 +140,10 @@ public:
 
     // normalization: \int P dx = 1
     double sum = 0.0;
-    for (int b = 0; b < nbins; b++)
-      sum += H.data[b].ProbDensity * H.data[b].Width;
+    for (int b = 0; b < nbins; b++) {
+      if (H.data[b].Width > 0.0)
+        sum += H.data[b].ProbDensity * H.data[b].Width;
+    }
     double invSum = 1.0;
     if (sum > 0.0)
       invSum = 1.0 / sum;
@@ -204,11 +206,15 @@ public:
 
     // normalization: \int P dx = 1
     double sum = 0.0;
-    for (int b = 0; b < nbins; b++)
-      sum += H.data[b].ProbDensity * H.data[b].Width;
+    for (int b = 0; b < nbins; b++) {
+      if (H.data[b].Width > 0.0)
+        sum += H.data[b].ProbDensity * H.data[b].Width;
+    }
+
     double invSum = 1.0;
-    if (sum > 0.0)
+    if (sum > 0.0) {
       invSum = 1.0 / sum;
+    }
     for (int b = 0; b < nbins; b++)
       H.data[b].ProbDensity *= invSum;
 
@@ -244,8 +250,10 @@ public:
 
     // normalization: \int P dx = 1
     double sum = 0.0;
-    for (size_t b = 0; b < H.data.size(); b++)
-      sum += H.data[b].ProbDensity * H.data[b].Width;
+    for (size_t b = 0; b < H.data.size(); b++) {
+      if (H.data[b].Width > 0.0)
+        sum += H.data[b].ProbDensity * H.data[b].Width;
+    }
     double invSum = 1.0;
     if (sum > 0.0)
       invSum = 1.0 / sum;

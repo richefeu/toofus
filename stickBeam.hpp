@@ -21,17 +21,21 @@
 #include "vec3.hpp"
 
 /*
-This small struct can be used for analysis bases on beam theory.
-The analysis is restricted to nodal forces that MUST be statically balanced.
-
-
-
-5 node  0            1       2         3                 4
-        +------------+-------+---------+-----------------+
-         o          e o     e o       e o               e
-4 elem        (0)        (1)      (2)           (3)
-
-*/
+ *   This small struct can be used for analysis bases on beam theory.
+ *   The analysis is restricted to nodal forces that MUST be statically balanced.
+ *
+ *   y
+ *   |
+ *   |
+ *   o-----x
+ *   z
+ *
+ *   5 node  0            1       2         3                 4
+ *           +------------+-------+---------+-----------------+
+ *            o          e o     e o       e o               e
+ *   4 elem        (0)        (1)      (2)           (3)
+ *
+ */
 struct beam {
   double radius;
 
@@ -83,6 +87,26 @@ struct beam {
     xpos.push_back(x);
     vec3r f(fx, fy, fz);
     force.push_back(f);
+
+    if (xpos.size() >= 2) {
+      size_t ilast = xpos.size() - 1;
+      size_t ip = ilast;
+      for (size_t p = 0; p < xpos.size(); ++p) {
+        if (x <= xpos[p]) {
+          ip = p;
+          break;
+        }
+      }
+
+      if (ip != ilast) {
+        for (size_t p = xpos.size() - 1; p > ip; --p) {
+          xpos[p] = xpos[p - 1];
+          force[p] = force[p - 1];
+        }
+        xpos[ip] = x;
+        force[ip] = f;
+      }
+    }
   }
 
   void connect() {
@@ -204,6 +228,21 @@ struct beam {
     return length;
   }
 
+  void print_sumF() {
+    vec3r sumf;
+    for (size_t i = 0; i < force.size(); i++) {
+      sumf += force[i];
+    }
+    std::cout << "sum f = " << sumf << "\n";
+  }
+
+  void print_node_force() {
+
+    for (size_t i = 0; i < xpos.size(); i++) {
+      std::cout << "x =  " << xpos[i] << ", force = " << force[i] << "\n";
+    }
+  }
+
   void print() {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
@@ -222,18 +261,31 @@ struct beam {
   }
 };
 
-#if 0
+#if 1
 int main(int argc, char const *argv[]) {
 
   beam B;
+  
   B.radius = 0.1;
-  B.addNode(0, 0, -0.5, 0);
-  B.addNode(0.8, 0, -2 + 5.5, 0);
-  B.addNode(2.3, 0, -2, 0);
-  B.addNode(3.8, 0, -2, 0);
-  B.addNode(5.3, 0, -2, 0);
-  B.addNode(6.8, 0, -2 + 5.5, 0);
   B.addNode(7.6, 0, -0.5, 0);
+  B.addNode(6.8, 0, -2 + 5.5, 0);
+  B.addNode(2.3, 0, -2, 0);
+  B.addNode(5.3, 0, -2, 0);
+  B.addNode(3.8, 0, -2, 0);
+  B.addNode(0.8, 0, -2 + 5.5, 0);
+  B.addNode(0, 0, -0.5, 0);
+  
+  
+  /*
+  B.radius = 0.1;
+  B.addNode(0.0, 0, 5, 0);
+  B.addNode(1.0, 0, -10, 0);
+  B.addNode(2.0, 0, 5, 0);
+  */
+  
+  B.print_sumF();
+  B.print_node_force();
+
   B.connect();
   B.computeInternalActions();
   B.computeNodeStress();

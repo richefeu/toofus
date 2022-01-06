@@ -52,6 +52,7 @@ public:
     point normal;
     triangle() : i0(0), i1(0), i2(0), normal() {}
     triangle(int I0, int I1, int I2) : i0(I0), i1(I1), i2(I2), normal() {}
+    triangle(int I0, int I1, int I2, double Nx, double Ny, double Nz) : i0(I0), i1(I1), i2(I2), normal(Nx, Ny, Nz) {}
   };
 
   // edge
@@ -211,8 +212,8 @@ public:
       T.normal.x = (double)(vnormal.x);
       T.normal.y = (double)(vnormal.y);
       T.normal.z = (double)(vnormal.z);
-      
-      std::cout << vnormal.x << ' ' << vnormal.y << ' ' << vnormal.z << " | ";
+
+      //std::cout << vnormal.x << ' ' << vnormal.y << ' ' << vnormal.z << " | ";
       // FIXME: it seems that normal are finally wrong
       //        (don't know why)
 
