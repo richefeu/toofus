@@ -42,7 +42,7 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
 
   std::vector<double> alpha(n);
   for (int i = 1; i < n; ++i)
-    alpha[i] = (3 * (a[i + 1] - a[i]) / h[i] - 3 * (a[i] - a[i - 1]) / h[i - 1]);
+    alpha[i] = (3.0 * (a[i + 1] - a[i]) / h[i] - 3.0 * (a[i] - a[i - 1]) / h[i - 1]);
 
   std::vector<double> c(n + 1);
   std::vector<double> l(n + 1);
@@ -53,7 +53,7 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   z[0] = 0.0;
 
   for (int i = 1; i < n; ++i) {
-    l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
+    l[i] = 2.0 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
     mu[i] = h[i] / l[i];
     z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
   }

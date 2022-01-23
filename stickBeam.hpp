@@ -261,7 +261,7 @@ struct beam {
   }
 };
 
-#if 1
+#if 0
 int main(int argc, char const *argv[]) {
 
   beam B;

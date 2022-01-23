@@ -78,6 +78,10 @@ public:
   void circle(double cx, double cy, double r, const char *style) {
     os << "<circle cx=\"" << cx << "\" cy=\"" << cy << "\" r=\"" << r << "\" style=\"" << style << "\" />\n";
   }
+  
+  void circle(viewZone &vz, double cx, double cy, double r, const char *style) {
+    ellipse(vz, cx, cy, r, r, style);
+  }
 
   void ellipse(double cx, double cy, double rx, double ry, const char *style) {
     os << "<ellipse cx=\"" << cx << "\" cy=\"" << cy << "\" rx=\"" << rx << "\" ry=\"" << ry << "\" style=\"" << style
