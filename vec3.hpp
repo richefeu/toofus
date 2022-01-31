@@ -270,19 +270,17 @@ typedef vec3<unsigned int> vec3ui;
 typedef vec3<bool> vec3b;
 
 namespace std {
-
 template <class T> struct less<vec3<T>> {
   bool operator()(const vec3<T> &lhs, const vec3<T> &rhs) const {
-    if (rhs.x < lhs.x)
+    if (lhs.x < rhs.x)
       return true;
-    else if (lhs.x == rhs.x && rhs.y < lhs.y)
+    else if (lhs.x == rhs.x && lhs.y < rhs.y)
       return true;
-    else if (lhs.x == rhs.x && lhs.y == rhs.y && rhs.z < lhs.z)
+    else if (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z)
       return true;
     return false;
   }
 };
-
 } // end namespace std
 
 #endif /* end of include guard: VEC3_HPP */

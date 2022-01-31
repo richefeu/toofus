@@ -16,6 +16,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <random>
 #include <vector>
@@ -29,7 +30,7 @@ const double pi_2 = pi / 2.0;
 const double pi_4 = pi / 4.0;
 const double _2pi = 2.0 * pi;
 const double _1_3 = 1.0 / 3.0;
-const double _4_3 = 1.0 / 3.0;
+const double _4_3 = 4.0 / 3.0;
 const double e = 2.71828182845904523536;
 const double deg2rad = pi / 180.0;
 const double rad2deg = 180.0 / pi;
@@ -156,6 +157,36 @@ template <typename T> T dist(T x1, T y1, T z1, T x2, T y2, T z2) {
   return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
 
+
+// QUAKE 3 fast inversed square root
+// Thanks to compiler optimisations, using 1.0/sqrt(v) will have
+// better performance than these functions
+static float Q_rsqrt(float number) {
+  const float x2 = number * 0.5F;
+  const float threehalfs = 1.5F;
+
+  union {
+    float f;
+    uint32_t i;
+  } conv = {.f = number};
+  conv.i = 0x5f3759df - (conv.i >> 1);
+  conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
+  return conv.f;
+}
+static float Q_accurate_rsqrt(float number) {
+  const float x2 = number * 0.5F;
+  const float threehalfs = 1.5F;
+
+  union {
+    float f;
+    uint32_t i;
+  } conv = {.f = number};
+  conv.i = 0x5f3759df - (conv.i >> 1);
+  conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
+  conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 2
+  return conv.f;
+}
+
 /// @brief Compute the mean value and the variance of some data
 template <typename T> void MeanAndVariance(std::vector<T> &data, double &mean, double &var) {
   mean = 0.0;
@@ -190,6 +221,7 @@ template <typename T> T RSD(std::vector<T> &data) {
 #include <iostream>
 int main() {
 
+  /*
   std::cout << "dist = " << Mth::dist(-1.0, -2.0, 6.3 , 2.45) << "\n";
   
   std::vector<double> vec = {2.3,9.3,10.3,98.4,0.34,34.65};
@@ -197,8 +229,22 @@ int main() {
   std::cout << "picked value = " << Mth::random(vec) << "\n";
   std::cout << "picked value = " << Mth::random(vec) << "\n";
   std::cout << "picked value = " << Mth::random(vec) << "\n";
+  */
   
   
+  double value = 1234.56876;
+  std::cout << 1.0/sqrt(value) << "  vs  " << Mth::Q_rsqrt(value) << "  vs  " << Mth::Q_accurate_rsqrt(value) << '\n';
+  
+  double a=0.0;
+  for (unsigned i = 0 ; i < 1000000000; i++) {
+    double v = Mth::random(0.0001,10.);
+    double f = 1.0f/sqrt(v);
+    //double f = Mth::Q_rsqrt(v);
+    a+=f;
+  }
+  std::cout << "a="<<a<<'\n';
+
+
 
   return 0;
 }

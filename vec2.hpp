@@ -18,7 +18,7 @@
 // Template class for vectors with 2 components
 // ============================================
 
-#include "common.hpp"
+//#include "common.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -143,7 +143,7 @@ public:
     return n;
   }
 
-  /// Normalize and return the normalized vector
+  /// Return a normalized vector (without changing 'this' vector)
   vec2 normalized() const {
     vec2 V = *this;
     V.normalize();
@@ -160,7 +160,7 @@ public:
 
   // input/output
   friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV) {
-    return (pStr << pV.x << CommBox().sep << pV.y);
+    return (pStr << pV.x << ' ' << pV.y);
   }
 
   friend std::istream &operator>>(std::istream &pStr, vec2 &pV) { return (pStr >> pV.x >> pV.y); }
@@ -171,14 +171,13 @@ typedef vec2<int> vec2i;
 typedef vec2<unsigned int> vec2ui;
 typedef vec2<bool> vec2b;
 
-// FIXME !! The following seems wrong. We should have lhs.x < rhs.x in the tests
-// Maybe fixing this could break some other codes... Ooops!!
+
 namespace std {
 template <class T> struct less<vec2<T>> {
   bool operator()(const vec2<T> &lhs, const vec2<T> &rhs) const {
-    if (rhs.x < lhs.x)
+    if (lhs.x < rhs.x)
       return true;
-    else if (lhs.x == rhs.x && rhs.y < lhs.y)
+    else if (lhs.x == rhs.x && lhs.y < rhs.y)
       return true;
     return false;
   }

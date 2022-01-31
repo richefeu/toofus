@@ -90,7 +90,7 @@ public:
 
   void ellipse(viewZone &vz, double cx, double cy, double rx, double ry, const char *style) {
     os << "<ellipse cx=\"" << cx * vz.scalex + vz.x0 << "\" cy=\"" << cy * vz.scaley + vz.y0 << "\" rx=\""
-       << rx * vz.scalex << "\" ry=\"" << ry * vz.scaley << "\" style=\"" << style << "\" />\n";
+       << fabs(rx * vz.scalex) << "\" ry=\"" << fabs(ry * vz.scaley) << "\" style=\"" << style << "\" />\n";
   }
 
   void text(double x, double y, const char *style, const char *content) {
