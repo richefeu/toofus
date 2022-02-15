@@ -58,7 +58,6 @@ struct LeastSquare {
   } 
 };
 
-
 struct LSfit {
   LeastSquare LS;
   static std::map<const char *, std::function<paramFunc(std::vector<double> & Params)> > FuncDataBase;

@@ -30,3 +30,10 @@ The recommended and easiest method of installation is to move to the downloaded 
 ```sh
 sh install.sh
 ```
+
+
+## useful header-only libraries
+
+
+https://github.com/delfrrr/delaunator-cpp
+

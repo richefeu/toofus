@@ -65,7 +65,7 @@ public:
   void transpose() { std::swap(xy, yx); }
 
   void eigenvalues(double &v1, double &v2, bool &swapped) const {
-    /// @fixme seems to ok only for symmetric matrix
+    /// @fixme seems to be ok only for symmetric matrix
     v1 = 0.5 * (xx + yy) + sqrt((0.5 * (xx - yy)) * (0.5 * (xx - yy)) + xy * xy);
     v2 = 0.5 * (xx + yy) - sqrt((0.5 * (xx - yy)) * (0.5 * (xx - yy)) + xy * xy);
     if (v2 > v1) {
