@@ -37,7 +37,7 @@ struct qdt_Circle {
   qdt_Circle() : x(0.0), y(0.0), r(0.0) {}
   qdt_Circle(double x_, double y_, double r_) : x(x_), y(y_), r(r_) {}
 
-  bool contains(qdt_Point &p) {
+  bool contains(const qdt_Point &p) {
     double dx = p.x - x;
     double dy = p.y - y;
     double dd = dx * dx + dy * dy;
@@ -56,13 +56,13 @@ struct qdt_Rectangle {
   qdt_Rectangle(double xmin_, double ymin_, double xmax_, double ymax_)
       : xmin(xmin_), ymin(ymin_), xmax(xmax_), ymax(ymax_) {}
 
-  bool contains(qdt_Point &p) { return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax); }
+  bool contains(const qdt_Point &p) { return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax); }
 
-  bool intersects(qdt_Rectangle &range) {
+  bool intersects(const qdt_Rectangle &range) {
     return !(xmin > range.xmax || xmax < range.xmin || ymin > range.ymax || ymax < range.ymin);
   }
 
-  bool intersects(qdt_Circle &c) {
+  bool intersects(const qdt_Circle &c) {
     double dx = c.x - std::max(xmin, std::min(c.x, xmax));
     double dy = c.y - std::max(ymin, std::min(c.y, ymax));
     return (dx * dx + dy * dy) < (c.r * c.r);
@@ -123,8 +123,8 @@ public:
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
-  QuadTree(qdt_Rectangle &boundary_, size_t capacity_) {
-    boundary = boundary_;
+  QuadTree(qdt_Rectangle &boundary_, size_t capacity_) : boundary(boundary_) {
+    //boundary = boundary_;
     capacity = capacity_;
     divided = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;

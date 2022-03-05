@@ -161,24 +161,24 @@ template <typename T> T dist(T x1, T y1, T z1, T x2, T y2, T z2) {
 // QUAKE 3 fast inversed square root
 // Thanks to compiler optimisations, using 1.0/sqrt(v) will have
 // better performance than these functions
-static float Q_rsqrt(float number) {
-  const float x2 = number * 0.5F;
-  const float threehalfs = 1.5F;
+template <typename T> T Q_rsqrt(T number) {
+  const T x2 = number * 0.5F;
+  const T threehalfs = 1.5F;
 
   union {
-    float f;
+    T f;
     uint32_t i;
   } conv = {.f = number};
   conv.i = 0x5f3759df - (conv.i >> 1);
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
   return conv.f;
 }
-static float Q_accurate_rsqrt(float number) {
-  const float x2 = number * 0.5F;
-  const float threehalfs = 1.5F;
+template <typename T> T Q_accurate_rsqrt(T number) {
+  const T x2 = number * 0.5F;
+  const T threehalfs = 1.5F;
 
   union {
-    float f;
+    T f;
     uint32_t i;
   } conv = {.f = number};
   conv.i = 0x5f3759df - (conv.i >> 1);

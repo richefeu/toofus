@@ -49,7 +49,7 @@ template <class T> struct Tempo {
     }
   }
 
-  void set(std::string command, double p1 = 0, double p2 = 0, T p3 = 0, T p4 = 0) {
+  void set(const std::string command, double p1 = 0, double p2 = 0, T p3 = 0, T p4 = 0) {
     if (command == "Range") {
       update = [this, p1, p2, p3, p4](double t) -> T {
         if (t >= p1 && t <= p2) {

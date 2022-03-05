@@ -18,7 +18,7 @@
 // Template class for vectors with 3 components
 // ============================================
 
-#include "common.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -83,9 +83,9 @@ public:
 
   T *c_vec() { return &x; }
 
-  T &operator[](int i) { return (&x)[i]; }
+  T &operator[](int i) { return *(&x+i); }
 
-  const T &operator[](int i) const { return (&x)[i]; }
+  const T &operator[](int i) const { return *(&x+i); }
 
   // For local frames, the notation n,t and s is more appropriate than x,y and z
   const T n() const { return x; }
@@ -183,20 +183,19 @@ public:
 
   /// Normalize and return length (before being normalized)
   T normalize() {
-    T n = norm2(*this);
-    if (n > 0.0) {
-      n = sqrt(n);
-      *this *= (1.0 / n);
+    T N = norm2(*this);
+    if (N > 0.0) {
+      N = sqrt(N);
+      *this *= (1.0 / N);
     }
-
-    return n;
+    return N;
   }
 
   T normalizeTested() {
-    T n = norm2(*this);
-    if (n > 0.0) {
-      n = sqrt(n);
-      *this *= (1.0 / n);
+    T N = norm2(*this);
+    if (N > 0.0) {
+      N = sqrt(N);
+      *this *= (1.0 / N);
       if (x == 1) {
         y = z = 0;
       } else if (y == 1) {
@@ -205,8 +204,7 @@ public:
         x = y = 0;
       }
     }
-
-    return n;
+    return N;
   }
 
   T normalizeQuotientAlgo() {
@@ -258,7 +256,7 @@ public:
 
   // input/output
   friend std::ostream &operator<<(std::ostream &pStr, const vec3 &pV) {
-    return (pStr << pV.x << CommBox().sep << pV.y << CommBox().sep << pV.z);
+    return (pStr << pV.x << ' ' << pV.y << ' ' << pV.z);
   }
 
   friend std::istream &operator>>(std::istream &pStr, vec3 &pV) { return (pStr >> pV.x >> pV.y >> pV.z); }
@@ -284,3 +282,16 @@ template <class T> struct less<vec3<T>> {
 } // end namespace std
 
 #endif /* end of include guard: VEC3_HPP */
+
+#if 0
+#include <iostream>
+int main (int argc, char const *argv[])
+{
+  vec3r v(1.,2., 3.);
+  std::cout << v << '\n';
+  
+  
+  return 0;
+}
+
+#endif

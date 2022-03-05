@@ -56,10 +56,10 @@ public:
       N.z = 1;
 
     // Cell dimensions
-    real dx, dy, dz;
-    dx = (box.max.x - box.min.x) / (real)N.x;
-    dy = (box.max.y - box.min.y) / (real)N.y;
-    dz = (box.max.z - box.min.z) / (real)N.z;
+    double dx, dy, dz;
+    dx = (box.max.x - box.min.x) / (double)N.x;
+    dy = (box.max.y - box.min.y) / (double)N.y;
+    dz = (box.max.z - box.min.z) / (double)N.z;
 
     factor.set((dx > 0.0) ? 1.0 / dx : 0.0, (dy > 0.0) ? 1.0 / dy : 0.0, (dz > 0.0) ? 1.0 / dz : 0.0);
 

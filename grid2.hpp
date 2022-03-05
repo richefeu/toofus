@@ -22,12 +22,12 @@
 template <class T> class grid2 {
 public:
   vector<T> Data;
-  uint nrows, ncols;
+  size_t nrows, ncols;
 
   grid2() : nrows(0), ncols(0) {}
-  grid2(uint r, uint c = 1) : Data(r * c, 0), nrows(r), ncols(c) {}
+  grid2(size_t r, size_t c = 1) : Data(r * c, 0), nrows(r), ncols(c) {}
 
-  void resize(uint r, uint c = 1) {
+  void resize(size_t r, size_t c = 1) {
     Data.resize(r * c);
     nrows = r;
     ncols = c;
@@ -35,13 +35,13 @@ public:
 
   void fill(const T &val = 0) { std::fill(Data.begin(), Data.end(), val); }
 
-  T &operator()(uint r, uint c) { return Data[c * nrows + r]; }
+  T &operator()(size_t r, size_t c) { return Data[c * nrows + r]; }
 
-  const T &operator()(uint r, uint c) const { return Data[c * nrows + r]; }
+  const T &operator()(size_t r, size_t c) const { return Data[c * nrows + r]; }
 
   // input/output
   friend ostream &operator<<(ostream &pStr, const grid2 &Grd) {
-    for (uint i = 0; i < Grd.Data.size() - 1; ++i)
+    for (size_t i = 0; i < Grd.Data.size() - 1; ++i)
       pStr << Grd.Data[i] << ' ';
     pStr << Grd.Data[Grd.Data.size() - 1];
     return pStr;

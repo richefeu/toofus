@@ -18,7 +18,6 @@
 // Template class for vectors with 2 components
 // ============================================
 
-//#include "common.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -55,9 +54,9 @@ public:
 
   T *c_vec() { return &x; }
 
-  T &operator[](int i) { return (&x)[i]; }
+  T &operator[](int i) { return *(&x + i); }
 
-  const T &operator[](int i) const { return (&x)[i]; }
+  const T &operator[](int i) const { return *(&x + i); }
 
   // For local frames, the notation n,t and s is more appropriate than x and y
   const T n() const { return x; }
@@ -123,7 +122,7 @@ public:
 
   /// Cross product
   friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
-  
+
   /// Linear interpolation
   friend vec2<T> lerp(double t, const vec2<T> &a, const vec2<T> &b) { return (1.0f - t) * a + t * b; }
 
@@ -137,10 +136,10 @@ public:
 
   /// Normalize and return length (before being normalized)
   T normalize() {
-    T n = norm(*this);
-    if (n > 0.0)
-      *this *= (1.0f / n);
-    return n;
+    T N = norm(*this);
+    if (N > 0.0)
+      *this *= (1.0f / N);
+    return N;
   }
 
   /// Return a normalized vector (without changing 'this' vector)
@@ -159,9 +158,7 @@ public:
   bool operator!=(const vec2<T> &other) const { return !(*this == other); }
 
   // input/output
-  friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV) {
-    return (pStr << pV.x << ' ' << pV.y);
-  }
+  friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV) { return (pStr << pV.x << ' ' << pV.y); }
 
   friend std::istream &operator>>(std::istream &pStr, vec2 &pV) { return (pStr >> pV.x >> pV.y); }
 };
@@ -170,7 +167,6 @@ typedef vec2<double> vec2r;
 typedef vec2<int> vec2i;
 typedef vec2<unsigned int> vec2ui;
 typedef vec2<bool> vec2b;
-
 
 namespace std {
 template <class T> struct less<vec2<T>> {
@@ -185,3 +181,15 @@ template <class T> struct less<vec2<T>> {
 } // namespace std
 
 #endif /* end of include guard: VEC2_HPP */
+
+#if 0
+#include <iostream>
+
+int main(int argc, char const *argv[]) {
+  vec2r v(1., 2.);
+  std::cout << v[0] << ' ' << v[1] << '\n';
+
+  return 0;
+}
+
+#endif

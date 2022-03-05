@@ -265,7 +265,7 @@ public:
     // Set vectors to the identity matrix
     V.setIdentity();
     // Set B and D values to the diagonal of the input matrix
-    for (uint i = 0; i < 3; i++)
+    for (size_t i = 0; i < 3; i++)
       B[i] = D[i] = A[i * 3 + i];
 
     // Rotate until off-diagonal elements of input matrix are zero
@@ -388,8 +388,8 @@ public:
 
   // input/output
   friend std::ostream &operator<<(std::ostream &pStr, const mat9 &M) {
-    return (pStr << M.xx << CommBox().sep << M.xy << CommBox().sep << M.xz << CommBox().sep << M.yx << CommBox().sep
-                 << M.yy << CommBox().sep << M.yz << CommBox().sep << M.zx << CommBox().sep << M.zy << CommBox().sep
+    return (pStr << M.xx << ' ' << M.xy << ' ' << M.xz << ' ' << M.yx << ' '
+                 << M.yy << ' ' << M.yz << ' ' << M.zx << ' ' << M.zy << ' '
                  << M.zz);
   }
 

@@ -32,7 +32,7 @@ public:
   AABB(const AABB &aabb) : min(aabb.min), max(aabb.max) {}
 
   explicit AABB(const std::vector<vec3r> &cloud) : min(cloud[0]), max(cloud[0]) {
-    for (uint i = 1; i < cloud.size(); ++i) {
+    for (size_t i = 1; i < cloud.size(); ++i) {
       min = component_min(min, cloud[i]);
       max = component_max(max, cloud[i]);
     }
@@ -44,13 +44,21 @@ public:
     return (*this);
   }
 
+  /**
+    @brief Get the radius of a sphere that surrounds the AABB, 
+           centered at the AABB center
+  */
   double getRadius() const { return 0.25 * (max - min).length(); }
 
+  /**
+    @brief The AABB is set to a single point
+  */
   void set_single(const vec3r &v) {
     min = v;
     max = v;
   }
 
+  
   void add(const vec3r &v) {
     min = component_min(min, v);
     max = component_max(max, v);
@@ -74,6 +82,10 @@ public:
     max.z += more.z;
   }
 
+  /**
+    @brief Join the 2 AABB 
+    TODO : rename it 'union' or something like this
+  */
   void enlarge(const AABB &more) {
     min = component_min(min, more.min);
     max = component_max(max, more.max);

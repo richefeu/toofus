@@ -420,7 +420,7 @@ public:
 
   // --- input/output ---
   friend std::ostream &operator<<(std::ostream &pStr, const quat &Q) {
-    pStr << Q.s << CommBox().sep << Q.v;
+    pStr << Q.s << ' ' << Q.v;
     return pStr;
   }
 
