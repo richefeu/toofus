@@ -34,7 +34,7 @@ const double _4_3 = 4.0 / 3.0;
 const double e = 2.71828182845904523536;
 const double deg2rad = pi / 180.0;
 const double rad2deg = 180.0 / pi;
-const double randFactor = 1.0 / RAND_MAX;
+const double randFactor = 1.0 / (double)(RAND_MAX);
 
 /// @brief Gives angle between 0 and 4,
 /// while atan2 gives an angle between -PI and PI
@@ -46,7 +46,7 @@ template <typename T> T DiamondAngle(T x, T y) {
 }
 
 /// @brief Return the sign of a value (1 is positive, -1 is negative)
-template <typename T> T sign(T value) { return std::copysign(1.0, value); }
+template <typename T> T sign(T value) { return std::copysign(1, value); }
 
 template <typename T> T map(T value, T minA, T maxA, T minB, T maxB) {
   return (value - minA) / (maxA - minA) * (maxB - minB) + minB;

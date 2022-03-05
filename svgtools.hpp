@@ -75,6 +75,11 @@ public:
        << "\" />\n";
   }
 
+  void rect(viewZone &vz, double x, double y, double w, double h, const char *style) {
+    os << "<rect x=\"" << x * vz.scalex + vz.x0 << "\" y=\"" << y * vz.scaley + vz.y0 << "\" width=\""
+       << fabs(w * vz.scalex) << "\" height=\"" << fabs(h * vz.scaley) << "\" style=\"" << style << "\" />\n";
+  }
+
   void circle(double cx, double cy, double r, const char *style) {
     os << "<circle cx=\"" << cx << "\" cy=\"" << cy << "\" r=\"" << r << "\" style=\"" << style << "\" />\n";
   }
@@ -130,7 +135,6 @@ public:
 int main(int argc, char const *argv[]) {
   std::ofstream ofs("test.svg");
   SVGfile svg(ofs);
-  // SVGfile svg;
 
   svg.begin(200, 200);
 

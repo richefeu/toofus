@@ -151,11 +151,13 @@ int main()
 #include <fstream>
 
 int main() {
-  std::vector<double> x(21);
-  std::vector<double> y(21);
+  std::vector<double> x(8);
+  std::vector<double> y(8);
+  std::ofstream in("spline_input.txt");
   for (int i = 0; i < x.size(); ++i) {
-    x[i] = i;
+    x[i] = i*2;
     y[i] = 1.0 / (1.0 + exp(-(x[i] - 8.0)));
+    in << x[i] << ' ' << y[i] << '\n';
   }
 
   std::vector<SplineSet> cs = spline(x, y);
@@ -166,7 +168,7 @@ int main() {
   derivSpline(cs, csd);
   getSlineCurve(csd, xsd, ysd, 10);
   getSlineCurve(cs, xs, ys, 10);
-  std::ofstream out("test.txt");
+  std::ofstream out("spline_ouput.txt");
   for (int i = 0; i < xs.size(); ++i)
     out << xs[i] << "\t" << ys[i] << "\t" << xsd[i] << "\t" << ysd[i] << std::endl;
 

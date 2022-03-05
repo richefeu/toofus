@@ -14,9 +14,10 @@
 #ifndef CONVEXHULL_HPP
 #define CONVEXHULL_HPP
 
-#include "vec2.hpp"
 #include <algorithm>
 #include <vector>
+
+#include "vec2.hpp"
 
 /**
 @file convexHull.hpp
