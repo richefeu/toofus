@@ -120,6 +120,10 @@ public:
   /// Absolut value of the components
   friend vec2<T> component_abs(const vec2<T> &a) { return vec2<T>(fabs(a.x), fabs(a.y)); }
 
+  // https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
+  /// Clockwise angle between 2 vectors (from a to b)
+  friend T angle(const vec2<T> &a, const vec2<T> &b) { return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y); }
+
   /// Cross product
   friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
 
@@ -188,6 +192,9 @@ template <class T> struct less<vec2<T>> {
 int main(int argc, char const *argv[]) {
   vec2r v(1., 2.);
   std::cout << v[0] << ' ' << v[1] << '\n';
+
+  vec2r v2(-2., 1.);
+  std::cout << angle(v, v2) * 180./M_PI << '\n';
 
   return 0;
 }
