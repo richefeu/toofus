@@ -98,20 +98,20 @@ public:
     size_t nb = value.size();
     std::sort(value.begin(), value.end());
     double fact;
-    if (normalize == true && nb > 0)
+    if (normalize == true && nb > 0) {
       fact = 1.0 / nb;
-    else
+    } else {
       fact = 1.0;
+    }
     H.min = value[0];
     H.max = value[nb - 1];
     double binWidth = (H.max - H.min) / (double)nbins;
     double binAbscise;
-    size_t amount;
     double threshold;
     size_t count = 0;
     for (int b = 0; b < nbins; b++) {
       binAbscise = H.min + (b + 0.5) * binWidth;
-      amount = 0;
+      size_t amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
       while (count < nb && value[count] <= threshold) {
         ++amount;
