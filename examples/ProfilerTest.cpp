@@ -1,3 +1,4 @@
+#define ENABLE_PROFILING
 #include "../profiler.hpp"
 
 #include <cstdlib>
@@ -26,8 +27,9 @@ int main(int argc, char const *argv[]) {
       }
     }
   }
+  { START_TIMER("NOTHING"); }
 
-  PRINT_TIMERS_NAME("coucou");
+  PRINT_TIMERS("ProfilerTest");
 
   return 0;
 }

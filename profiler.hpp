@@ -1,3 +1,16 @@
+// This tool has been written by Raphael (CEA)
+// and then adapted and added into TOOFUS
+//
+// This file is part of TOOFUS (TOols OFten USued)
+//
+// It can not be copied and/or distributed without the express
+// permission of the authors.
+// It is coded for academic purposes.
+//
+// Note
+// Without a license, the code is copyrighted by default.
+// People can read the code, but they have no legal right to use it.
+// To use the code, you must contact the author directly and ask permission.
 #pragma once
 
 #include <algorithm>
@@ -17,9 +30,7 @@ const std::string cName[nColumns] = {"number Of Calls", "min(s)", "mean(s)", "ma
 
 class Profiler {
 public:
-  Profiler()
-      : m_daughter() // only used for root
-  {
+  Profiler() : m_daughter() { // only used for root
     m_name = "root";
     m_iteration = 1;
     m_level = 0;
@@ -50,143 +61,122 @@ public:
       std::cout << motif;
   }
 
-  void space() { std::cout << " "; }
-
-  void column() { std::cout << "|"; }
-
-  void endline() { std::cout << std::endl; }
-
   void printBanner(size_t shift) {
     if (m_name == "root") {
-#ifndef __MPI
-      std::cout << " MPI feature is disable for timers, if you use MPI please "
-                   "add -D__MPI ";
-      endline();
-#else
+#ifdef __MPI
       size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
       if (rank == 0) {
-        std::cout << " MPI feature activated, rank 0:" << std::endl;
+        std::cout << " MPI feature activated, rank 0:\n";
+#else
+      std::cout << " MPI feature is disable for timers, if you use MPI please add -D__MPI\n";
 #endif
-      std::string start_name = " |-- start timetable ";
-      std::cout << start_name;
-      printReplicate(start_name.size(), shift + nColumns * (cWidth + 2) - 3, "-");
-      column();
-      endline();
-      std::cout << " |    name";
-      printReplicate(9, shift, " ");
-      for (size_t i = 0; i < nColumns; i++) {
-        column();
-        int size = cName[i].size();
-        printReplicate(0, (int(cWidth) - size - 1), " ");
-        std::cout << cName[i];
-        space();
-      }
-      column();
-      endline();
-      shift += nColumns * (cWidth + 2) - 2; // +1 for "|";
-      space();
-      column();
-      printReplicate(2, shift - 1, "-");
-      column();
-      endline();
+        std::string start_name = " ┌";
+        std::cout << start_name;
+        printReplicate(start_name.size(), shift + nColumns * (cWidth + 2) - 1, "─");
+        std::cout << "┐\n";
+        std::cout << " │    name";
+        printReplicate(9, shift, " ");
+        for (size_t i = 0; i < nColumns; i++) {
+          std::cout << "│";
+          int size = cName[i].size();
+          printReplicate(0, (int(cWidth) - size - 1), " ");
+          std::cout << cName[i] << " ";
+        }
+        std::cout << "│\n";
+        shift += nColumns * (cWidth + 2) - 2;
+        std::cout << " │";
+        printReplicate(2, shift - 1, "─");
+        std::cout << "│\n";
 #ifdef __MPI
-    }
+      }
 #endif
+    }
   }
-}
 
-void
-printEnding(size_t shift)
-{
-  if (m_name == "root") {
+  void printEnding(size_t shift) {
+    if (m_name == "root") {
+#ifdef __MPI
+      size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
+      if (rank == 0) {
+#endif
+        shift += nColumns * (cWidth + 2);
+        std::string end_name = " └";
+        std::cout << end_name;
+        printReplicate(end_name.size(), shift - 1, "─");
+        std::cout << "┘\n";
+#ifdef __MPI
+      }
+#endif
+    }
+  }
+
+  void print(size_t shift) {
 #ifdef __MPI
     size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
     if (rank == 0) {
 #endif
-      shift += nColumns * (cWidth + 2) - 2; // +1 for "|";
-      std::string end_name = " |-- end timetable ";
-      std::cout << end_name;
-      printReplicate(end_name.size(), shift - 1, "-");
-      column();
-      endline();
+      size_t realShift = shift;
+      std::cout << " │ ";
+      size_t currentShift = 3;
+      for (int i = 0; i < int(m_level) - 1; i++) {
+        int spaceSize = 3;
+        for (int j = 0; j < spaceSize; j++)
+          std::cout << " ";
+        currentShift += spaceSize;
+      }
+      if (m_level > 0) {
+        std::cout << "└──";
+        currentShift += 3;
+      }
+      std::cout << "► " << m_name;
+      currentShift += m_name.size() + 1;
+      printReplicate(currentShift, realShift, " ");
+      std::string cValue[nColumns];
+
+      cValue[0] = std::to_string(m_iteration);
 #ifdef __MPI
     }
-#endif
-  }
-}
+    double local_min = std::to_string(m_duration.count());
+    double local_mean = std::to_string(m_duration.count());
+    double local_max = std::to_string(m_duration.count());
+    double global_min, global_max, global_mean;
 
-void print(size_t shift) {
-#ifdef __MPI
-  size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
-  if (rank == 0) {
-#endif
-    size_t realShift = shift;
-    space();
-    column();
-    space();
-    size_t currentShift = 3;
-    for (int i = 0; i < int(m_level) - 1; i++) {
-      int spaceSize = 3;
-      for (int j = 0; j < spaceSize; j++)
-        space();
-      currentShift += spaceSize;
-    }
-    if (m_level > 0) {
-      std::cout << "|--";
-      currentShift += 3;
-    }
-    std::cout << "> " << m_name;
-    currentShift += m_name.size() + 1;
-    printReplicate(currentShift, realShift, " ");
-    std::string cValue[nColumns];
+    MPI_Reduce(&global_min, &local_min, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&global_mean, &local_mean, 1, MPI_DOUBLE, MPI_MEAN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&global_max, &local_max, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-    cValue[0] = std::to_string(m_iteration);
-#ifdef __MPI
-  }
-  double local_min = std::to_string(m_duration.count());
-  double local_mean = std::to_string(m_duration.count());
-  double local_max = std::to_string(m_duration.count());
-  double global_min, global_max, global_mean;
+    if (rank == 0) {
 
-  MPI_Reduce(&global_min, &local_min, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-  MPI_Reduce(&global_mean, &local_mean, 1, MPI_DOUBLE, MPI_MEAN, 0, MPI_COMM_WORLD);
-  MPI_Reduce(&global_max, &local_max, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-  if (rank == 0) {
-
-    cValue[1] = std::to_string(global_min);
-    cValue[2] = std::to_string(global_mean);
-    cValue[3] = std::to_string(global_max);
+      cValue[1] = std::to_string(global_min);
+      cValue[2] = std::to_string(global_mean);
+      cValue[3] = std::to_string(global_max);
 #else
-      cValue[1] = std::to_string(m_duration.count());
-      cValue[2] = std::to_string(m_duration.count());
-      cValue[3] = std::to_string(m_duration.count());
+    cValue[1] = std::to_string(m_duration.count());
+    cValue[2] = std::to_string(m_duration.count());
+    cValue[3] = std::to_string(m_duration.count());
 #endif
 #ifdef __MPI
-    size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
+      size_t rank = MPI_Comm_rank(&rank, MPI_COMM_WORLD);
 #endif
-    for (size_t i = 0; i < nColumns; i++) {
-      column();
-      int size = cValue[i].size();
-      printReplicate(0, (int(cWidth) - size - 1), " ");
-      std::cout << cValue[i];
-      space();
+      for (size_t i = 0; i < nColumns; i++) {
+        std::cout << "│";
+        int size = cValue[i].size();
+        printReplicate(0, (int(cWidth) - size - 1), " ");
+        std::cout << cValue[i] << " ";
+      }
+      std::cout << "│\n";
+#ifdef __MPI
     }
-    column();
-    endline();
-#ifdef __MPI
-  }
 #endif
-}
+  }
 
-std::string m_name;
-std::size_t m_iteration;
-std::size_t m_level;
-std::vector<Profiler *> m_daughter;
-Profiler *m_mother;
-std::chrono::duration<double> m_duration;
-}
-;
+  std::string m_name;
+  std::size_t m_iteration;
+  std::size_t m_level;
+  std::vector<Profiler *> m_daughter;
+  Profiler *m_mother;
+  std::chrono::duration<double> m_duration;
+};
 
 enum enumTimer { CURRENT, ROOT };
 
@@ -195,7 +185,7 @@ template <enumTimer T> Profiler *&getTimer() {
   static Profiler *__current;
   return __current;
 }
-};
+}; // namespace PROFILER
 
 class chronoTime {
 public:
@@ -222,13 +212,12 @@ public:
 // Do not change Timers in the code, otherwise the results will be wrong
 
 // output in txt
-//
 class outputManager {
 private:
   std::string base_name;
 
 public:
-  outputManager() { base_name = "profile"; }
+  outputManager() { base_name = "unnamed"; }
 
   outputManager(const char *name) { base_name = name; }
 
@@ -242,7 +231,7 @@ public:
 #endif
     }
 
-    std::string file_name = base_name + "." + std::to_string(nthreads) + ".perf";
+    std::string file_name = "perflog_" + base_name + "_" + std::to_string(nthreads) + ".txt";
     return file_name;
   }
 
@@ -300,6 +289,7 @@ public:
   }
 };
 
+#ifdef ENABLE_PROFILING
 #define INIT_TIMERS()                                                                                                  \
   Profiler *&root_timer_ptr = PROFILER::getTimer<ROOT>();                                                              \
   root_timer_ptr = new Profiler();                                                                                     \
@@ -312,20 +302,17 @@ public:
   current = PROFILER::getTimer<CURRENT>()->find(name);                                                                 \
   chronoTime tttt(&(current->m_duration));
 
-#define WRITE_TIMERS()                                                                                                 \
-  outputManager tmp_out();                                                                                             \
+#define WRITE_TIMERS(...)                                                                                              \
+  outputManager tmp_out(__VA_ARGS__);                                                                                  \
   tmp_out.writeFile();                                                                                                 \
   tmp_out.printTimeTable();
 
-#define WRITE_TIMERS_NAME(N)                                                                                           \
-  outputManager tmp_out(N);                                                                                            \
-  tmp_out.writeFile();                                                                                                 \
-  tmp_out.printTimeTable();
-
-#define PRINT_TIMERS()                                                                                                 \
+#define PRINT_TIMERS(...)                                                                                              \
   roottimer.end();                                                                                                     \
-  WRITE_TIMERS();
-
-#define PRINT_TIMERS_NAME(N)                                                                                           \
-  roottimer.end();                                                                                                     \
-  WRITE_TIMERS_NAME(N);
+  WRITE_TIMERS(__VA_ARGS__);
+#else
+	#define INIT_TIMERS()
+	#define START_TIMER(name)
+	#define WRITE_TIMERS(...)
+	#define PRINT_TIMERS(...)
+#endif
