@@ -37,12 +37,10 @@
 #define RANDOM 20
 
 #include <cmath>
-#include <cstdlib> // needed for rand()
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-using namespace std;
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
