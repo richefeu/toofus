@@ -1,3 +1,4 @@
+#define ENABLE_PROFILING
 #include "../profiler.hpp"
 
 #include <cstdlib>
@@ -25,9 +26,22 @@ int main(int argc, char const *argv[]) {
         v[i] -= v[i - 1];
       }
     }
+
+    for (size_t i = 1; i < 1000000; i++) {
+      {
+        START_TIMER("THIRD");
+        v[i] -= v[i - 1];
+      }
+    }
   }
 
-  PRINT_TIMERS_NAME("coucou");
+  {
+    START_TIMER("NOTHING");
+
+    std::cout << " I do nothing\n";
+  }
+
+  PRINT_TIMERS("ProfilerTest");
 
   return 0;
 }
