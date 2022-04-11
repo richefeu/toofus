@@ -310,9 +310,12 @@ public:
 #define PRINT_TIMERS(...)                                                                                              \
   roottimer.end();                                                                                                     \
   WRITE_TIMERS(__VA_ARGS__);
+
 #else
-	#define INIT_TIMERS()
-	#define START_TIMER(name)
-	#define WRITE_TIMERS(...)
-	#define PRINT_TIMERS(...)
+
+#define INIT_TIMERS()
+#define START_TIMER(name)
+#define WRITE_TIMERS(...)
+#define PRINT_TIMERS(...)
+
 #endif
