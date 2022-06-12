@@ -1,6 +1,3 @@
-// This tool has been written by Raphael (CEA)
-// and then adapted and added into TOOFUS
-//
 // This file is part of TOOFUS (TOols OFten USued)
 //
 // It can not be copied and/or distributed without the express
@@ -11,6 +8,11 @@
 // Without a license, the code is copyrighted by default.
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
+
+// Credit
+// This tool has been written by Raphael (CEA)
+// and then adapted and added into TOOFUS
+
 #pragma once
 
 #include <algorithm>

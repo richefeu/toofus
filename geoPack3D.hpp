@@ -26,21 +26,25 @@ public:
   struct Sphere {
     double x, y, z;
     double r;
+    int Nc;
     Sphere(double x_, double y_, double z_, double r_) {
       x = x_;
       y = y_;
       z = z_;
       r = r_;
+      Nc = 0;
     }
   };
 
   double rmin;
   double rmax;
-  double gapTol;
-  double distNeighbor;
-  double distMin;
-  int max;
-  int k;
+  double gapTol;       // une tolerance (positive) sur l'espace entre les spheres
+  double distNeighbor; // distance inter-spheres pour les listes de voisinage
+  double distMin;      // distance min pour placer des spheres
+  int max;             // nombre maxi de spheres placées
+  int k; // nombre de tentatives de placement autour d'une sphere placée avant de l'enlever de la liste des actifs
+  int NcMax;
+  double interGapMax; // pas encore implementé
 
   std::vector<Sphere> sample;
   std::vector<std::vector<int>> prox;
@@ -73,6 +77,7 @@ public:
     distNeighbor = 2.0 * rmax + gapTol;
     distMin = 0.0;
     k = k_;
+    NcMax = 12;
 
     // Domain
     xmin = xmin_;
@@ -91,6 +96,18 @@ public:
     }
   }
 
+  double getSolidFraction() {
+    double Vtot = (xmax - xmin) * (ymax - ymin) * (zmax - zmin);
+    if (Vtot <= 0.0)
+      return 0.0;
+    double Vs = 0.0;
+
+    for (size_t i = 0; i < sample.size(); i++) {
+      Vs += 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0;
+    }
+    return Vs / Vtot;
+  }
+
   void seedTime() { srand(time(NULL)); }
 
   void reActivate(int from = 0, int to = 0) {
@@ -99,6 +116,13 @@ public:
     for (int i = from; i < to; i++) {
       active.push_back(i);
     }
+  }
+
+  void deActivate(int index) {
+    for (int i = index; i < (int)active.size() - 1; i++) {
+      active[i] = active[i + 1];
+    }
+    active.pop_back();
   }
 
   // execute the algorithm
@@ -119,10 +143,6 @@ public:
     while (active.size() > 0 && sample.size() < max) {
       int randIndex = rand() % active.size();
       int currentSphere = active[randIndex];
-      double packedx = sample[currentSphere].x;
-      double packedy = sample[currentSphere].y;
-      double packedz = sample[currentSphere].z;
-      double packedr = sample[currentSphere].r;
 
       bool found = false;
 
@@ -130,20 +150,26 @@ public:
         double testr = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
         double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
-        double m = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
+        double m = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
         double ux = cos(angle1);
         double uy = sin(angle1);
         double uz = sin(angle2);
-        // double sc = sqrt(ux * ux + uy * uy + uz * uz);
-        double testx = packedx + m * ux;
-        double testy = packedy + m * uy;
-        double testz = packedz + m * uz;
+        double sc = 1.0f / sqrt(ux * ux + uy * uy + uz * uz);
+        double testx = sample[currentSphere].x + m * sc * ux;
+        double testy = sample[currentSphere].y + m * sc * uy;
+        double testz = sample[currentSphere].z + m * sc * uz;
 
         bool ok = true;
-        // boundaries
-        if (testx < xmin + testr || testx > xmax - testr || testy < ymin + testr || testy > ymax - testr ||
-            testz < zmin + testr || testz > zmax - testr) {
+
+        if (sample[currentSphere].Nc > 3)
           ok = false;
+
+        // boundaries
+        if (ok == true) {
+          if (testx < xmin + testr || testx > xmax - testr || testy < ymin + testr || testy > ymax - testr ||
+              testz < zmin + testr || testz > zmax - testr) {
+            ok = false;
+          }
         }
 
         // inter-particles
@@ -162,9 +188,12 @@ public:
           }
         }
 
+        // add if ok
         if (ok == true) {
           found = true;
           Sphere P(testx, testy, testz, testr);
+          //P.Nc += 1;
+          //sample[currentSphere].Nc += 1;
           sample.push_back(P);
           prox.push_back(std::vector<int>());
           int particleIndex = sample.size() - 1;
@@ -180,6 +209,10 @@ public:
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
             }
+            if (d < sample[i].r + testr) {
+              sample[i].Nc += 1;
+              sample[particleIndex].Nc += 1;
+            }
           }
 
           active.push_back(particleIndex);
@@ -188,10 +221,7 @@ public:
       } // n-loop
 
       if (!found) {
-        for (int i = randIndex; i < (int)active.size() - 1; i++) {
-          active[i] = active[i + 1];
-        }
-        active.pop_back();
+        deActivate(randIndex);
       }
 
       count++;
@@ -218,71 +248,82 @@ public:
     int count = 0;
     int countMax = (int)floor((xmax - xmin) / (0.5 * (rmin + rmax)));
     while (active.size() > 0 && sample.size() < max) {
+
+      // get a rand sphere index from the active ones
       int randIndex = rand() % active.size();
       int currentSphere = active[randIndex];
-      double packedx = sample[currentSphere].x;
-      double packedy = sample[currentSphere].y;
-      double packedz = sample[currentSphere].z;
-      double packedr = sample[currentSphere].r;
+
+      if (sample[currentSphere].Nc > 2) {
+        deActivate(randIndex);
+        continue;
+      }
 
       bool found = false;
 
+      // will try k times to add a sphere arround it
       for (int n = 0; n < k; n++) {
+
+        // an attempt of positionning
         double testr = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
         double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
-        double m = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
+        double m = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
         double ux = cos(angle1);
         double uy = sin(angle1);
         double uz = sin(angle2);
-        // double sc = sqrt(ux * ux + uy * uy + uz * uz);
-        double testx = packedx + m * ux;
-        double testy = packedy + m * uy;
-        double testz = packedz + m * uz;
+        double sc = 1.0f / sqrt(ux * ux + uy * uy + uz * uz);
+        double testx = sample[currentSphere].x + m * sc * ux;
+        double testy = sample[currentSphere].y + m * sc * uy;
+        double testz = sample[currentSphere].z + m * sc * uz;
 
         bool ok = true;
-        // boundaries
+
+        // boundary limits
         if (testx < xmin || testx > xmax || testy < ymin || testy > ymax || testz < zmin || testz > zmax) {
           ok = false;
         }
-        double dv = 2.0 * rmax + distMin + gapTol; // a verifier
-        if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
-            testz > zmax - dv) {
-          double lx = xmax - xmin;
-          double half_lx = 0.5 * lx;
-          double ly = ymax - ymin;
-          double half_ly = 0.5 * ly;
-          double lz = zmax - zmin;
-          double half_lz = 0.5 * lz;
 
-          for (int i = 0; i < boundaries.size(); i++) {
+        // inter-spheres thoughout the periodicity
+        if (ok == true) {
+          double dv = 2.0 * rmax + distMin + gapTol;
+          if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
+              testz > zmax - dv) {
+            double lx = xmax - xmin;
+            double half_lx = 0.5 * lx;
+            double ly = ymax - ymin;
+            double half_ly = 0.5 * ly;
+            double lz = zmax - zmin;
+            double half_lz = 0.5 * lz;
 
-            int neighborDisk = boundaries[i];
+            for (int i = 0; i < boundaries.size(); i++) {
 
-            double dx = sample[neighborDisk].x - testx;
-            double dy = sample[neighborDisk].y - testy;
-            double dz = sample[neighborDisk].z - testz;
+              int neighborDisk = boundaries[i];
 
-            if (dx > half_lx) {
-              dx -= lx;
-            } else if (dx < -half_lx) {
-              dx += lx;
-            }
-            if (dy > half_ly) {
-              dy -= ly;
-            } else if (dy < -half_ly) {
-              dy += ly;
-            }
-            if (dz > half_lz) {
-              dz -= lz;
-            } else if (dz < -half_lz) {
-              dz += lz;
-            }
+              double dx = sample[neighborDisk].x - testx;
+              double dy = sample[neighborDisk].y - testy;
+              double dz = sample[neighborDisk].z - testz;
 
-            double d = sqrt(dx * dx + dy * dy + dz * dz);
-            if (d < testr + sample[neighborDisk].r + distMin) {
-              ok = false;
-              break;
+              if (dx > half_lx) {
+                dx -= lx;
+              } else if (dx < -half_lx) {
+                dx += lx;
+              }
+              if (dy > half_ly) {
+                dy -= ly;
+              } else if (dy < -half_ly) {
+                dy += ly;
+              }
+              if (dz > half_lz) {
+                dz -= lz;
+              } else if (dz < -half_lz) {
+                dz += lz;
+              }
+
+              double d = sqrt(dx * dx + dy * dy + dz * dz);
+              if (d < testr + sample[neighborDisk].r + distMin) {
+                ok = false;
+                break;
+              }
             }
           }
         }
@@ -306,11 +347,13 @@ public:
         if (ok == true) {
           found = true;
           Sphere P(testx, testy, testz, testr);
+          P.Nc += 1;
+          sample[currentSphere].Nc += 1;
           sample.push_back(P);
           prox.push_back(std::vector<int>());
 
           int particleIndex = sample.size() - 1;
-          double dv = 2.0 * rmax + distMin + gapTol; // a verifier
+          double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
             boundaries.push_back(particleIndex);
@@ -332,13 +375,11 @@ public:
           active.push_back(particleIndex);
           break;
         }
-      } // n-loop
+      } // n-loop (k times)
 
+      // if not found, remove the sphere from the active ones
       if (!found) {
-        for (int i = randIndex; i < (int)active.size() - 1; i++) {
-          active[i] = active[i + 1];
-        }
-        active.pop_back();
+        deActivate(randIndex);
       }
 
       count++;
@@ -354,6 +395,8 @@ public:
   // compiler 'seeSpheres' puis > seeSpheres points.txt
   void save(const char *name) {
     std::ofstream file(name);
+    file << xmin << ' ' << ymin << ' ' << zmin << '\n';
+    file << xmax << ' ' << ymax << ' ' << zmax << '\n';
     for (size_t i = 0; i < sample.size(); i++) {
       file << sample[i].x << ' ' << sample[i].y << ' ' << sample[i].z << ' ' << sample[i].r << '\n';
     }

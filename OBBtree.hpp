@@ -23,6 +23,9 @@
 #include "quat.hpp"
 #include "vec3.hpp"
 
+/**
+ * This is simply an OBB with some additional data
+ */
 template <class T> class OBBbundle {
 public:
   OBB obb;

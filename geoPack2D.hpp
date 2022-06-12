@@ -80,8 +80,8 @@ public:
 
     max = max_;
     if (max == 0) {
-      int nx = floor((xmax - xmin) / rmin);
-      int ny = floor((ymax - ymin) / rmin);
+      int nx = (int)floor((xmax - xmin) / rmin);
+      int ny = (int)floor((ymax - ymin) / rmin);
       max = nx * ny;
     }
   }
