@@ -1,5 +1,15 @@
-// Compilation :
-// clang++ -O3 -Wall -std=c++11 -Wno-deprecated  -framework OpenGL -framework GLUT seeSpheres.cpp -o seeSpheres
+// Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
+//
+// This file is part of TOOFUS (TOols OFten USued)
+//
+// It can not be copied and/or distributed without the express
+// permission of the authors.
+// It is coded for academic purposes.
+//
+// Note
+// Without a license, the code is copyrighted by default.
+// People can read the code, but they have no legal right to use it.
+// To use the code, you must contact the author directly and ask permission.
 
 #include "seeSpheres.hpp"
 
@@ -290,11 +300,10 @@ void reshape(int w, int h) {
 }
 
 void drawTube(double origx, double origy, double origz, double arrowx, double arrowy, double arrowz, double diam) {
-  // vec3r dest = orig + arrow;
   double destx = origx + arrowx;
   double desty = origy + arrowy;
   double destz = origz + arrowz;
-  // vec3r v = arrow;
+
   double vx = arrowx;
   double vy = arrowy;
   double vz = arrowz;
@@ -302,38 +311,32 @@ void drawTube(double origx, double origy, double origz, double arrowx, double ar
   vx /= l;
   vy /= l;
   vz /= l;
-  // v.normalize();
-  // vec3r vmz(v.x, v.y, v.z - 1.0);  // v - z
+
   double vmzx = vx;
   double vmzy = vy;
   double vmzz = vz - 1.0;
 
-  // vec3r a;
   double ax, ay, az;
   double norm2_vmz = vmzx * vmzx + vmzy * vmzy + vmzz * vmzz;
   if (norm2_vmz > 0.1) {
-    // a.set(v.y, -v.x, 0.0);
     ax = vy;
     ay = -vx;
     az = 0.0;
   } else {
-    // a.set(-v.z, 0.0, v.x);
     ax = -vz;
     ay = 0.0;
     az = vx;
   }
 
-  // a.normalize();
   l = sqrt(ax * ax + ay * ay + az * az);
   ax /= l;
   ay /= l;
   az /= l;
-  // vec3r b = cross(v, a);
+
   double bx = vy * az - vz * ay;
   double by = vz * ax - vx * az;
   double bz = vx * ay - vy * ax;
 
-  // vec3r c1, c2, n;
   double c1x, c1y, c1z;
   double c2x, c2y, c2z;
   double nx, ny, nz;
@@ -342,7 +345,6 @@ void drawTube(double origx, double origy, double origz, double arrowx, double ar
   for (double angle = 0.0; angle <= 2.0 * M_PI; angle += 0.2 * M_PI) {
     double c = cos(angle);
     double s = sin(angle);
-    // n = cos(angle) * a + sin(angle) * b;
     nx = c * ax + s * bx;
     ny = c * ay + s * by;
     nz = c * az + s * bz;
@@ -350,11 +352,11 @@ void drawTube(double origx, double origy, double origz, double arrowx, double ar
     nx *= r;
     ny *= r;
     nz *= r;
-    // c1 = orig + n;
+
     c1x = origx + nx;
     c1y = origy + ny;
     c1z = origz + nz;
-    // c2 = dest + n;
+
     c2x = destx + nx;
     c2y = desty + ny;
     c2z = destz + nz;
@@ -367,8 +369,6 @@ void drawTube(double origx, double origy, double origz, double arrowx, double ar
 void drawParticles() {
   if (mouse_mode != NOTHING && spheres.size() > 2000) return;
 
-  // glColor3f(0.1f, 0.6f, 0.6f);
-  // glColor3f(1.0f, 0.0f, 1.0f);
   glColor3f(0.337254901960784, 0.505882352941176, 0.768627450980392);
 
   glEnable(GL_LIGHTING);
@@ -450,9 +450,6 @@ void readSpheres(const char* name) {
 
   std::cout << "Read " << name << std::endl;
   std::ifstream is(name);
-
-  //is >> xmin >> ymin >> zmin;
-  //is >> xmax >> ymax >> zmax;
 
   while (is.good()) {
     Sphere S;
