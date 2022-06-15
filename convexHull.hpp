@@ -49,7 +49,7 @@ namespace {
 /// @brief  Returns a list of points on the convex hull in counter-clockwise order.
 /// @note   The last point in the returned list is the same than the first one.
 std::vector<vec2r> convexHull(std::vector<vec2r> &P) {
-  size_t n = P.size(), k = 0;
+  int n = P.size(), k = 0;
   if (n == 1)
     return P;
   std::vector<vec2r> H(2 * n);
