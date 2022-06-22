@@ -47,9 +47,9 @@
 const float inv255 = 1.0 / 255.0;
 
 struct colorRGBA {
-  int r, g, b, a;
-  float rr, gg, bb, aa;
-  void set(int R, int G, int B, int A) {
+  int r, g, b, a; // 0 to 255
+  float rr, gg, bb, aa; // 0.0 to 1.0 (same data that has been pre-computed)
+  void set(int R, int G, int B, int A = 255) {
     r = R;
     g = G;
     b = B;
@@ -58,6 +58,16 @@ struct colorRGBA {
     gg = g * inv255;
     bb = b * inv255;
     aa = a * inv255;
+  }
+  void set(float RR, float GG, float BB, float AA = 1.0) {
+    rr = RR;
+    gg = GG;
+    bb = BB;
+    aa = AA;
+    r = (int)floor(rr * 255);
+    g = (int)floor(gg * 255);
+    b = (int)floor(bb * 255);
+    a = (int)floor(aa * 255);  
   }
 };
 
