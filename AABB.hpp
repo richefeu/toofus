@@ -45,7 +45,7 @@ public:
   }
 
   /**
-    @brief Get the radius of a sphere that surrounds the AABB, 
+    @brief Get the radius of a sphere that surrounds the AABB,
            centered at the AABB center
   */
   double getRadius() const { return 0.25 * (max - min).length(); }
@@ -58,7 +58,6 @@ public:
     max = v;
   }
 
-  
   void add(const vec3r &v) {
     min = component_min(min, v);
     max = component_max(max, v);
@@ -83,8 +82,8 @@ public:
   }
 
   /**
-    @brief Join the 2 AABB 
-    TODO : rename it 'union' or something like this
+    @brief Join the 2 AABB
+    TODO : rename it 'union', 'merge' or something like this
   */
   void enlarge(const AABB &more) {
     min = component_min(min, more.min);
@@ -108,18 +107,27 @@ public:
     return true;
   }
 
+  /**
+    @brief Check intersection only in the X direction
+  */
   bool intersectX(const AABB &a) const {
     if (max.x < a.min.x || a.max.x < min.x)
       return false;
     return true;
   }
-
+  
+  /**
+    @brief Check intersection only in the Y direction
+  */
   bool intersectY(const AABB &a) const {
     if (max.y < a.min.y || a.max.y < min.y)
       return false;
     return true;
   }
-
+  
+  /**
+    @brief Check intersection only in the Z direction
+  */
   bool intersectZ(const AABB &a) const {
     if (max.z < a.min.z || a.max.z < min.z)
       return false;
