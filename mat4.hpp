@@ -14,6 +14,8 @@
 #ifndef MAT4_HPP
 #define MAT4_HPP
 
+#include <algorithm>
+
 #include "vec2.hpp"
 
 template <typename T> class mat4 {
@@ -55,7 +57,7 @@ public:
 
   T &operator[](int i) { return (&xx)[i]; }
   const T &operator[](int i) const { return (&xx)[i]; }
-  
+
   T &at(int line, int column) { return (&xx)[2 * line + column]; }
   const T &at(int line, int column) const { return (&xx)[2 * line + column]; }
 
@@ -234,7 +236,9 @@ public:
     return mat4(xx1, xy1, yx1, yy1);
   }
 
-  double det() const { return (xx * yy - xy * yx); }
+  T normSup() const { return std::max({std::abs(xx), std::abs(xy), std::abs(yx), std::abs(yy)}); }
+
+  T det() const { return (xx * yy - xy * yx); }
 
   void svd(mat4 &U, mat4 &S, mat4 &V) const {
     // taken from http://www.lucidarme.me/?p=4802

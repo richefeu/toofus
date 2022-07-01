@@ -19,6 +19,8 @@
 /// @author Vincent Richefeu <Vincent.Richefeu@3sr-grenoble.fr>,
 /// Lab 3SR, Grenoble University
 
+#include <algorithm>
+
 #include "vec3.hpp"
 
 /// Matrix 3x3
@@ -219,6 +221,11 @@ public:
     xy = xz = yx = yz = zx = zy = 0.0;
   }
 
+  T normSup() const {
+    return std::max({std::abs(xx), std::abs(xy), std::abs(xz), std::abs(yx), std::abs(yy), std::abs(yz), std::abs(zx),
+                     std::abs(zy), std::abs(zz)});
+  }
+
   T det() const { return (xx * (yy * zz - zy * yz) - yx * (xy * zz - zy * xz) + zx * (xy * yz - yy * xz)); }
 
   T trace() const { return (xx + yy + zz); }
@@ -388,9 +395,8 @@ public:
 
   // input/output
   friend std::ostream &operator<<(std::ostream &pStr, const mat9 &M) {
-    return (pStr << M.xx << ' ' << M.xy << ' ' << M.xz << ' ' << M.yx << ' '
-                 << M.yy << ' ' << M.yz << ' ' << M.zx << ' ' << M.zy << ' '
-                 << M.zz);
+    return (pStr << M.xx << ' ' << M.xy << ' ' << M.xz << ' ' << M.yx << ' ' << M.yy << ' ' << M.yz << ' ' << M.zx
+                 << ' ' << M.zy << ' ' << M.zz);
   }
 
   friend std::istream &operator>>(std::istream &pStr, mat9 &M) {

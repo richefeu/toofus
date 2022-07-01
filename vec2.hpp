@@ -18,6 +18,7 @@
 // Template class for vectors with 2 components
 // ============================================
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -135,6 +136,8 @@ public:
 
   /// Length of the vector
   friend T norm(const vec2 &a) { return sqrt(a * a); }
+
+  T normSup() const { return std::max(std::abs(x), std::abs(y)); }
 
   T length() const { return norm(*this); }
 

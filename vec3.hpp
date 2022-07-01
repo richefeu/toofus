@@ -18,7 +18,6 @@
 // Template class for vectors with 3 components
 // ============================================
 
-
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -83,9 +82,9 @@ public:
 
   T *c_vec() { return &x; }
 
-  T &operator[](int i) { return *(&x+i); }
+  T &operator[](int i) { return *(&x + i); }
 
-  const T &operator[](int i) const { return *(&x+i); }
+  const T &operator[](int i) const { return *(&x + i); }
 
   // For local frames, the notation n,t and s is more appropriate than x,y and z
   const T n() const { return x; }
@@ -180,6 +179,8 @@ public:
   /// Length of the vector
   friend T norm(const vec3 &a) { return sqrt(a * a); }
   T length() const { return norm(*this); }
+
+  T normSup() const { return std::max({std::abs(x), std::abs(y), std::abs(z)}); }
 
   /// Normalize and return length (before being normalized)
   T normalize() {
