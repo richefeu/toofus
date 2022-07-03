@@ -25,6 +25,7 @@ namespace Mth {
 
 // All const are with external linkage by default
 const double pi = 3.14159265358979323846;
+const double invPi = 1.0 / pi;
 const double piSqr = pi * pi;
 const double pi_2 = pi / 2.0;
 const double pi_4 = pi / 4.0;
