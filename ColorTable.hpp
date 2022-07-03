@@ -37,21 +37,20 @@
 #define RANDOM 20
 
 #include <cmath>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-const float inv255 = 1.0 / 255.0;
-
 struct colorRGBA {
   int r, g, b, a;       // 0 to 255
   float rr, gg, bb, aa; // 0.0 to 1.0 (same data that has been pre-computed)
   colorRGBA() : r(0), g(0), b(0), a(0), rr(0.0), gg(0.0), bb(0.0), aa(0.0) {}
   void set(int R, int G, int B, int A = 255) {
+    static const float inv255 = 1.0 / 255.0;
     r = R;
     g = G;
     b = B;
@@ -75,7 +74,12 @@ struct colorRGBA {
 
 struct color4ub {
   uint8_t r, g, b, a;
-  color4ub() : r(0),g(0),b(0),a(255) {}
+  color4ub() : r(0), g(0), b(0), a(255) {}
+};
+
+struct color4f {
+  float r, g, b, a;
+  color4f() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 };
 
 class ColorTable {
@@ -614,7 +618,7 @@ public:
   int getSize() { return size; }
   float getMin() { return min; }
   float getMax() { return max; }
-  
+
   void getRGB(float value, colorRGBA *col) {
     unsigned int i;
 
@@ -631,7 +635,7 @@ public:
     col->b = UNPACK_BLUE(table[i]);
     col->a = UNPACK_ALPHA(table[i]);
   }
-  
+
   void getColor4ub(float value, color4ub *col) {
     unsigned int i;
 
@@ -647,6 +651,24 @@ public:
     col->g = static_cast<uint8_t>(UNPACK_GREEN(table[i]));
     col->b = static_cast<uint8_t>(UNPACK_BLUE(table[i]));
     col->a = static_cast<uint8_t>(UNPACK_ALPHA(table[i]));
+  }
+
+  void getColor4f(float value, color4f *col) {
+    static const float inv255 = 1.0 / 255.0;
+    unsigned int i;
+
+    float pos = (value - min) / (max - min);                // in ]0.0 1.0[
+    i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
+
+    if (value <= min)
+      i = 0;
+    else if (value >= max)
+      i = size - 1;
+
+    col->r = static_cast<float>(inv255 * UNPACK_RED(table[i]));
+    col->g = static_cast<float>(inv255 * UNPACK_GREEN(table[i]));
+    col->b = static_cast<float>(inv255 * UNPACK_BLUE(table[i]));
+    col->a = static_cast<float>(inv255 * UNPACK_ALPHA(table[i]));
   }
 
   // returns one color among 6 well distinguishable colors
