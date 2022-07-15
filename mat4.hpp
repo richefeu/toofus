@@ -55,19 +55,19 @@ public:
     yy = YY;
   }
 
-  T &operator[](int i) { return (&xx)[i]; }
-  const T &operator[](int i) const { return (&xx)[i]; }
+  T &operator[](int i) { return *(&xx + i); }
+  const T &operator[](int i) const { return *(&xx + i); }
 
-  T &at(int line, int column) { return (&xx)[2 * line + column]; }
-  const T &at(int line, int column) const { return (&xx)[2 * line + column]; }
+  T &at(int line, int column) { return *(&xx + 2 * line + column); }
+  const T &at(int line, int column) const { return *(&xx + 2 * line + column); }
 
   T *c_mtx() { return &xx; }
 
   mat4 transposed() { return mat4(xx, yx, xy, yy); }
   void transpose() { std::swap(xy, yx); }
 
+  /// only for symmetric matrix
   void eigenvalues(double &v1, double &v2, bool &swapped) const {
-    /// @fixme seems to be ok only for symmetric matrix
     v1 = 0.5 * (xx + yy) + sqrt((0.5 * (xx - yy)) * (0.5 * (xx - yy)) + xy * xy);
     v2 = 0.5 * (xx + yy) - sqrt((0.5 * (xx - yy)) * (0.5 * (xx - yy)) + xy * xy);
     if (v2 > v1) {

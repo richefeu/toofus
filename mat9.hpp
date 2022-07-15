@@ -102,11 +102,11 @@ public:
     zz = ZZ;
   }
 
-  T &operator[](int i) { return (&xx)[i]; }
-  const T &operator[](int i) const { return (&xx)[i]; }
+  T &operator[](int i) { return *(&xx + i); }
+  const T &operator[](int i) const { return *(&xx + i); }
 
-  T &at(int line, int column) { return (&xx)[3 * line + column]; }
-  const T &at(int line, int column) const { return (&xx)[3 * line + column]; }
+  T &at(int line, int column) { return *(&xx + 3 * line + column); }
+  const T &at(int line, int column) const { return *(&xx + 3 * line + column); }
 
   T *c_mtx() { return &xx; }
 
@@ -416,3 +416,22 @@ template <typename U> mat9<U> dyadic_product(const vec3<U> &a, const vec3<U> &b)
 }
 
 #endif /* end of include guard: MAT9_HPP */
+
+#if 0
+#include <iostream>
+
+int main (int argc, char const *argv[])
+{
+  mat9i M(1,2,3,4,5,6,7,8,9);
+  //M[4] = 0;
+  M.at(0,0) = 12;
+  std::cout << M[0] << '\n';
+  std::cout << M << '\n';
+  
+  return 0;
+}
+
+#endif
+
+
+
