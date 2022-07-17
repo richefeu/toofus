@@ -26,13 +26,13 @@ public:
   struct Sphere {
     double x, y, z;
     double r;
-    int Nc;
+    int nbNeighbors;
     Sphere(double x_, double y_, double z_, double r_) {
       x = x_;
       y = y_;
       z = z_;
       r = r_;
-      Nc = 0;
+      nbNeighbors = 0;
     }
   };
 
@@ -43,8 +43,14 @@ public:
   double distMin;      // distance min pour placer des spheres
   int max;             // nombre maxi de spheres placées
   int k; // nombre de tentatives de placement autour d'une sphere placée avant de l'enlever de la liste des actifs
-  int NcMax;
-  double interGapMax; // pas encore implementé
+
+  int limitLocalNumberNeighbors;
+  int localNumberNeighborsMax;
+  double distProbingConnectivity;
+
+  int limitLocalSolidFraction;
+  double distProbingSolidFraction;
+  double localSolidFractionMax;
 
   std::vector<Sphere> sample;
   std::vector<std::vector<int>> prox;
@@ -62,6 +68,8 @@ public:
     max = 0;
     k = 0;
     xmin = xmax = ymin = ymax = zmin = zmax = 0.0;
+    limitLocalNumberNeighbors = 0;
+    limitLocalSolidFraction = 0;
   }
 
   GeoPack3D(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_, double zmin_,
@@ -77,7 +85,7 @@ public:
     distNeighbor = 2.0 * rmax + gapTol;
     distMin = 0.0;
     k = k_;
-    NcMax = 12;
+    localNumberNeighborsMax = 12;
 
     // Domain
     xmin = xmin_;
@@ -96,6 +104,7 @@ public:
     }
   }
 
+  // solid fraction by assuming there is no overlap
   double getSolidFraction() {
     double Vtot = (xmax - xmin) * (ymax - ymin) * (zmax - zmin);
     if (Vtot <= 0.0)
@@ -106,6 +115,50 @@ public:
       Vs += 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0;
     }
     return Vs / Vtot;
+  }
+
+  double sphereLenVolume(double R1, double R2, double dist) {
+    if (dist > R1 + R2)
+      return 0.0;
+
+    double Rmin = std::min(R1, R2);
+    if (fabs(dist / Rmin) < 1.0e-20) {
+      return 4.0 * M_PI * Rmin * Rmin * Rmin / 3.0;
+    }
+
+    double a = R1 + R2 - dist;
+    return (M_PI * (a * a) *
+            (dist * dist + 2.0 * dist * R2 - 3.0 * R2 * R2 + 2.0 * dist * R1 + 6.0 * R2 * R1 - 3.0 * R1 * R1) /
+            (12.0 * dist));
+  }
+
+  double localSolidFraction(int i, double width) {
+
+    double Rprob = sample[i].r + width;
+    double Vprob = 4.0 * M_PI * Rprob * Rprob * Rprob / 3.0;
+    double Vs = 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0;
+    for (int n = 0; n < prox[i].size(); n++) {
+      int j = prox[i][n];
+      double dx = sample[j].x - sample[i].x;
+      double dy = sample[j].y - sample[i].y;
+      double dz = sample[j].z - sample[i].z;
+      double dst = sqrt(dx * dx + dy * dy + dz * dz);
+      Vs += sphereLenVolume(Rprob, sample[j].r, dst);
+    }
+
+    return Vs / Vprob;
+  }
+
+  void limit_localNumberNeighbors(double dst, int value) {
+    limitLocalNumberNeighbors = 1;
+    distProbingConnectivity = dst;
+    localNumberNeighborsMax = value;
+  }
+
+  void limit_localSolidFraction(double dst, double value) {
+    limitLocalSolidFraction = 1;
+    distProbingSolidFraction = dst;
+    localSolidFractionMax = value;
   }
 
   void seedTime() { srand(time(NULL)); }
@@ -139,9 +192,18 @@ public:
 
     // step 2
     int count = 0;
-    int countMax = (int)floor((xmax - xmin) / (0.5 * (rmin + rmax)));
+    int countMax = (int)floor(2.0 * (xmax - xmin) / (rmin + rmax));
     while (active.size() > 0 && sample.size() < max) {
       int randIndex = rand() % active.size();
+      if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
+        deActivate(randIndex);
+        continue;
+      }
+      if (limitLocalSolidFraction == 1 &&
+          localSolidFraction(active[randIndex], distProbingSolidFraction) > localSolidFractionMax) {
+        deActivate(randIndex);
+        continue;
+      }
       int currentSphere = active[randIndex];
 
       bool found = false;
@@ -160,9 +222,6 @@ public:
         double testz = sample[currentSphere].z + m * sc * uz;
 
         bool ok = true;
-
-        if (sample[currentSphere].Nc > 3)
-          ok = false;
 
         // boundaries
         if (ok == true) {
@@ -192,8 +251,6 @@ public:
         if (ok == true) {
           found = true;
           Sphere P(testx, testy, testz, testr);
-          //P.Nc += 1;
-          //sample[currentSphere].Nc += 1;
           sample.push_back(P);
           prox.push_back(std::vector<int>());
           int particleIndex = sample.size() - 1;
@@ -205,13 +262,13 @@ public:
             double dy = fabs(sample[i].y - testy);
             double dz = fabs(sample[i].z - testz);
             double d = sqrt(dx * dx + dy * dy + dz * dz);
-            if (d < sample[i].r + testr + distNeighbor + distMin) {
+            if (d <= sample[i].r + testr + distNeighbor + distMin) {
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
             }
-            if (d < sample[i].r + testr) {
-              sample[i].Nc += 1;
-              sample[particleIndex].Nc += 1;
+            if (d <= sample[i].r + testr + distProbingConnectivity) {
+              sample[i].nbNeighbors += 1;
+              sample[particleIndex].nbNeighbors += 1;
             }
           }
 
@@ -227,8 +284,9 @@ public:
       count++;
       if (count >= countMax) {
         count = 0;
-        std::cout << "Number of spheres packed: " << sample.size() << std::endl;
-        std::cout << "Number of active spheres: " << active.size() << std::endl << std::endl;
+
+        std::cout << "Number of spheres packed: " << sample.size() << ", ";
+        std::cout << "Number of active spheres: " << active.size() << '\n' << std::endl;
       }
     } // end-while
   }   // end-method-run
@@ -249,11 +307,19 @@ public:
     int countMax = (int)floor((xmax - xmin) / (0.5 * (rmin + rmax)));
     while (active.size() > 0 && sample.size() < max) {
 
-      // get a rand sphere index from the active ones
       int randIndex = rand() % active.size();
+      if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
+        deActivate(randIndex);
+        continue;
+      }
+      if (limitLocalSolidFraction == 1 &&
+          localSolidFraction(active[randIndex], distProbingSolidFraction) > localSolidFractionMax) {
+        deActivate(randIndex);
+        continue;
+      }
       int currentSphere = active[randIndex];
 
-      if (sample[currentSphere].Nc > 2) {
+      if (sample[currentSphere].nbNeighbors > 2) {
         deActivate(randIndex);
         continue;
       }
@@ -347,8 +413,8 @@ public:
         if (ok == true) {
           found = true;
           Sphere P(testx, testy, testz, testr);
-          P.Nc += 1;
-          sample[currentSphere].Nc += 1;
+          //P.nbNeighbors += 1;
+          //sample[currentSphere].nbNeighbors += 1;
           sample.push_back(P);
           prox.push_back(std::vector<int>());
 
@@ -370,6 +436,10 @@ public:
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
             }
+            if (d <= sample[i].r + testr + distProbingConnectivity) {
+              sample[i].nbNeighbors += 1;
+              sample[particleIndex].nbNeighbors += 1;
+            }
           }
 
           active.push_back(particleIndex);
@@ -385,8 +455,8 @@ public:
       count++;
       if (count >= countMax) {
         count = 0;
-        std::cout << "Number of spheres packed: " << sample.size() << std::endl;
-        std::cout << "Number of active spheres: " << active.size() << std::endl << std::endl;
+        std::cout << "Number of spheres packed: " << sample.size() << ", ";
+        std::cout << "Number of active spheres: " << active.size() << '\n' << std::endl;
       }
     } // end-while
   }   // end-execPeriodic
@@ -395,12 +465,17 @@ public:
   // compiler 'seeSpheres' puis > seeSpheres points.txt
   void save(const char *name) {
     std::ofstream file(name);
-    file << xmin << ' ' << ymin << ' ' << zmin << '\n';
-    file << xmax << ' ' << ymax << ' ' << zmax << '\n';
     for (size_t i = 0; i < sample.size(); i++) {
       file << sample[i].x << ' ' << sample[i].y << ' ' << sample[i].z << ' ' << sample[i].r << '\n';
     }
   }
+
+  void saveBox(const char *name) {
+    std::ofstream file(name);
+    file << xmin << ' ' << ymin << ' ' << zmin << '\n';
+    file << xmax << ' ' << ymax << ' ' << zmax << '\n';
+  }
+
 
   void saveVTK(const char *name) {
     std::ofstream fog(name, std::ios::out);

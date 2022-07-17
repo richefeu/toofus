@@ -48,16 +48,27 @@ struct Sphere {
   double x, y, z;
   double r;
   Sphere() : x(0.0), y(0.0), z(0.0), r(0.0) {}
-  Sphere(double x_, double y_, double z_,double r_)
-      : x(x_), y(y_), z(z_), r(r_) {}
+  Sphere(double x_, double y_, double z_, double r_) : x(x_), y(y_), z(z_), r(r_) {}
 };
 
 std::vector<Sphere> spheres;
+
+struct Neighbor {
+  int i, j;
+  double nx, ny, nz;
+  double dst;
+};
+
+std::vector<Neighbor> neighbors;
 
 // Box
 double xmin, xmax;
 double ymin, ymax;
 double zmin, zmax;
+
+// Display options
+double transparency = 0.2;
+double rminRateConnection = 0.2;
 
 // Data for drawing spheres
 #define X .525731112119133606
@@ -76,6 +87,7 @@ void drawsphere(int ndiv, float radius);
 void drawtri(GLfloat* a, GLfloat* b, GLfloat* c, int div, float r);
 void normalize(GLfloat* a);
 void drawParticles();
+void drawConnections();
 void drawBoundingBox();
 
 void clear_background();
@@ -94,5 +106,6 @@ void fit_view();
 void bounding_box();
 bool fileExists(const char* fileName);
 void readSpheres(int num);
+void buildPeriodicNeighbors();
 
 #endif /* end of include guard: SEE_HPP_E29BD15E */

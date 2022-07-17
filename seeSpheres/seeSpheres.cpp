@@ -52,9 +52,31 @@ void keyboard(unsigned char Key, int x, int y) {
       show_background = 1 - show_background;
       break;
 
+    case 'c': {
+      rminRateConnection -= 0.1;
+      rminRateConnection = std::max(0.0, rminRateConnection);
+      buildPeriodicNeighbors();
+    } break;
+
+    case 'C': {
+      rminRateConnection += 0.1;
+      rminRateConnection = std::min(1.0, rminRateConnection);
+      buildPeriodicNeighbors();
+    } break;
+
     case 'q':
       exit(0);
       break;
+
+    case 't': {
+      transparency -= 0.1;
+      transparency = std::max(0.0, transparency);
+    } break;
+
+    case 'T': {
+      transparency += 0.1;
+      transparency = std::min(1.0, transparency);
+    } break;
 
     case '=': {
       fit_view();
@@ -237,10 +259,12 @@ void display() {
   gluLookAt(eye_x, eye_y, eye_z, center_x, center_y, center_z, up_x, up_y, up_z);
 
   glShadeModel(GL_SMOOTH);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
   // Display things
   drawParticles();
+  drawConnections();
   drawBoundingBox();
 
   glFlush();
@@ -369,10 +393,10 @@ void drawTube(double origx, double origy, double origz, double arrowx, double ar
 void drawParticles() {
   if (mouse_mode != NOTHING && spheres.size() > 2000) return;
 
-  glColor3f(0.337254901960784, 0.505882352941176, 0.768627450980392);
-
+  glColor4f(0.337254901960784, 0.505882352941176, 0.768627450980392, transparency);
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_LIGHTING);
-  for (uint i = 0; i < spheres.size(); ++i) {
+  for (size_t i = 0; i < spheres.size(); ++i) {
     glPushMatrix();
     glTranslatef(spheres[i].x, spheres[i].y, spheres[i].z);
     drawsphere(2, spheres[i].r);
@@ -380,11 +404,35 @@ void drawParticles() {
   }
 }
 
+void drawConnections() {
+  if (mouse_mode != NOTHING && spheres.size() > 2000) return;
+
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_LIGHTING);
+  glLineWidth(3.0f);
+  glColor3f(1.0f, 0.5f, 0.0f);
+
+  glBegin(GL_LINES);
+  for (size_t k = 0; k < neighbors.size(); ++k) {
+    int i = neighbors[k].i;
+    int j = neighbors[k].j;
+    double l = neighbors[k].dst;
+    glVertex3f(spheres[i].x, spheres[i].y, spheres[i].z);
+    glVertex3f(spheres[i].x + l * neighbors[k].nx, spheres[i].y + l * neighbors[k].ny,
+               spheres[i].z + l * neighbors[k].nz);
+
+    glVertex3f(spheres[j].x, spheres[j].y, spheres[j].z);
+    glVertex3f(spheres[j].x - l * neighbors[k].nx, spheres[j].y - l * neighbors[k].ny,
+               spheres[j].z - l * neighbors[k].nz);
+  }
+  glEnd();
+}
+
 void drawBoundingBox() {
   glDisable(GL_LIGHTING);
 
-  glLineWidth(1.0f);
-  glColor3f(0.2f, 0.2f, 0.2f);
+  glLineWidth(3.0f);
+  glColor3f(1.0f, 0.5f, 0.84f);
 
   glBegin(GL_LINE_LOOP);
   glVertex3f(xmin, ymin, zmin);
@@ -452,16 +500,64 @@ void readSpheres(const char* name) {
   std::ifstream is(name);
 
   while (is.good()) {
+    if (is.eof()) break;
     Sphere S;
     is >> S.x >> S.y >> S.z >> S.r;
-
+    if (is.eof()) break;
     spheres.push_back(S);
 
     if (is.eof()) break;
   }
   if (spheres.empty()) return;
   std::cout << "Number of spheres: " << spheres.size() << std::endl;
-  bounding_box();
+
+  if (fileExists("box.txt")) {
+    std::ifstream boxfile("box.txt");
+    boxfile >> xmin >> ymin >> zmin;
+    boxfile >> xmax >> ymax >> zmax;
+  } else {
+    bounding_box();
+  }
+  buildPeriodicNeighbors();
+}
+
+void buildPeriodicNeighbors() {
+
+  double rmin = 1e20;
+  for (size_t i = 0; i < spheres.size(); i++) {
+    rmin = std::min(rmin, spheres[i].r);
+  }
+  rmin *= rminRateConnection;
+
+  neighbors.clear();
+  double sx = xmax - xmin;
+  double sy = ymax - ymin;
+  double sz = zmax - zmin;
+
+  for (size_t i = 0; i < spheres.size(); i++) {
+    for (size_t j = i + 1; j < spheres.size(); j++) {
+      double lijx = (spheres[j].x - spheres[i].x) / sx;
+      double lijy = (spheres[j].y - spheres[i].y) / sy;
+      double lijz = (spheres[j].z - spheres[i].z) / sz;
+      lijx -= floor(lijx + 0.5);
+      lijy -= floor(lijy + 0.5);
+      lijz -= floor(lijz + 0.5);
+      double bx = sx * lijx;
+      double by = sy * lijy;
+      double bz = sz * lijz;
+      double ccdist = sqrt(bx * bx + by * by + bz * bz);
+      if (ccdist < spheres[i].r + spheres[j].r + rmin) {
+        Neighbor N;
+        N.i = i;
+        N.j = j;
+        N.nx = bx / ccdist;
+        N.ny = by / ccdist;
+        N.nz = bz / ccdist;
+        N.dst = ccdist;
+        neighbors.push_back(N);
+      }
+    }
+  }
 }
 
 // =====================================================================
@@ -480,7 +576,7 @@ int main(int argc, char* argv[]) {
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
   glutInitWindowPosition(50, 50);
   glutInitWindowSize(width, height);
-  main_window = glutCreateWindow("Tube Packing VISUALIZER");
+  main_window = glutCreateWindow("Sphere viewer");
 
   // ==== Register callbacks
   glutDisplayFunc(display);
@@ -533,11 +629,11 @@ int main(int argc, char* argv[]) {
   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
   glEnable(GL_BLEND);
-  glBlendEquation(GL_FUNC_ADD);
+  // glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
+  // glDepthFunc(GL_LEQUAL);
 
   // ==== Enter GLUT event processing cycle
   adjust_clipping_plans();
