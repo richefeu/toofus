@@ -49,6 +49,7 @@ double center_x, center_y, center_z;
 double up_x, up_y, up_z;
 
 int show_background = 0;
+int show_images = 1;
 
 struct Sphere {
   double x, y, z;
@@ -73,7 +74,7 @@ double ymin, ymax;
 double zmin, zmax;
 
 // Display options
-double transparency = 0.2;
+double transparency = 1.0;
 double rminRateConnection = 0.2;
 
 // Data for drawing spheres
@@ -93,6 +94,7 @@ void drawsphere(int ndiv, float radius);
 void drawtri(GLfloat* a, GLfloat* b, GLfloat* c, int div, float r);
 void normalize(GLfloat* a);
 void drawParticles();
+void drawParticleImages();
 void drawConnections();
 void drawBoundingBox();
 

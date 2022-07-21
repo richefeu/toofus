@@ -64,6 +64,10 @@ void keyboard(unsigned char Key, int x, int y) {
       buildPeriodicNeighbors();
     } break;
 
+    case 'i': {
+      show_images = 1 - show_images;
+    } break;
+
     case 'q':
       exit(0);
       break;
@@ -264,6 +268,7 @@ void display() {
 
   // Display things
   drawParticles();
+  if (show_images == 1) drawParticleImages();
   drawConnections();
   drawBoundingBox();
 
@@ -401,6 +406,84 @@ void drawParticles() {
     glTranslatef(spheres[i].x, spheres[i].y, spheres[i].z);
     drawsphere(2, spheres[i].r);
     glPopMatrix();
+  }
+}
+
+void drawParticleImages() {
+  static const int shift[27][3] = {
+      {-1, -1, -1}, {-1, -1, 0}, {-1, -1, 1}, {-1, 0, -1}, {-1, 0, 0}, {-1, 0, 1}, {-1, 1, -1}, {-1, 1, 0}, {-1, 1, 1},
+      {0, -1, -1},  {0, -1, 0},  {0, -1, 1},  {0, 0, -1},  {0, 0, 0},  {0, 0, 1},  {0, 1, -1},  {0, 1, 0},  {0, 1, 1},
+      {1, -1, -1},  {1, -1, 0},  {1, -1, 1},  {1, 0, -1},  {1, 0, 0},  {1, 0, 1},  {1, 1, -1},  {1, 1, 0},  {1, 1, 1}};
+  const double rate = 0.1;
+  
+  if (mouse_mode != NOTHING && spheres.size() > 2000) return;
+
+  glColor4f(0.337254901960784, 0.505882352941176, 0.768627450980392, 0.08);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHTING);
+  double Lx = xmax - xmin;
+  double Ly = ymax - ymin;
+  double Lz = zmax - zmin;
+  
+  for (size_t i = 0; i < spheres.size(); ++i) {
+
+    for (size_t im = 0; im < 27; im++) {
+      double xim = spheres[i].x + shift[im][0] * Lx;
+      double yim = spheres[i].y + shift[im][1] * Ly;
+      double zim = spheres[i].z + shift[im][2] * Lz;
+
+      if (xim >= xmin - rate * Lx && xim <= xmax + rate * Lx && yim >= ymin - rate * Ly && yim <= ymax + rate * Ly &&
+          zim >= zmin - rate * Lz && zim <= zmax + rate * Lz) {
+        glPushMatrix();
+        glTranslatef(xim, yim, zim);
+        drawsphere(2, spheres[i].r);
+        glPopMatrix();
+      }
+    }
+
+    /*
+    if (xmax - spheres[i].x < 0.25 * Lx) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x - Lx, spheres[i].y, spheres[i].z);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+
+    if (spheres[i].x - xmin < 0.25 * Lx) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x + Lx, spheres[i].y, spheres[i].z);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+
+    if (ymax - spheres[i].y < 0.25 * Ly) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x, spheres[i].y - Ly, spheres[i].z);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+
+    if (spheres[i].y - ymin < 0.25 * Ly) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x, spheres[i].y + Ly, spheres[i].z);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+
+    if (zmax - spheres[i].z < 0.25 * Lz) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x, spheres[i].y, spheres[i].z - Lz);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+
+    if (spheres[i].z - zmin < 0.25 * Lz) {
+      glPushMatrix();
+      glTranslatef(spheres[i].x, spheres[i].y, spheres[i].z + Lz);
+      drawsphere(2, spheres[i].r);
+      glPopMatrix();
+    }
+    */
   }
 }
 

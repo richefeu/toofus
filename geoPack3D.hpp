@@ -104,7 +104,7 @@ public:
     }
   }
 
-  // solid fraction by assuming there is no overlap
+  // Overall solid fraction by assuming there is no overlap
   double getSolidFraction() {
     double Vtot = (xmax - xmin) * (ymax - ymin) * (zmax - zmin);
     if (Vtot <= 0.0)
@@ -117,33 +117,43 @@ public:
     return Vs / Vtot;
   }
 
-  double sphereLenVolume(double R1, double R2, double dist) {
+  double sphereLensVolume(double R1, double R2, double dist) {
     if (dist > R1 + R2)
       return 0.0;
 
     double Rmin = std::min(R1, R2);
-    if (fabs(dist / Rmin) < 1.0e-20) {
+    double Rmax = std::max(R1, R2);
+
+    if (dist + Rmin < Rmax) {
       return 4.0 * M_PI * Rmin * Rmin * Rmin / 3.0;
     }
-
     double a = R1 + R2 - dist;
     return (M_PI * (a * a) *
             (dist * dist + 2.0 * dist * R2 - 3.0 * R2 * R2 + 2.0 * dist * R1 + 6.0 * R2 * R1 - 3.0 * R1 * R1) /
             (12.0 * dist));
   }
 
-  double localSolidFraction(int i, double width) {
+  // it returns the solide fraction in a layer of 'width' around the sphere i
+  // BEFORE another sphere is added
+  double localSolidFraction(int i, double width, bool periodic = false) {
 
     double Rprob = sample[i].r + width;
-    double Vprob = 4.0 * M_PI * Rprob * Rprob * Rprob / 3.0;
-    double Vs = 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0;
+    double Vprob = 4.0 * M_PI * (Rprob * Rprob * Rprob - sample[i].r * sample[i].r * sample[i].r) / 3.0;
+    double Vs = 0.0;
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+
     for (int n = 0; n < prox[i].size(); n++) {
       int j = prox[i][n];
       double dx = sample[j].x - sample[i].x;
       double dy = sample[j].y - sample[i].y;
       double dz = sample[j].z - sample[i].z;
+      if (periodic == true) {
+        dx -= floor(dx / Lx + 0.5) * Lx;
+        dy -= floor(dy / Ly + 0.5) * Ly;
+        dz -= floor(dz / Lz + 0.5) * Lz;
+      }
       double dst = sqrt(dx * dx + dy * dy + dz * dz);
-      Vs += sphereLenVolume(Rprob, sample[j].r, dst);
+      Vs += sphereLensVolume(Rprob, sample[j].r, dst);
     }
 
     return Vs / Vprob;
@@ -285,18 +295,19 @@ public:
       if (count >= countMax) {
         count = 0;
 
-        std::cout << "Number of spheres packed: " << sample.size() << ", ";
-        std::cout << "Number of active spheres: " << active.size() << '\n' << std::endl;
+        std::cout << "packed: " << sample.size() << ", ";
+        std::cout << "active: " << active.size() << std::endl;
       }
     } // end-while
   }   // end-method-run
 
   void execPeriodic(bool skipFirstStep = false) {
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+
     // step 1
     if (skipFirstStep == false) {
       double firstr = ran(rmin, rmax);
-      Sphere P(ran(xmin + firstr, xmax - firstr), ran(ymin + firstr, ymax - firstr), ran(zmin + firstr, zmax - firstr),
-               firstr);
+      Sphere P(0.5 * Lx, 0.5 * Ly, 0.5 * Lz, firstr);
       sample.push_back(P);
       prox.push_back(std::vector<int>());
       active.push_back(sample.size() - 1);
@@ -313,7 +324,7 @@ public:
         continue;
       }
       if (limitLocalSolidFraction == 1 &&
-          localSolidFraction(active[randIndex], distProbingSolidFraction) > localSolidFractionMax) {
+          localSolidFraction(active[randIndex], distProbingSolidFraction, true) > localSolidFractionMax) {
         deActivate(randIndex);
         continue;
       }
@@ -341,7 +352,14 @@ public:
         double testx = sample[currentSphere].x + m * sc * ux;
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
-
+        
+        if (testx < xmin) testx += Lx;
+        if (testx > xmax) testx -= Lx;
+        if (testy < ymin) testy += Ly;
+        if (testy > ymax) testy -= Ly;
+        if (testz < zmin) testz += Lz;
+        if (testz > zmax) testz -= Lz;
+        
         bool ok = true;
 
         // boundary limits
@@ -354,36 +372,17 @@ public:
           double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
-            double lx = xmax - xmin;
-            double half_lx = 0.5 * lx;
-            double ly = ymax - ymin;
-            double half_ly = 0.5 * ly;
-            double lz = zmax - zmin;
-            double half_lz = 0.5 * lz;
-
+                
             for (int i = 0; i < boundaries.size(); i++) {
-
               int neighborDisk = boundaries[i];
 
               double dx = sample[neighborDisk].x - testx;
               double dy = sample[neighborDisk].y - testy;
               double dz = sample[neighborDisk].z - testz;
 
-              if (dx > half_lx) {
-                dx -= lx;
-              } else if (dx < -half_lx) {
-                dx += lx;
-              }
-              if (dy > half_ly) {
-                dy -= ly;
-              } else if (dy < -half_ly) {
-                dy += ly;
-              }
-              if (dz > half_lz) {
-                dz -= lz;
-              } else if (dz < -half_lz) {
-                dz += lz;
-              }
+              dx -= floor(dx / Lx + 0.5) * Lx;
+              dy -= floor(dy / Ly + 0.5) * Ly;
+              dz -= floor(dz / Lz + 0.5) * Lz;
 
               double d = sqrt(dx * dx + dy * dy + dz * dz);
               if (d < testr + sample[neighborDisk].r + distMin) {
@@ -402,6 +401,11 @@ public:
             double dx = sample[neighborSphere].x - testx;
             double dy = sample[neighborSphere].y - testy;
             double dz = sample[neighborSphere].z - testz;
+            
+            dx -= floor(dx / Lx + 0.5) * Lx;
+            dy -= floor(dy / Ly + 0.5) * Ly;
+            dz -= floor(dz / Lz + 0.5) * Lz;
+            
             double d = sqrt(dx * dx + dy * dy + dz * dz);
             if (d < testr + sample[neighborSphere].r + distMin) {
               ok = false;
@@ -413,8 +417,6 @@ public:
         if (ok == true) {
           found = true;
           Sphere P(testx, testy, testz, testr);
-          //P.nbNeighbors += 1;
-          //sample[currentSphere].nbNeighbors += 1;
           sample.push_back(P);
           prox.push_back(std::vector<int>());
 
@@ -428,9 +430,14 @@ public:
           for (int i = 0; i < sample.size(); i++) {
             if (i == particleIndex)
               continue;
-            double dx = fabs(sample[i].x - testx);
-            double dy = fabs(sample[i].y - testy);
-            double dz = fabs(sample[i].z - testz);
+            double dx = sample[i].x - testx;
+            double dy = sample[i].y - testy;
+            double dz = sample[i].z - testz;
+            
+            dx -= floor(dx / Lx + 0.5) * Lx;
+            dy -= floor(dy / Ly + 0.5) * Ly;
+            dz -= floor(dz / Lz + 0.5) * Lz;
+
             double d = sqrt(dx * dx + dy * dy + dz * dz);
             if (d < sample[i].r + testr + distNeighbor + distMin) {
               prox[i].push_back(particleIndex);
@@ -455,8 +462,8 @@ public:
       count++;
       if (count >= countMax) {
         count = 0;
-        std::cout << "Number of spheres packed: " << sample.size() << ", ";
-        std::cout << "Number of active spheres: " << active.size() << '\n' << std::endl;
+        std::cout << "packed: " << sample.size() << ", ";
+        std::cout << "active: " << active.size() << std::endl;
       }
     } // end-while
   }   // end-execPeriodic
@@ -475,7 +482,6 @@ public:
     file << xmin << ' ' << ymin << ' ' << zmin << '\n';
     file << xmax << ' ' << ymax << ' ' << zmax << '\n';
   }
-
 
   void saveVTK(const char *name) {
     std::ofstream fog(name, std::ios::out);
