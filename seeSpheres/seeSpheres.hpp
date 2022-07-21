@@ -14,7 +14,13 @@
 #ifndef SEE_HPP_E29BD15E
 #define SEE_HPP_E29BD15E
 
+#ifdef __APPLE__
 #include <GL/freeglut.h>
+#else
+#include <GL/freeglut.h>
+#include <GL/freeglut_std.h>
+#include <GL/glut.h>
+#endif
 
 #include <cmath>
 #include <cstdio>
