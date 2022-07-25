@@ -12,8 +12,8 @@
 // Credit
 // This tool has been written by Raphael (CEA)
 // and then adapted and added into TOOFUS
-
-#pragma once
+#ifndef PROFILER_HPP
+#define PROFILER_HPP
 
 #include <algorithm>
 #include <chrono>
@@ -226,12 +226,10 @@ public:
   std::string buildName() {
     std::size_t nthreads = 1;
 
-#pragma omp parallel
-    {
 #ifdef _OPENMP
-      nthreads = omp_get_num_threads();
+#pragma omp parallel
+    { nthreads = omp_get_num_threads(); }
 #endif
-    }
 
     std::string file_name = "perflog_" + base_name + "_" + std::to_string(nthreads) + ".txt";
     return file_name;
@@ -321,3 +319,5 @@ public:
 #define PRINT_TIMERS(...)
 
 #endif
+
+#endif /* end of include guard: PROFILER_HPP */
