@@ -481,7 +481,7 @@ public:
   }
 
   // cpos and cols can not be set randomly!!
-  void rebuild_interp_rgba(std::vector<int> cpos, std::vector<colorRGBA> cols) {
+  void rebuild_interp_rgba(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
     if (!table.empty())
       table.clear();
     table.reserve(size);
@@ -507,10 +507,10 @@ public:
       colorRGBA col;
       for (int c = cpos[i - 1]; c <= cpos[i]; c++) {
         float w = (double)(c - cpos[i - 1]) / (double)(cpos[i] - cpos[i - 1]);
-        col.r = (1.0 - w) * cols[i - 1].r + w * cols[i].r;
-        col.g = (1.0 - w) * cols[i - 1].g + w * cols[i].g;
-        col.b = (1.0 - w) * cols[i - 1].b + w * cols[i].b;
-        col.a = (1.0 - w) * cols[i - 1].a + w * cols[i].a;
+        col.r = (1.0 - w) * cols[i - 1][0] + w * cols[i][0];
+        col.g = (1.0 - w) * cols[i - 1][1] + w * cols[i][1];
+        col.b = (1.0 - w) * cols[i - 1][2] + w * cols[i][2];
+        col.a = (1.0 - w) * cols[i - 1][3] + w * cols[i][3];
 
         // clamp to [0,255]
         col.r = col.r < 0 ? 0 : (col.r > 255 ? 255 : col.r);
@@ -523,7 +523,7 @@ public:
     }
   }
 
-  void rebuild_interp_hsv(std::vector<int> cpos, std::vector<colorRGBA> cols) {
+  void rebuild_interp_hsv(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
     if (!table.empty())
       table.clear();
     table.reserve(size);
@@ -550,19 +550,19 @@ public:
       for (int c = cpos[i - 1]; c <= cpos[i]; c++) {
         float w = (double)(c - cpos[i - 1]) / (double)(cpos[i] - cpos[i - 1]);
 
-        double R1 = cols[i - 1].r / 255.;
-        double G1 = cols[i - 1].g / 255.;
-        double B1 = cols[i - 1].b / 255.;
-        double R2 = cols[i].r / 255.;
-        double G2 = cols[i].g / 255.;
-        double B2 = cols[i].b / 255.;
-        double H1, S1, V1, H2, S2, V2;
+        double R1 = cols[i - 1][0] / 255.;
+        double G1 = cols[i - 1][1] / 255.;
+        double B1 = cols[i - 1][2] / 255.;
+        double R2 = cols[i][0] / 255.;
+        double G2 = cols[i][1] / 255.;
+        double B2 = cols[i][2] / 255.;
+        double H1 = 0.0, S1 = 0.0, V1 = 0.0, H2 = 0.0, S2 = 0.0, V2 = 0.0;
         RGB_to_HSV(R1, G1, B1, &H1, &S1, &V1);
         RGB_to_HSV(R2, G2, B2, &H2, &S2, &V2);
         double H = (1.0 - w) * H1 + w * H2;
         double S = (1.0 - w) * S1 + w * S2;
         double V = (1.0 - w) * V1 + w * V2;
-        double R, G, B;
+        double R = 0.0, G = 0.0, B = 0.0;
         HSV_to_RGB(H, S, V, &R, &G, &B);
         col.r = (int)(255 * R);
         col.g = (int)(255 * G);
