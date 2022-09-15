@@ -79,17 +79,22 @@ public:
   }
 
   static void create_folder(std::string &folder) {
-    if (access(folder.c_str(), F_OK)) {
+    create_folder(folder.c_str());
+  }
+  
+  static void create_folder(const char *folder) {
+    if (access(folder, F_OK)) {
       int stat;
 #if defined(__WIN32) || defined(__WIN64) || defined(__WIN32__)
-      stat = mkdir(folder.c_str());
+      stat = mkdir(folder);
 #else
-      stat = mkdir(folder.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+      stat = mkdir(folder, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 #endif
       if (stat == -1)
         std::cout << "Cannot create the folder " << folder << std::endl;
     }
   }
+  
 };
 
 #endif /* end of include guard: FILETOOL_HPP */
