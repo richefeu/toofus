@@ -151,12 +151,23 @@ public:
     glEnd();
   }
 
+  static void triangle(vec3r &A, vec3r &B, vec3r &C, vec3r &NA, vec3r &NB, vec3r &NC) {
+    glNormal3f(NA.x, NA.y, NA.z);
+    glVertex3f(A.x, A.y, A.z);
+    glNormal3f(NB.x, NB.y, NB.z);
+    glVertex3f(B.x, B.y, B.z);
+    glNormal3f(NC.x, NC.y, NC.z);
+    glVertex3f(C.x, C.y, C.z);
+  }
+
   static void frame(const vec3r &pos, double lx = 1.0, double ly = 1.0, double lz = 1.0) {
     glDisable(GL_LIGHTING);
 
     double arrowSize = lx;
-    if (ly > arrowSize) arrowSize = ly;
-    if (lz > arrowSize) arrowSize = lz;
+    if (ly > arrowSize)
+      arrowSize = ly;
+    if (lz > arrowSize)
+      arrowSize = lz;
     arrowSize *= 0.05;
 
     glColor4ub(255, 0, 0, 255);
