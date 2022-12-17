@@ -93,7 +93,7 @@ public:
 
   // histogram where the number of bins have the same width.
   // The histogram can be normalized (number per bin / total number)
-  static histo histoNumBins(std::vector<double> &value, int nbins, bool normalize = true) {
+  static histo histoNumBins(std::vector<double> &value, size_t nbins, bool normalize = true) {
     histo H(nbins);
     size_t nb = value.size();
     std::sort(value.begin(), value.end());
@@ -109,7 +109,7 @@ public:
     double binAbscise;
     double threshold;
     size_t count = 0;
-    for (int b = 0; b < nbins; b++) {
+    for (size_t b = 0; b < nbins; b++) {
       binAbscise = H.min + (b + 0.5) * binWidth;
       size_t amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
@@ -126,7 +126,7 @@ public:
 
   // The pdf is normalized (integration from -infty to infty = 1)
   // and the width of all bins is (max - min) / nbins
-  static histo pdfNumBins(std::vector<double> &value, int nbins) {
+  static histo pdfNumBins(std::vector<double> &value, size_t nbins) {
     histo H(nbins);
     std::sort(value.begin(), value.end());
     H.min = value[0];
@@ -136,7 +136,7 @@ public:
     size_t amount;
     double threshold;
     size_t count = 0;
-    for (int b = 0; b < nbins; b++) {
+    for (size_t b = 0; b < nbins; b++) {
       binAbscise = H.min + (b + 0.5) * binWidth;
       amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
@@ -151,14 +151,14 @@ public:
 
     // normalization: \int P dx = 1
     double sum = 0.0;
-    for (int b = 0; b < nbins; b++) {
+    for (size_t b = 0; b < nbins; b++) {
       if (H.data[b].Width > 0.0)
         sum += H.data[b].ProbDensity * H.data[b].Width;
     }
     double invSum = 1.0;
     if (sum > 0.0)
       invSum = 1.0 / sum;
-    for (int b = 0; b < nbins; b++)
+    for (size_t b = 0; b < nbins; b++)
       H.data[b].ProbDensity *= invSum;
 
     return H;
@@ -214,7 +214,7 @@ public:
   }
   */
 
-  static histo pdfNumBinsRange(std::vector<double> &value, int nbins, double min, double max) {
+  static histo pdfNumBinsRange(std::vector<double> &value, size_t nbins, double min, double max) {
     histo H(nbins);
     std::sort(value.begin(), value.end());
     H.min = min;
@@ -224,7 +224,7 @@ public:
     size_t amount;
     double threshold;
     size_t count = 0;
-    for (int b = 0; b < nbins; b++) {
+    for (size_t b = 0; b < nbins; b++) {
       binAbscise = H.min + (b + 0.5) * binWidth;
       amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
@@ -239,7 +239,7 @@ public:
 
     // normalization: \int P dx = 1
     double sum = 0.0;
-    for (int b = 0; b < nbins; b++) {
+    for (size_t b = 0; b < nbins; b++) {
       if (H.data[b].Width > 0.0)
         sum += H.data[b].ProbDensity * H.data[b].Width;
     }
@@ -248,13 +248,13 @@ public:
     if (sum > 0.0) {
       invSum = 1.0 / sum;
     }
-    for (int b = 0; b < nbins; b++)
+    for (size_t b = 0; b < nbins; b++)
       H.data[b].ProbDensity *= invSum;
 
     return H;
   }
 
-  static histo pdfMaxPerBin(std::vector<double> &value, int maxEltPerBin) {
+  static histo pdfMaxPerBin(std::vector<double> &value, size_t maxEltPerBin) {
     histo H;
     std::sort(value.begin(), value.end());
     H.min = value[0];
@@ -299,7 +299,7 @@ public:
     return H;
   }
 
-  static histo pdfMaxPerBin_minWidth(std::vector<double> &value, int maxEltPerBin, double minWidth) {
+  static histo pdfMaxPerBin_minWidth(std::vector<double> &value, size_t maxEltPerBin, double minWidth) {
     histo H;
     std::sort(value.begin(), value.end());
     H.min = value[0];
@@ -353,13 +353,13 @@ public:
     return H;
   }
 
-  static histo pdf(std::vector<double> &value, int quality = 100) {
+  static histo pdf(std::vector<double> &value, size_t quality = 100) {
     histo H;
     std::sort(value.begin(), value.end());
     H.min = value[0];
     H.max = value[value.size() - 1];
 
-    int maxEltPerBin = value.size() / quality;
+    size_t maxEltPerBin = value.size() / quality;
     if (maxEltPerBin < 5)
       maxEltPerBin = 5;
     double minWidth = (H.max - H.min) / (double)quality;

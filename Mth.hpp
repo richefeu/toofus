@@ -81,7 +81,7 @@ template <typename T> T random(std::vector<T> &data) {
   static std::random_device rd;
   static std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(0, data.size() - 1);
-  size_t index = dis(gen);
+  size_t index = static_cast<size_t>(dis(gen));
   return data[index];
 }
 
@@ -90,16 +90,16 @@ template <typename T> T random(std::vector<T> &data) {
 /// @param[out] x a vector of data of length n
 // Note 'inline' is for shut-down the 'unused-function' warning
 // and 'static' is to avoid multiple definitions at linkage
-inline static void sobolSequence(const int n, std::vector<double> &x) {
-  const int MAXBIT = 30, MAXDIM = 6;
-  int j, k, l;
-  unsigned int i, im, ipp;
-  static int mdeg[MAXDIM] = {1, 2, 3, 3, 4, 4};
-  static unsigned int in;
-  static std::vector<unsigned int> ix(MAXDIM);
-  static std::vector<unsigned int *> iu(MAXBIT);
-  static unsigned int ip[MAXDIM] = {0, 1, 1, 2, 1, 4};
-  static unsigned int iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3,  1,  3, 3,  1,  1,
+inline static void sobolSequence(const size_t n, std::vector<double> &x) {
+  const size_t MAXBIT = 30, MAXDIM = 6;
+  size_t j, k, l;
+  size_t i, im, ipp;
+  static size_t mdeg[MAXDIM] = {1, 2, 3, 3, 4, 4};
+  static size_t in;
+  static std::vector<size_t> ix(MAXDIM);
+  static std::vector<size_t *> iu(MAXBIT);
+  static size_t ip[MAXDIM] = {0, 1, 1, 2, 1, 4};
+  static size_t iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3,  1,  3, 3,  1,  1,
                                              5, 7, 7, 3, 3, 5, 15, 11, 5, 15, 13, 9};
   static double fac;
 
@@ -137,7 +137,7 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
     if (j >= MAXBIT)
       return; // std::cerr << "MAXBIT too small in sobseq" << std::endl;
     im = j * MAXDIM;
-    int kmax = (n < MAXDIM) ? n : MAXDIM;
+    size_t kmax = (n < MAXDIM) ? n : MAXDIM;
     for (k = 0; k < kmax; k++) {
       ix[k] ^= iv[im + k];
       x[k] = ix[k] * fac;

@@ -89,7 +89,7 @@ public:
     wu = w * u;
     wv = w * v;
     D = 1.0 / (uv * uv - uu * vv);
-    float s, t;
+    double s, t;
     s = (uv * wv - vv * wu) * D;
     if (s < 0.0 || s > 1.0)
       return 0;
