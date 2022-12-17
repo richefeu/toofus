@@ -30,18 +30,18 @@ struct SplineSet {
 };
 
 std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
-  int n = x.size() - 1;
+  size_t n = x.size() - 1;
   std::vector<double> a;
   a.insert(a.begin(), y.begin(), y.end());
   std::vector<double> b(n);
   std::vector<double> d(n);
   std::vector<double> h(n);
 
-  for (int i = 0; i < n; ++i)
+  for (size_t i = 0; i < n; ++i)
     h[i] = (x[i + 1] - x[i]);
 
   std::vector<double> alpha(n);
-  for (int i = 1; i < n; ++i)
+  for (size_t i = 1; i < n; ++i)
     alpha[i] = (3.0 * (a[i + 1] - a[i]) / h[i] - 3.0 * (a[i] - a[i - 1]) / h[i - 1]);
 
   std::vector<double> c(n + 1);
@@ -52,7 +52,7 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   mu[0] = 0.0;
   z[0] = 0.0;
 
-  for (int i = 1; i < n; ++i) {
+  for (size_t i = 1; i < n; ++i) {
     l[i] = 2.0 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
     mu[i] = h[i] / l[i];
     z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
@@ -62,14 +62,14 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   z[n] = 0.0;
   c[n] = 0.0;
 
-  for (int j = n - 1; j >= 0; --j) {
+  for (size_t j = n - 1; j >= 0; --j) {
     c[j] = z[j] - mu[j] * c[j + 1];
     b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3.0;
     d[j] = (c[j + 1] - c[j]) / (3.0 * h[j]);
   }
 
   std::vector<SplineSet> output_set(n + 1);
-  for (int i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     output_set[i].a = a[i];
     output_set[i].b = b[i];
     output_set[i].c = c[i];
@@ -92,8 +92,8 @@ void getSlineCurve(std::vector<SplineSet> &cs, std::vector<double> &xsv, std::ve
     }
   }
   // last point
-  int i2 = cs.size() - 1;
-  int i1 = i2 - 1;
+  size_t i2 = cs.size() - 1;
+  size_t i1 = i2 - 1;
   double delta = cs[i2].x - cs[i1].x;
   double ys = cs[i1].a + cs[i1].b * delta + cs[i1].c * delta * delta + cs[i1].d * delta * delta * delta;
   xsv.push_back(cs[i2].x);

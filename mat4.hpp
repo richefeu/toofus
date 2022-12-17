@@ -62,6 +62,13 @@ public:
   const T &at(int line, int column) const { return *(&xx + 2 * line + column); }
 
   T *c_mtx() { return &xx; }
+  
+  void setZero() { xx = xy = yx = yy = 0.0; }
+
+  void setIdentity() {
+    xx = yy  = 1.0;
+    xy = yx  = 0.0;
+  }
 
   mat4 transposed() { return mat4(xx, yx, xy, yy); }
   void transpose() { std::swap(xy, yx); }
