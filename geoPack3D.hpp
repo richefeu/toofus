@@ -53,9 +53,9 @@ public:
   double localSolidFractionMax;
 
   std::vector<Sphere> sample;
-  std::vector<std::vector<int>> prox;
-  std::vector<int> boundaries;
-  std::vector<int> active;
+  std::vector<std::vector<size_t>> prox;
+  std::vector<size_t> boundaries;
+  std::vector<size_t> active;
 
   double xmin, xmax;
   double ymin, ymax;
@@ -142,7 +142,7 @@ public:
     double Vs = 0.0;
     double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
 
-    for (int n = 0; n < prox[i].size(); n++) {
+    for (size_t n = 0; n < prox[i].size(); n++) {
       int j = prox[i][n];
       double dx = sample[j].x - sample[i].x;
       double dy = sample[j].y - sample[i].y;
@@ -196,14 +196,14 @@ public:
       Sphere P(ran(xmin + firstr, xmax - firstr), ran(ymin + firstr, ymax - firstr), ran(zmin + firstr, zmax - firstr),
                firstr);
       sample.push_back(P);
-      prox.push_back(std::vector<int>());
+      prox.push_back(std::vector<size_t>());
       active.push_back(sample.size() - 1);
     }
 
     // step 2
     int count = 0;
     int countMax = (int)floor(2.0 * (xmax - xmin) / (rmin + rmax));
-    while (active.size() > 0 && sample.size() < max) {
+    while (active.size() > 0 && sample.size() < (size_t)max) {
       int randIndex = rand() % active.size();
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
         deActivate(randIndex);
@@ -243,7 +243,7 @@ public:
 
         // inter-particles
         if (ok == true) {
-          for (int i = 0; i < prox[currentSphere].size(); i++) {
+          for (size_t i = 0; i < prox[currentSphere].size(); i++) {
             int neighborSphere = prox[currentSphere][i];
 
             double dx = sample[neighborSphere].x - testx;
@@ -262,10 +262,10 @@ public:
           found = true;
           Sphere P(testx, testy, testz, testr);
           sample.push_back(P);
-          prox.push_back(std::vector<int>());
-          int particleIndex = sample.size() - 1;
+          prox.push_back(std::vector<size_t>());
+          size_t particleIndex = sample.size() - 1;
 
-          for (int i = 0; i < sample.size(); i++) {
+          for (size_t i = 0; i < sample.size(); i++) {
             if (i == particleIndex)
               continue;
             double dx = fabs(sample[i].x - testx);
@@ -309,14 +309,14 @@ public:
       double firstr = ran(rmin, rmax);
       Sphere P(0.5 * Lx, 0.5 * Ly, 0.5 * Lz, firstr);
       sample.push_back(P);
-      prox.push_back(std::vector<int>());
+      prox.push_back(std::vector<size_t>());
       active.push_back(sample.size() - 1);
     }
 
     // step 2
     int count = 0;
     int countMax = (int)floor((xmax - xmin) / (0.5 * (rmin + rmax)));
-    while (active.size() > 0 && sample.size() < max) {
+    while (active.size() > 0 && sample.size() < (size_t)max) {
 
       int randIndex = rand() % active.size();
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
@@ -373,8 +373,8 @@ public:
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
                 
-            for (int i = 0; i < boundaries.size(); i++) {
-              int neighborDisk = boundaries[i];
+            for (size_t i = 0; i < boundaries.size(); i++) {
+              size_t neighborDisk = boundaries[i];
 
               double dx = sample[neighborDisk].x - testx;
               double dy = sample[neighborDisk].y - testy;
@@ -395,7 +395,7 @@ public:
 
         // inter-particles
         if (ok == true) {
-          for (int i = 0; i < prox[currentSphere].size(); i++) {
+          for (size_t i = 0; i < prox[currentSphere].size(); i++) {
             int neighborSphere = prox[currentSphere][i];
 
             double dx = sample[neighborSphere].x - testx;
@@ -418,16 +418,16 @@ public:
           found = true;
           Sphere P(testx, testy, testz, testr);
           sample.push_back(P);
-          prox.push_back(std::vector<int>());
+          prox.push_back(std::vector<size_t>());
 
-          int particleIndex = sample.size() - 1;
+          size_t particleIndex = sample.size() - 1;
           double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
             boundaries.push_back(particleIndex);
           }
 
-          for (int i = 0; i < sample.size(); i++) {
+          for (size_t i = 0; i < sample.size(); i++) {
             if (i == particleIndex)
               continue;
             double dx = sample[i].x - testx;

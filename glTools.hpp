@@ -151,6 +151,7 @@ public:
     glEnd();
   }
 
+  // Attention : jamais testé !!!!!
   static void triangle(vec3r &A, vec3r &B, vec3r &C, vec3r &NA, vec3r &NB, vec3r &NC) {
     glNormal3f(NA.x, NA.y, NA.z);
     glVertex3f(A.x, A.y, A.z);
@@ -168,7 +169,7 @@ public:
       arrowSize = ly;
     if (lz > arrowSize)
       arrowSize = lz;
-    arrowSize *= 0.05;
+    arrowSize *= 0.02;
 
     glColor4ub(255, 0, 0, 255);
     glShape::arrow(pos, lx * vec3r::unit_x(), arrowSize);
@@ -277,6 +278,7 @@ public:
   static GLubyte rasters[95][13];
   static GLuint fontOffset;
 
+  // DO NOT FORGET TO INIT BEFORE BEING ABLE TO PRINT
   static void init() {
     glShadeModel(GL_FLAT);
     makeRasterFont();

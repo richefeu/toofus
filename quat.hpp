@@ -395,23 +395,23 @@ public:
   vec3r rotate(const vec3r &u) const { // OP: 21*, 18±
     double M[9];
     get_rot_matrix(M); // OP: 12*, 12±
-    vec3r v;
+    vec3r rv;
     // OP: 9*, 6+
-    v.x = M[0] * u.x + M[1] * u.y + M[2] * u.z;
-    v.y = M[3] * u.x + M[4] * u.y + M[5] * u.z;
-    v.z = M[6] * u.x + M[7] * u.y + M[8] * u.z;
-    return v;
+    rv.x = M[0] * u.x + M[1] * u.y + M[2] * u.z;
+    rv.y = M[3] * u.x + M[4] * u.y + M[5] * u.z;
+    rv.z = M[6] * u.x + M[7] * u.y + M[8] * u.z;
+    return rv;
   }
 
   /// Unrotate the vector u with the (oposite) rotation hold by the quaternion.
   vec3r unrotate(const vec3r &u) const {
     double M[9];
     get_rot_matrix(M);
-    vec3r v;
-    v.x = M[0] * u.x + M[3] * u.y + M[6] * u.z;
-    v.y = M[1] * u.x + M[4] * u.y + M[7] * u.z;
-    v.z = M[2] * u.x + M[5] * u.y + M[8] * u.z;
-    return v;
+    vec3r uv;
+    uv.x = M[0] * u.x + M[3] * u.y + M[6] * u.z;
+    uv.y = M[1] * u.x + M[4] * u.y + M[7] * u.z;
+    uv.z = M[2] * u.x + M[5] * u.y + M[8] * u.z;
+    return uv;
   }
 
   bool operator==(const quat &other) const { return (this->s == other.s && this->v == other.v); }
