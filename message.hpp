@@ -184,7 +184,7 @@ public:
     if ((x != n) && (x % (n / 100 + 1) != 0))
       return;
 
-    float ratio = static_cast<float>(x / (float)n);
+    float ratio = (float)x / (float)n;
     size_t c = static_cast<size_t>(ratio * (float)w);
 
     os << std::setw(3) << (size_t)(ratio * 100) << "% [";

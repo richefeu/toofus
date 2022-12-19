@@ -203,7 +203,7 @@ public:
       v.y = crossT.y;
       v.z = crossT.z;
     } else {
-      float invLen;
+      double invLen;
       if (fabs(V1.x) >= fabs(V1.y)) {
         // V1.x or V1.z is the largest magnitude component
         invLen = 1.0 / sqrt(V1.x * V1.x + V1.z * V1.z);
@@ -253,7 +253,7 @@ public:
     // @see http://hub.jmonkeyengine.org/t/random-quaternions/8431
     static std::default_random_engine engine;
     if (seedTime == true)
-      engine.seed(std::chrono::system_clock::now().time_since_epoch().count());
+      engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
     double sum = 0.0;
     s = distrib(engine);
@@ -268,7 +268,7 @@ public:
   // DEPRECATED!! use randomize(true) instead
   void randomizeSeed() {
     static std::default_random_engine engine;
-    engine.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
     double sum = 0.0;
     s = distrib(engine);

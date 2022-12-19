@@ -90,7 +90,7 @@ template <typename T> T random(std::vector<T> &data) {
 /// @param[out] x a vector of data of length n
 // Note 'inline' is for shut-down the 'unused-function' warning
 // and 'static' is to avoid multiple definitions at linkage
-inline static void sobolSequence(const size_t n, std::vector<double> &x) {
+inline static void sobolSequence(const int n, std::vector<double> &x) {
   const size_t MAXBIT = 30, MAXDIM = 6;
   size_t j, k, l;
   size_t i, im, ipp;
@@ -99,8 +99,7 @@ inline static void sobolSequence(const size_t n, std::vector<double> &x) {
   static std::vector<size_t> ix(MAXDIM);
   static std::vector<size_t *> iu(MAXBIT);
   static size_t ip[MAXDIM] = {0, 1, 1, 2, 1, 4};
-  static size_t iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3,  1,  3, 3,  1,  1,
-                                             5, 7, 7, 3, 3, 5, 15, 11, 5, 15, 13, 9};
+  static size_t iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3, 1, 3, 3, 1, 1, 5, 7, 7, 3, 3, 5, 15, 11, 5, 15, 13, 9};
   static double fac;
 
   if (n < 0) {
@@ -127,7 +126,7 @@ inline static void sobolSequence(const size_t n, std::vector<double> &x) {
         iu[j][k] = i;
       }
     }
-  } else {
+  } else { // n >= 0
     im = in++;
     for (j = 0; j < MAXBIT; j++) {
       if (!(im & 1))
@@ -137,10 +136,10 @@ inline static void sobolSequence(const size_t n, std::vector<double> &x) {
     if (j >= MAXBIT)
       return; // std::cerr << "MAXBIT too small in sobseq" << std::endl;
     im = j * MAXDIM;
-    size_t kmax = (n < MAXDIM) ? n : MAXDIM;
+    size_t kmax = (static_cast<size_t>(n) < MAXDIM) ? static_cast<size_t>(n) : MAXDIM;
     for (k = 0; k < kmax; k++) {
       ix[k] ^= iv[im + k];
-      x[k] = ix[k] * fac;
+      x[k] = (double)ix[k] * fac;
     }
   }
 }
@@ -157,7 +156,6 @@ template <typename T> T dist(T x1, T y1, T z1, T x2, T y2, T z2) {
   T dz = z2 - z1;
   return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
-
 
 // QUAKE 3 fast inversed square root
 // Thanks to compiler optimisations, using 1.0/sqrt(v) will have
@@ -196,13 +194,13 @@ template <typename T> void MeanAndVariance(std::vector<T> &data, double &mean, d
     return;
   for (size_t i = 0; i < data.size(); i++)
     mean += data[i];
-  mean /= data.size();
+  mean /= (double)data.size();
   double s = 0.0;
   for (size_t i = 0; i < data.size(); i++) {
     s = data[i] - mean;
     var += s * s;
   }
-  var /= (data.size() - 1);
+  var /= (double)(data.size() - 1);
 }
 
 /// @brief Coefficient of variation (CV) or relative standard deviation (RSD)

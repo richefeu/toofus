@@ -26,7 +26,7 @@ public:
   struct Sphere {
     double x, y, z;
     double r;
-    int nbNeighbors;
+    size_t nbNeighbors;
     Sphere(double x_, double y_, double z_, double r_) {
       x = x_;
       y = y_;
@@ -41,14 +41,14 @@ public:
   double gapTol;       // une tolerance (positive) sur l'espace entre les spheres
   double distNeighbor; // distance inter-spheres pour les listes de voisinage
   double distMin;      // distance min pour placer des spheres
-  int max;             // nombre maxi de spheres placées
-  int k; // nombre de tentatives de placement autour d'une sphere placée avant de l'enlever de la liste des actifs
+  size_t max;             // nombre maxi de spheres placées
+  size_t k; // nombre de tentatives de placement autour d'une sphere placée avant de l'enlever de la liste des actifs
 
-  int limitLocalNumberNeighbors;
-  int localNumberNeighborsMax;
+  size_t limitLocalNumberNeighbors;
+  size_t localNumberNeighborsMax;
   double distProbingConnectivity;
 
-  int limitLocalSolidFraction;
+  size_t limitLocalSolidFraction;
   double distProbingSolidFraction;
   double localSolidFractionMax;
 
@@ -72,13 +72,13 @@ public:
     limitLocalSolidFraction = 0;
   }
 
-  GeoPack3D(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_, double zmin_,
-            double zmax_, double gap_ = 0.0, int max_ = 0) {
+  GeoPack3D(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_, double zmin_,
+            double zmax_, double gap_ = 0.0, size_t max_ = 0) {
     parameters(rmin_, rmax_, k_, xmin_, xmax_, ymin_, ymax_, zmin_, zmax_, gap_, max_);
   }
 
-  void parameters(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_,
-                  double zmin_, double zmax_, double gapTol_ = 0.0, int max_ = 0) {
+  void parameters(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_,
+                  double zmin_, double zmax_, double gapTol_ = 0.0, size_t max_ = 0) {
     rmin = rmin_;
     rmax = rmax_;
     gapTol = gapTol_;
@@ -97,9 +97,9 @@ public:
 
     max = max_;
     if (max == 0) {
-      int nx = floor((xmax - xmin) / rmin);
-      int ny = floor((ymax - ymin) / rmin);
-      int nz = floor((zmax - zmin) / rmin);
+      size_t nx = static_cast<size_t>(floor((xmax - xmin) / rmin));
+      size_t ny = static_cast<size_t>(floor((ymax - ymin) / rmin));
+      size_t nz = static_cast<size_t>(floor((zmax - zmin) / rmin));
       max = nx * ny * nz;
     }
   }
@@ -135,7 +135,7 @@ public:
 
   // it returns the solide fraction in a layer of 'width' around the sphere i
   // BEFORE another sphere is added
-  double localSolidFraction(int i, double width, bool periodic = false) {
+  double localSolidFraction(size_t i, double width, bool periodic = false) {
 
     double Rprob = sample[i].r + width;
     double Vprob = 4.0 * M_PI * (Rprob * Rprob * Rprob - sample[i].r * sample[i].r * sample[i].r) / 3.0;
@@ -143,7 +143,7 @@ public:
     double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
 
     for (size_t n = 0; n < prox[i].size(); n++) {
-      int j = prox[i][n];
+      size_t j = prox[i][n];
       double dx = sample[j].x - sample[i].x;
       double dy = sample[j].y - sample[i].y;
       double dz = sample[j].z - sample[i].z;
@@ -159,7 +159,7 @@ public:
     return Vs / Vprob;
   }
 
-  void limit_localNumberNeighbors(double dst, int value) {
+  void limit_localNumberNeighbors(double dst, size_t value) {
     limitLocalNumberNeighbors = 1;
     distProbingConnectivity = dst;
     localNumberNeighborsMax = value;
@@ -171,18 +171,18 @@ public:
     localSolidFractionMax = value;
   }
 
-  void seedTime() { srand(time(NULL)); }
+  void seedTime() { srand(static_cast<unsigned int>(time(NULL))); }
 
-  void reActivate(int from = 0, int to = 0) {
+  void reActivate(size_t from = 0, size_t to = 0) {
     if (to == 0)
       to = sample.size();
-    for (int i = from; i < to; i++) {
+    for (size_t i = from; i < to; i++) {
       active.push_back(i);
     }
   }
 
-  void deActivate(int index) {
-    for (int i = index; i < (int)active.size() - 1; i++) {
+  void deActivate(size_t index) {
+    for (size_t i = index; i < active.size() - 1; i++) {
       active[i] = active[i + 1];
     }
     active.pop_back();
@@ -201,10 +201,10 @@ public:
     }
 
     // step 2
-    int count = 0;
-    int countMax = (int)floor(2.0 * (xmax - xmin) / (rmin + rmax));
+    size_t count = 0;
+    size_t countMax = (size_t)floor(2.0 * (xmax - xmin) / (rmin + rmax));
     while (active.size() > 0 && sample.size() < (size_t)max) {
-      int randIndex = rand() % active.size();
+      size_t randIndex = static_cast<size_t>(rand()) % active.size();
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
         deActivate(randIndex);
         continue;
@@ -214,11 +214,11 @@ public:
         deActivate(randIndex);
         continue;
       }
-      int currentSphere = active[randIndex];
+      size_t currentSphere = active[randIndex];
 
       bool found = false;
 
-      for (int n = 0; n < k; n++) {
+      for (size_t n = 0; n < k; n++) {
         double testr = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
         double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
@@ -244,7 +244,7 @@ public:
         // inter-particles
         if (ok == true) {
           for (size_t i = 0; i < prox[currentSphere].size(); i++) {
-            int neighborSphere = prox[currentSphere][i];
+            size_t neighborSphere = prox[currentSphere][i];
 
             double dx = sample[neighborSphere].x - testx;
             double dy = sample[neighborSphere].y - testy;
@@ -314,11 +314,11 @@ public:
     }
 
     // step 2
-    int count = 0;
-    int countMax = (int)floor((xmax - xmin) / (0.5 * (rmin + rmax)));
+    size_t count = 0;
+    size_t countMax = static_cast<size_t>(floor((xmax - xmin) / (0.5 * (rmin + rmax))));
     while (active.size() > 0 && sample.size() < (size_t)max) {
 
-      int randIndex = rand() % active.size();
+      size_t randIndex = static_cast<size_t>(rand()) % active.size();
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
         deActivate(randIndex);
         continue;
@@ -328,7 +328,7 @@ public:
         deActivate(randIndex);
         continue;
       }
-      int currentSphere = active[randIndex];
+      size_t currentSphere = active[randIndex];
 
       if (sample[currentSphere].nbNeighbors > 2) {
         deActivate(randIndex);
@@ -338,7 +338,7 @@ public:
       bool found = false;
 
       // will try k times to add a sphere arround it
-      for (int n = 0; n < k; n++) {
+      for (size_t n = 0; n < k; n++) {
 
         // an attempt of positionning
         double testr = ran(rmin, rmax);
@@ -396,7 +396,7 @@ public:
         // inter-particles
         if (ok == true) {
           for (size_t i = 0; i < prox[currentSphere].size(); i++) {
-            int neighborSphere = prox[currentSphere][i];
+            size_t neighborSphere = prox[currentSphere][i];
 
             double dx = sample[neighborSphere].x - testx;
             double dy = sample[neighborSphere].y - testy;

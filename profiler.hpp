@@ -80,7 +80,7 @@ public:
         printReplicate(9, shift, " ");
         for (size_t i = 0; i < nColumns; i++) {
           std::cout << "│";
-          int size = cName[i].size();
+          size_t size = cName[i].size();
           printReplicate(0, (int(cWidth) - size - 1), " ");
           std::cout << cName[i] << " ";
         }
@@ -162,7 +162,7 @@ public:
 #endif
       for (size_t i = 0; i < nColumns; i++) {
         std::cout << "│";
-        int size = cValue[i].size();
+        size_t size = cValue[i].size();
         printReplicate(0, (int(cWidth) - size - 1), " ");
         std::cout << cValue[i] << " ";
       }
