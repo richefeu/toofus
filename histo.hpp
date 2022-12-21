@@ -85,7 +85,7 @@ public:
   void save(const char *name) {
     std::ofstream out(name);
     for (size_t i = 0; i < data.size(); i++) {
-      if (isfinite(data[i].ProbDensity)) {
+      if (std::isfinite(data[i].ProbDensity)) {
         out << data[i].X << ' ' << data[i].ProbDensity << ' ' << 0.5 * data[i].Width << '\n';
       }
     }
@@ -99,7 +99,7 @@ public:
     std::sort(value.begin(), value.end());
     double fact;
     if (normalize == true && nb > 0) {
-      fact = 1.0 / nb;
+      fact = 1.0 / (double)nb;
     } else {
       fact = 1.0;
     }
@@ -110,7 +110,7 @@ public:
     double threshold;
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
-      binAbscise = H.min + (b + 0.5) * binWidth;
+      binAbscise = H.min + ((double)b + 0.5) * binWidth;
       size_t amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
       while (count < nb && value[count] <= threshold) {
@@ -119,7 +119,7 @@ public:
       }
       H.data[b].Width = binWidth;
       H.data[b].X = binAbscise;
-      H.data[b].ProbDensity = amount * fact;
+      H.data[b].ProbDensity = (double)amount * fact;
     }
     return H;
   }
@@ -137,7 +137,7 @@ public:
     double threshold;
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
-      binAbscise = H.min + (b + 0.5) * binWidth;
+      binAbscise = H.min + ((double)b + 0.5) * binWidth;
       amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
       while (count < value.size() && value[count] <= threshold) {
@@ -146,7 +146,7 @@ public:
       }
       H.data[b].Width = binWidth;
       H.data[b].X = binAbscise;
-      H.data[b].ProbDensity = amount / binWidth; // a density (not yet normalized)
+      H.data[b].ProbDensity = (double)amount / binWidth; // a density (not yet normalized)
     }
 
     // normalization: \int P dx = 1
@@ -225,7 +225,7 @@ public:
     double threshold;
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
-      binAbscise = H.min + (b + 0.5) * binWidth;
+      binAbscise = H.min + ((double)b + 0.5) * binWidth;
       amount = 0;
       threshold = binAbscise + 0.5 * binWidth;
       while (count < value.size() && value[count] <= threshold) {
@@ -234,7 +234,7 @@ public:
       }
       H.data[b].Width = binWidth;
       H.data[b].X = binAbscise;
-      H.data[b].ProbDensity = amount / binWidth; // a density (not yet normalized)
+      H.data[b].ProbDensity = (double)amount / binWidth; // a density (not yet normalized)
     }
 
     // normalization: \int P dx = 1

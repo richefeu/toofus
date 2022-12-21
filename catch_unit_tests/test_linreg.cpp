@@ -6,7 +6,7 @@ TEST_CASE("linreg") {
   std::vector<double> y(20);
 
   for (size_t i = 0; i < 20; i++) {
-    x[i] = static_cast<double>(i * 1.0);
+    x[i] = (double)i * 1.0;
     y[i] = 2.0 * x[i] + 3.0;
   }
 

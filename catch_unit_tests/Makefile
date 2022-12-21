@@ -1,6 +1,7 @@
 # Declaration of variables
-CC = clang++
-CC_FLAGS = -O3 -std=c++11 -I.. -Wall -Wextra -Wshadow -Wconversion -Wpedantic
+CC = g++-12
+CC_FLAGS = -O3 -std=c++11 -I.. -Wall -Wextra -Wshadow -Wconversion -pedantic
+
 
 # File names
 EXEC = tests
@@ -10,7 +11,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 
 # Main target
 $(EXEC): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(EXEC)
+	$(CC) $(CC_FLAGS) $(OBJECTS) -o $(EXEC)
 
 # To obtain object files
 %.o: %.cpp

@@ -36,6 +36,7 @@ public:
     }
   };
 
+  bool verbose;
   double rmin;
   double rmax;
   double gapTol;       // une tolerance (positive) sur l'espace entre les spheres
@@ -70,11 +71,13 @@ public:
     xmin = xmax = ymin = ymax = zmin = zmax = 0.0;
     limitLocalNumberNeighbors = 0;
     limitLocalSolidFraction = 0;
+    verbose = true;
   }
 
   GeoPack3D(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_, double zmin_,
             double zmax_, double gap_ = 0.0, size_t max_ = 0) {
     parameters(rmin_, rmax_, k_, xmin_, xmax_, ymin_, ymax_, zmin_, zmax_, gap_, max_);
+    verbose = true;
   }
 
   void parameters(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_,
@@ -295,8 +298,10 @@ public:
       if (count >= countMax) {
         count = 0;
 
-        std::cout << "packed: " << sample.size() << ", ";
-        std::cout << "active: " << active.size() << std::endl;
+        if (verbose == true) {
+          std::cout << "packed: " << sample.size() << ", ";
+          std::cout << "active: " << active.size() << std::endl;  
+        }
       }
     } // end-while
   }   // end-method-run
@@ -462,8 +467,10 @@ public:
       count++;
       if (count >= countMax) {
         count = 0;
-        std::cout << "packed: " << sample.size() << ", ";
-        std::cout << "active: " << active.size() << std::endl;
+        if (verbose == true) {
+          std::cout << "packed: " << sample.size() << ", ";
+          std::cout << "active: " << active.size() << std::endl;
+        }   
       }
     } // end-while
   }   // end-execPeriodic

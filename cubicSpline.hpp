@@ -30,6 +30,7 @@ struct SplineSet {
 };
 
 std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
+  // todo: warn if x.size() is less than ???
   size_t n = x.size() - 1;
   std::vector<double> a;
   a.insert(a.begin(), y.begin(), y.end());
@@ -62,7 +63,7 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   z[n] = 0.0;
   c[n] = 0.0;
 
-  for (size_t j = n - 1; j >= 0; --j) {
+  for (size_t j = n - 1; (long)j >= 0; --j) {
     c[j] = z[j] - mu[j] * c[j + 1];
     b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3.0;
     d[j] = (c[j + 1] - c[j]) / (3.0 * h[j]);

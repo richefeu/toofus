@@ -5,7 +5,7 @@ TEST_CASE("vec2") {
   vec2r V;
   REQUIRE(V.x == 0.0);
   REQUIRE(norm(V) == 0.0);
-  V.x = 1234.;
+  V.x = 1234.5;
   V.normalize();
   REQUIRE(norm(V) == 1.0);
   REQUIRE(cross(V, V) == 0.0);

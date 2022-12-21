@@ -167,7 +167,8 @@ template <typename T> T Q_rsqrt(T number) {
   union {
     T f;
     uint32_t i;
-  } conv = {.f = number};
+  } conv;// = {.f = number};
+  conv.f = number;
   conv.i = 0x5f3759df - (conv.i >> 1);
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
   return conv.f;
@@ -179,7 +180,8 @@ template <typename T> T Q_accurate_rsqrt(T number) {
   union {
     T f;
     uint32_t i;
-  } conv = {.f = number};
+  } conv;// = {.f = number};
+  conv.f = number;
   conv.i = 0x5f3759df - (conv.i >> 1);
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 2
