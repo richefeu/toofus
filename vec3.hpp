@@ -83,8 +83,10 @@ public:
   T *c_vec() { return &x; }
 
   T &operator[](int i) { return *(&x + i); }
+  T &operator[](size_t i) { return *(&x + i); }
 
   const T &operator[](int i) const { return *(&x + i); }
+  const T &operator[](size_t i) const { return *(&x + i); }
 
   // For local frames, the notation n,t and s is more appropriate than x,y and z
   const T n() const { return x; }

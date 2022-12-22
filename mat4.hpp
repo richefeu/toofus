@@ -56,7 +56,10 @@ public:
   }
 
   T &operator[](int i) { return *(&xx + i); }
+  T &operator[](size_t i) { return *(&xx + i); }
+  
   const T &operator[](int i) const { return *(&xx + i); }
+  const T &operator[](size_t i) const { return *(&xx + i); }
 
   T &at(int line, int column) { return *(&xx + 2 * line + column); }
   const T &at(int line, int column) const { return *(&xx + 2 * line + column); }

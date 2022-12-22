@@ -50,17 +50,17 @@ struct colorRGBA {
   float rr, gg, bb, aa; // 0.0 to 1.0 (same data that has been pre-computed)
   colorRGBA() : r(0), g(0), b(0), a(0), rr(0.0), gg(0.0), bb(0.0), aa(0.0) {}
   void set(int R, int G, int B, int A = 255) {
-    static const float inv255 = 1.0 / 255.0;
+    static const float inv255 = 1.0f / 255.0f;
     r = R;
     g = G;
     b = B;
     a = A;
-    rr = r * inv255;
-    gg = g * inv255;
-    bb = b * inv255;
-    aa = a * inv255;
+    rr = (float)r * inv255;
+    gg = (float)g * inv255;
+    bb = (float)b * inv255;
+    aa = (float)a * inv255;
   }
-  void set(float RR, float GG, float BB, float AA = 1.0) {
+  void set(float RR, float GG, float BB, float AA = 1.0f) {
     rr = RR;
     gg = GG;
     bb = BB;
@@ -256,26 +256,29 @@ public:
         r = g = b = 0;
         break;
       case 1: // vis5d
-        t = (curvature + 1.4) * (s - (1. + bias) / 2.);
+        t = (curvature + 1.4) * (s - (1.0 + bias) / 2.0);
         r = (int)(128.0 + 127.0 * atan(7.0 * t) / 1.57);
         g = (int)(128.0 + 127.0 * (2 * exp(-7 * t * t) - 1));
         b = (int)(128.0 + 127.0 * atan(-7.0 * t) / 1.57);
         break;
       case 2: { // matlab "jet"
-        double ii = (double)(s - bias) * 128.;
+        double ii = (double)(s - bias) * 128.0;
         if (ii < 0)
           ii = 0;
         if (ii > 128)
           ii = 128;
-        double rr = ii <= 46 ? 0. : ii >= 111 ? -0.03125 * (ii - 111) + 1. : ii >= 78 ? 1. : 0.03125 * (ii - 46);
-        double gg = ii <= 14 || ii >= 111 ? 0. : ii >= 79 ? -0.03125 * (ii - 111) : ii <= 46 ? 0.03125 * (ii - 14) : 1.;
-        double bb = ii >= 79 ? 0. : ii >= 47 ? -0.03125 * (ii - 79) : ii <= 14 ? 0.03125 * (ii - 14) + 1. : 1.;
-        r = (int)(rr * 255.);
-        g = (int)(gg * 255.);
-        b = (int)(bb * 255.);
+        double rr = ii <= 46 ? 0.0 : ii >= 111 ? -0.03125 * (ii - 111) + 1.0 : ii >= 78 ? 1. : 0.03125 * (ii - 46);
+        double gg = ii <= 14 || ii >= 111 ? 0.
+                    : ii >= 79            ? -0.03125 * (ii - 111)
+                    : ii <= 46            ? 0.03125 * (ii - 14)
+                                          : 1.0;
+        double bb = ii >= 79 ? 0.0 : ii >= 47 ? -0.03125 * (ii - 79) : ii <= 14 ? 0.03125 * (ii - 14) + 1.0 : 1.0;
+        r = (int)(rr * 255.0);
+        g = (int)(gg * 255.0);
+        b = (int)(bb * 255.0);
       } break;
       case 3: // lucie, samcef (?)
-        if (s - bias <= 0.) {
+        if (s - bias <= 0.0) {
           r = 0;
           g = 0;
           b = 255;
@@ -284,12 +287,12 @@ public:
           g = (int)((s - bias) * 637.5);
           b = (int)(255. - (s - bias) * 637.5);
         } else if (s - bias <= 0.60) {
-          r = (int)(1275. * (s - bias - 0.4));
+          r = (int)(1275.0 * (s - bias - 0.4));
           g = 255;
           b = 0;
-        } else if (s - bias <= 1.) {
+        } else if (s - bias <= 1.0) {
           r = 255;
-          g = (int)(255. - 637.5 * (s - bias - 0.6));
+          g = (int)(255.0 - 637.5 * (s - bias - 0.6));
           b = 0;
         } else {
           r = 255;
@@ -298,29 +301,29 @@ public:
         }
         break;
       case 4: // rainbow
-        if (s - bias <= 0.) {
+        if (s - bias <= 0.0) {
           r = 0;
           g = 0;
           b = 255;
         } else if (s - bias <= 0.25 + curvature) {
-          curvature = (curvature == -0.25) ? -0.26 : curvature;
+          curvature = (curvature == -0.25f) ? -0.26f : curvature;
           r = 0;
-          g = (int)((s - bias) * (255. / (0.25 + curvature)));
+          g = (int)((s - bias) * (255.0 / (0.25 + curvature)));
           b = 255;
         } else if (s - bias <= 0.50) {
-          curvature = (curvature == 0.25) ? 0.26 : curvature;
+          curvature = (curvature == 0.25f) ? 0.26f : curvature;
           r = 0;
           g = 255;
           b = (int)(255. - (255. / (0.25 - curvature)) * (s - bias - 0.25 - curvature));
         } else if (s - bias <= 0.75 - curvature) {
-          curvature = (curvature == 0.25) ? 0.26 : curvature;
-          r = (int)((s - bias - 0.5) * (255. / (0.25 - curvature)));
+          curvature = (curvature == 0.25f) ? 0.26f : curvature;
+          r = (int)((s - bias - 0.5) * (255.0 / (0.25 - curvature)));
           g = 255;
           b = 0;
         } else if (s - bias <= 1.) {
-          curvature = (curvature == -0.25) ? -0.26 : curvature;
+          curvature = (curvature == -0.25f) ? -0.26f : curvature;
           r = 255;
-          g = (int)(255. - (255. / (0.25 + curvature)) * (s - bias - 0.75 + curvature));
+          g = (int)(255.0 - (255.0 / (0.25 + curvature)) * (s - bias - 0.75 + curvature));
           b = 0;
         } else {
           r = 255;
@@ -364,80 +367,80 @@ public:
         }
         break;
       case 6: // darkblue->red->yellow->white
-        r = (int)(255. * cubic(-0.0506169, 2.81633, -1.87033, 0.0524573, s - bias));
-        g = (int)(255. * cubic(0.0485868, -1.26109, 6.3074, -4.12498, s - bias));
-        b = (int)(255. * cubic(0.364662, 1.50814, -7.36756, 6.51847, s - bias));
+        r = (int)(255.0 * cubic(-0.0506169, 2.81633, -1.87033, 0.0524573, s - bias));
+        g = (int)(255.0 * cubic(0.0485868, -1.26109, 6.3074, -4.12498, s - bias));
+        b = (int)(255.0 * cubic(0.364662, 1.50814, -7.36756, 6.51847, s - bias));
         break;
       case 7: // matlab "hot"
-        r = (int)(255. * hot_r(s - bias));
-        g = (int)(255. * hot_g(s - bias));
-        b = (int)(255. * hot_b(s - bias));
+        r = (int)(255.0 * hot_r(s - bias));
+        g = (int)(255.0 * hot_g(s - bias));
+        b = (int)(255.0 * hot_b(s - bias));
         break;
       case 8: // matlab "pink"
-        r = (int)(255. * sqrt((2. * gray(s - bias) + hot_r(s - bias)) / 3.));
-        g = (int)(255. * sqrt((2. * gray(s - bias) + hot_g(s - bias)) / 3.));
-        b = (int)(255. * sqrt((2. * gray(s - bias) + hot_b(s - bias)) / 3.));
+        r = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_r(s - bias)) / 3.0));
+        g = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_g(s - bias)) / 3.0));
+        b = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_b(s - bias)) / 3.0));
         break;
       case 9: // grayscale
-        if (s - bias <= 0.) {
+        if (s - bias <= 0.0) {
           r = g = b = 0;
         } else if (s - bias <= 1.) {
-          r = g = b = (int)(255 * (1. - curvature) * (s - bias));
+          r = g = b = (int)(255 * (1.0 - curvature) * (s - bias));
         } else {
-          r = g = b = (int)(255 * (1. - curvature));
+          r = g = b = (int)(255 * (1.0 - curvature));
         }
         break;
       case 10: // all white
         r = g = b = 255;
         break;
       case 11: { // matlab "hsv"
-        double H = 6. * s + 1.e-10, R = 0.0, G = 0.0, B = 0.0;
-        HSV_to_RGB(H, 1., 1., &R, &G, &B);
+        double H = 6.0 * s + 1.0e-10, R = 0.0, G = 0.0, B = 0.0;
+        HSV_to_RGB(H, 1.0, 1.0, &R, &G, &B);
         r = (int)(255 * R);
         g = (int)(255 * G);
         b = (int)(255 * B);
       } break;
       case 12: { // spectrum (truncated hsv)
-        double H = 5. * s + 1.e-10, R = 0.0, G = 0.0, B = 0.0;
-        HSV_to_RGB(H, 1., 1., &R, &G, &B);
+        double H = 5.0 * s + 1.e-10, R = 0.0, G = 0.0, B = 0.0;
+        HSV_to_RGB(H, 1.0, 1.0, &R, &G, &B);
         r = (int)(255 * R);
         g = (int)(255 * G);
         b = (int)(255 * B);
       } break;
       case 13: // matlab "bone"
-        r = (int)(255. * (7.0 * gray(s - bias) + hot_b(s - bias)) / 8.0);
-        g = (int)(255. * (7.0 * gray(s - bias) + hot_g(s - bias)) / 8.0);
-        b = (int)(255. * (7.0 * gray(s - bias) + hot_r(s - bias)) / 8.0);
+        r = (int)(255.0 * (7.0 * gray(s - bias) + hot_b(s - bias)) / 8.0);
+        g = (int)(255.0 * (7.0 * gray(s - bias) + hot_g(s - bias)) / 8.0);
+        b = (int)(255.0 * (7.0 * gray(s - bias) + hot_r(s - bias)) / 8.0);
         break;
       case 14: // matlab "spring"
-        r = (int)(255. * 1.0);
-        g = (int)(255. * gray(s - bias));
-        b = (int)(255. * (1.0 - gray(s - bias)));
+        r = (int)(255.0 * 1.0);
+        g = (int)(255.0 * gray(s - bias));
+        b = (int)(255.0 * (1.0 - gray(s - bias)));
         break;
       case 15: // matlab "summer"
-        r = (int)(255. * gray(s - bias));
-        g = (int)(255. * (0.5 + gray(s - bias) / 2.0));
-        b = (int)(255. * 0.4);
+        r = (int)(255.0 * gray(s - bias));
+        g = (int)(255.0 * (0.5 + gray(s - bias) / 2.0));
+        b = (int)(255.0 * 0.4);
         break;
       case 16: // matlab "autumn"
-        r = (int)(255. * 1.0);
-        g = (int)(255. * gray(s - bias));
-        b = (int)(255. * 0.0);
+        r = (int)(255.0 * 1.0);
+        g = (int)(255.0 * gray(s - bias));
+        b = (int)(255.0 * 0.0);
         break;
       case 17: // matlab "winter"
-        r = (int)(255. * 0.0);
-        g = (int)(255. * gray(s - bias));
-        b = (int)(255. * (0.5 + (1.0 - gray(s - bias)) / 2.0));
+        r = (int)(255.0 * 0.0);
+        g = (int)(255.0 * gray(s - bias));
+        b = (int)(255.0 * (0.5 + (1.0 - gray(s - bias)) / 2.0));
         break;
       case 18: // matlab "cool"
-        r = (int)(255. * gray(s - bias));
-        g = (int)(255. * (1.0 - gray(s - bias)));
-        b = (int)(255. * 1.0);
+        r = (int)(255.0 * gray(s - bias));
+        g = (int)(255.0 * (1.0 - gray(s - bias)));
+        b = (int)(255.0 * 1.0);
         break;
       case 19: // matlab "copper"
-        r = (int)(255. * MIN(1., gray(s - bias) * 1.25));
-        g = (int)(255. * MIN(1., gray(s - bias) * 0.7812));
-        b = (int)(255. * MIN(1., gray(s - bias) * 0.4975));
+        r = (int)(255.0 * MIN(1.0, gray(s - bias) * 1.25));
+        g = (int)(255.0 * MIN(1.0, gray(s - bias) * 0.7812));
+        b = (int)(255.0 * MIN(1.0, gray(s - bias) * 0.4975));
         break;
       case 20: // Random colors
         r = (int)(rand() / (double)RAND_MAX * 255.0);
@@ -451,7 +454,7 @@ public:
 
       float aa = 1.0;
       if (alphapow)
-        aa = pow(float(s ? s : 1.0e-10), float(alphapow));
+        aa = static_cast<float>(pow((float)(s ? s : 1.0e-10), (float)alphapow));
       a = (int)(255.0 * aa * alpha);
 
       if (beta) {
@@ -506,11 +509,11 @@ public:
 
       colorRGBA col;
       for (int c = cpos[i - 1]; c <= cpos[i]; c++) {
-        float w = (double)(c - cpos[i - 1]) / (double)(cpos[i] - cpos[i - 1]);
-        col.r = (1.0 - w) * cols[i - 1][0] + w * cols[i][0];
-        col.g = (1.0 - w) * cols[i - 1][1] + w * cols[i][1];
-        col.b = (1.0 - w) * cols[i - 1][2] + w * cols[i][2];
-        col.a = (1.0 - w) * cols[i - 1][3] + w * cols[i][3];
+        float w = (float)(c - cpos[i - 1]) / (float)(cpos[i] - cpos[i - 1]);
+        col.r = (int)((1.0 - w) * (float)cols[i - 1][0] + w * (float)cols[i][0]);
+        col.g = (int)((1.0 - w) * (float)cols[i - 1][1] + w * (float)cols[i][1]);
+        col.b = (int)((1.0 - w) * (float)cols[i - 1][2] + w * (float)cols[i][2]);
+        col.a = (int)((1.0 - w) * (float)cols[i - 1][3] + w * (float)cols[i][3]);
 
         // clamp to [0,255]
         col.r = col.r < 0 ? 0 : (col.r > 255 ? 255 : col.r);
@@ -548,14 +551,14 @@ public:
 
       colorRGBA col;
       for (int c = cpos[i - 1]; c <= cpos[i]; c++) {
-        float w = (double)(c - cpos[i - 1]) / (double)(cpos[i] - cpos[i - 1]);
+        float w = (float)(c - cpos[i - 1]) / (float)(cpos[i] - cpos[i - 1]);
 
-        double R1 = cols[i - 1][0] / 255.;
-        double G1 = cols[i - 1][1] / 255.;
-        double B1 = cols[i - 1][2] / 255.;
-        double R2 = cols[i][0] / 255.;
-        double G2 = cols[i][1] / 255.;
-        double B2 = cols[i][2] / 255.;
+        double R1 = cols[i - 1][0] / 255.0;
+        double G1 = cols[i - 1][1] / 255.0;
+        double B1 = cols[i - 1][2] / 255.0;
+        double R2 = cols[i][0] / 255.0;
+        double G2 = cols[i][1] / 255.0;
+        double B2 = cols[i][2] / 255.0;
         double H1 = 0.0, S1 = 0.0, V1 = 0.0, H2 = 0.0, S2 = 0.0, V2 = 0.0;
         RGB_to_HSV(R1, G1, B1, &H1, &S1, &V1);
         RGB_to_HSV(R2, G2, B2, &H2, &S2, &V2);
@@ -654,7 +657,7 @@ public:
   }
 
   void getColor4f(float value, color4f *col) {
-    static const float inv255 = 1.0 / 255.0;
+    static const float inv255 = 1.0f / 255.0f;
     unsigned int i;
 
     float pos = (value - min) / (max - min);                // in ]0.0 1.0[
@@ -665,10 +668,10 @@ public:
     else if (value >= max)
       i = size - 1;
 
-    col->r = static_cast<float>(inv255 * UNPACK_RED(table[i]));
-    col->g = static_cast<float>(inv255 * UNPACK_GREEN(table[i]));
-    col->b = static_cast<float>(inv255 * UNPACK_BLUE(table[i]));
-    col->a = static_cast<float>(inv255 * UNPACK_ALPHA(table[i]));
+    col->r = static_cast<float>(inv255 * (float)UNPACK_RED(table[i]));
+    col->g = static_cast<float>(inv255 * (float)UNPACK_GREEN(table[i]));
+    col->b = static_cast<float>(inv255 * (float)UNPACK_BLUE(table[i]));
+    col->a = static_cast<float>(inv255 * (float)UNPACK_ALPHA(table[i]));
   }
 
   // returns one color among 6 well distinguishable colors
