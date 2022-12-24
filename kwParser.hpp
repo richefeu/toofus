@@ -19,6 +19,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
 
 #define __DO__(IS) [&](std::istream & IS)
 #define __GET__(IS, WHAT) [&](std::istream &IS) { IS >> (WHAT); }
@@ -40,6 +41,15 @@ public:
       parse(file);
     else
       std::cerr << "@kwParser::parse, file " << filename << " cannot be opened" << std::endl;
+  }
+  
+  void parseString(const char *chain) {
+    std::stringstream ss;
+    ss.str(chain);
+    if (ss)
+      parse(ss);
+    else
+      std::cerr << "@kwParser::parseString, stream cannot be created" << std::endl;
   }
 
   void parse(std::istream &is) {
@@ -83,9 +93,10 @@ myClass.value2 654.321
 myClass.str coucou
 # myClass.str coucouComment
 @endcode
+*/
 
-Example of usage:
-@code{.cpp}
+#if 0
+//Example of usage:
 struct myClass {
         double value;
         double value2;
@@ -104,10 +115,16 @@ int main ()
         std::cout << "myClass.value = " << mc.value << std::endl;
         std::cout << "myClass.value2 = " << mc.value2 << std::endl;
         std::cout << "myClass.str = " << mc.str << std::endl;
+        
+        parser.parseString("myClass.str toto");
+        std::cout << "myClass.str = " << mc.str << std::endl;
+        
+        parser.parseString("myClass.value2 6.1 myClass.value 13.6");
+        std::cout << "myClass.value = " << mc.value << std::endl;
+        std::cout << "myClass.value2 = " << mc.value2 << std::endl;
 
         return 0;
 }
-@endcode
-*/
+#endif
 
 #endif /* end of include guard: KWPARSER_CPP */
