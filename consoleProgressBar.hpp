@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 class ConsoleProgressBar {
 private:
@@ -62,14 +63,14 @@ public:
     if ((x != nmax) && (x % (nmax / 100 + 1) != 0))
       return;
 
-    float ratio = x / (float)nmax;
-    size_t c = ratio * width;
+    float ratio = (float)x / (float)nmax;
+    size_t c = (size_t)std::floor(ratio) * width;
 
     os << title << std::setw(3) << (size_t)(ratio * 100) << "% " << openChar;
-    for (size_t x = 0; x < c; x++) {
+    for (size_t i = 0; i < c; i++) {
       os << progressChar;
     }
-    for (size_t x = c; x < width; x++) {
+    for (size_t i = c; i < width; i++) {
       os << voidChar;
     }
     os << closeChar << '\r' << std::flush;
