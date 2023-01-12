@@ -455,11 +455,11 @@ public:
     va_list args;
     va_start(args, fmt);
     char buffer[128];
-    vsnprintf(buffer, 127, fmt, args);
+    vsnprintf(buffer, 128, fmt, args);
     for (int i = NB_LINE_MAX - 1; i > 0; i--) {
       strcpy(textzone[i], textzone[i - 1]);
     }
-    sprintf((char *)textzone[0], "%s", buffer);
+    snprintf((char *)textzone[0], 128, "%s", buffer);
     va_end(args);
   }
 
