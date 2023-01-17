@@ -85,6 +85,19 @@ public:
       max = nx * ny;
     }
   }
+	
+  // Overall solid fraction by assuming there is no overlap
+  double getSolidFraction() {
+    double Vtot = (xmax - xmin) * (ymax - ymin);
+    if (Vtot <= 0.0)
+      return 0.0;
+    double Vs = 0.0;
+
+    for (size_t i = 0; i < sample.size(); i++) {
+      Vs += M_PI * sample[i].r * sample[i].r;
+    }
+    return Vs / Vtot;
+  }
 
   void seedTime() { srand(time(NULL)); }
 
