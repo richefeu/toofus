@@ -20,6 +20,8 @@
 #include <iostream>
 #include <vector>
 
+#include "vec2.hpp"
+
 struct viewZone {
   double x, y, w, h;
   double scalex, scaley, x0, y0;
@@ -80,13 +82,27 @@ public:
        << fabs(w * vz.scalex) << "\" height=\"" << fabs(h * vz.scaley) << "\" style=\"" << style << "\" />\n";
   }
 
+  void polygon(std::vector<vec2r> &vert, const char *style) {
+    os << "<polygon points=\"";
+    for (size_t i = 0; i < vert.size(); i++) {
+      os << vert[i].x << "," << vert[i].y << " ";
+    }
+    os << "\" style=\"" << style << "\" />\n";
+  }
+
+  void polygon(viewZone &vz, std::vector<vec2r> &vert, const char *style) {
+    os << "<polygon points=\"";
+    for (size_t i = 0; i < vert.size(); i++) {
+      os << vert[i].x * vz.scalex + vz.x0 << "," << vert[i].y * vz.scaley + vz.y0 << " ";
+    }
+    os << "\" style=\"" << style << "\" />\n";
+  }
+
   void circle(double cx, double cy, double r, const char *style) {
     os << "<circle cx=\"" << cx << "\" cy=\"" << cy << "\" r=\"" << r << "\" style=\"" << style << "\" />\n";
   }
-  
-  void circle(viewZone &vz, double cx, double cy, double r, const char *style) {
-    ellipse(vz, cx, cy, r, r, style);
-  }
+
+  void circle(viewZone &vz, double cx, double cy, double r, const char *style) { ellipse(vz, cx, cy, r, r, style); }
 
   void ellipse(double cx, double cy, double rx, double ry, const char *style) {
     os << "<ellipse cx=\"" << cx << "\" cy=\"" << cy << "\" rx=\"" << rx << "\" ry=\"" << ry << "\" style=\"" << style

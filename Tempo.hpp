@@ -51,6 +51,12 @@ template <class T> struct Tempo {
 
   void set(const std::string command, double p1 = 0, double p2 = 0, T p3 = 0, T p4 = 0) {
     if (command == "Range") {
+			//     ^
+			//  p3 |      +-------+
+			//     |      |       |
+			//  p4 |------+       +-----
+			//     +------------------------> t
+			//            p1     p2
       update = [this, p1, p2, p3, p4](double t) -> T {
         if (t >= p1 && t <= p2) {
           send(p3);
@@ -60,6 +66,12 @@ template <class T> struct Tempo {
         return p4;
       };
     } else if (command == "Ramp") {
+			//     ^
+			//  p4 |        +---------------
+			//     |       / 
+			//  p3 |------+   
+			//     +------------------------> t
+			//           p1  p2
       update = [this, p1, p2, p3, p4](double t) -> T {
         if (t < p1) {
           send(p3);

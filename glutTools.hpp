@@ -334,7 +334,7 @@ public:
     for (int i = NB_LINE_MAX - 1; i > 0; i--) {
       strcpy(textzone[i], textzone[i - 1]);
     }
-    sprintf((char *)textzone[0], "%s", buffer);
+    snprintf((char *)textzone[0], 128, "%s", buffer);
     va_end(args);
   }
 

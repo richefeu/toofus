@@ -19,6 +19,7 @@
 #include <cstring> // for strcpy
 
 #include "OBB.hpp"
+#include "ColorTable.hpp"
 
 class facetSphere {
 protected:
@@ -263,6 +264,8 @@ public:
 
 class glText {
 public:
+	static initialised = false;
+	
   static void makeRasterFont() {
     GLuint i;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -282,6 +285,7 @@ public:
   static void init() {
     glShadeModel(GL_FLAT);
     makeRasterFont();
+		initialised = true;
   }
 
   static void print(int x, int y, const char *fmt, ...) {
@@ -505,6 +509,78 @@ public:
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
   }
+	
+	/*
+	static void show_colorTable (ColorTable & ct)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glOrtho(0, width, 0, height, -1.0f, 1.0f);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		
+		
+		//glPushAttrib(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
+		//glPushAttrib(GL_LIGHTING);
+		glDisable(GL_LIGHTING);
+
+		int bottom = (int)(2.0 * height / 3.0);
+		int top = height - 20;
+		float H = top - bottom;
+		float dH = H / (ct.getSize());
+
+		glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+		colorRGBA col;
+		float value;
+		float dval = (ct.getMax() - ct.getMin()) / ct.getSize();
+
+		for (int i = 0 ; i < ct.getSize() ; ++i) {
+			value = ct.getMin() + (real)i * dval;
+			ct.getRGB(value, &col);
+			glColor3f ((real)col.r * to01, (real)col.g * to01, (real)col.b * to01);
+			glBegin(GL_QUADS);
+			glVertex2f(4., bottom + i * dH);
+			glVertex2f(20., bottom + i * dH);
+			glVertex2f(20., bottom + (i + 1)*dH);
+			glVertex2f(4., bottom + (i + 1)*dH);
+			glEnd();
+		}
+
+		glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+		glLineWidth(1.0f);
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_QUADS);
+		glVertex2f(4., bottom);
+		glVertex2f(20., bottom);
+		glVertex2f(20., top);
+		glVertex2f(4., top);
+		glEnd();
+
+		glColor3f(0.0, 0.0, 0.0);
+		char str[30];
+		sprintf ((char *) str, "%+3.3e", (float) (ct.getMin()));
+		glRasterPos2i (22, bottom);
+		for (uint j = 0; str[j]; ++j)
+			glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
+		sprintf ((char *) str, "%+3.3e", (float) (ct.getMax()));
+		glRasterPos2i (22, top - 8);
+		for (uint j = 0; str[j]; ++j)
+			glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
+
+
+		glPopAttrib();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+	}
+	*/
+	
+	
 };
 
 #endif /* end of include guard: GLTOOLS_HPP */
