@@ -264,7 +264,7 @@ public:
 
 class glText {
 public:
-	static initialised = false;
+	//static initialised = false;
 	
   static void makeRasterFont() {
     GLuint i;
@@ -285,7 +285,7 @@ public:
   static void init() {
     glShadeModel(GL_FLAT);
     makeRasterFont();
-		initialised = true;
+		//initialised = true;
   }
 
   static void print(int x, int y, const char *fmt, ...) {

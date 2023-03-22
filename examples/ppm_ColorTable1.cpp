@@ -17,7 +17,7 @@ int main(int argc, char const *argv[]) {
     ct.Rebuild();
     
     char fname[256];
-    sprintf(fname, "table%d.ppm", tableID);
+    snprintf(fname,256, "table%d.ppm", tableID);
     ct.savePpm(fname);
 
   }

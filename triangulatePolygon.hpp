@@ -47,7 +47,7 @@ public:
   static bool Process(const std::vector<vec2r> &contour, std::vector<int> &result) {
     // allocate and initialize list of Vertices in polygon
 
-    int n = contour.size();
+    int n = (int)contour.size();
     if (n < 3)
       return false;
 
@@ -109,14 +109,14 @@ public:
       }
     }
 
-    delete V;
+    delete[] V;
 
     return true;
   }
 
   // compute area of a contour/polygon
   static double Area(const std::vector<vec2r> &contour) {
-    int n = contour.size();
+    int n = (int)contour.size();
 
     double A = 0.0f;
 
@@ -184,3 +184,24 @@ private:
 };
 
 #endif // TRIANGULATE_POLYGON_H
+
+#if 0
+#include <cmath>
+#include <iostream>
+
+int main(int argc, char const *argv[]) {
+  std::vector<vec2r> contour;
+  for (double a = 0.0; a < 2 * M_PI; a += M_PI / 6) {
+    contour.push_back(vec2r(cos(a), sin(a)));
+  }
+  std::vector<int> result;
+  TriangulatePolygon::Process(contour, result);
+
+  for (int i = 0; i < result.size() - 3; i += 3) {
+    std::cout << result[i] << ' ' << result[i + 1] << ' ' << result[i + 2] << '\n';
+  }
+
+  return 0;
+}
+
+#endif

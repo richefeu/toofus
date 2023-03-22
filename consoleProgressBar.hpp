@@ -55,7 +55,7 @@ public:
   void setProgressChar(char c) { progressChar = (char)validChar(c, '|'); }
   void setVoidChar(char c) { voidChar = (char)validChar(c, ' '); }
   void setOpenChar(char c) { openChar = (char)validChar(c, '['); }
-  void setCloseCharChar(char c) { closeChar = (char)validChar(c, ']'); }
+  void setCloseChar(char c) { closeChar = (char)validChar(c, ']'); }
 
   // Process has done i out of n rounds,
   // and we want a bar of width w and resolution r.
