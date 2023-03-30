@@ -78,10 +78,8 @@ public:
     return FileName;
   }
 
-  static void create_folder(std::string &folder) {
-    create_folder(folder.c_str());
-  }
-  
+  static void create_folder(std::string &folder) { create_folder(folder.c_str()); }
+
   static void create_folder(const char *folder) {
     if (access(folder, F_OK)) {
       int stat;
@@ -94,7 +92,20 @@ public:
         std::cout << "Cannot create the folder " << folder << std::endl;
     }
   }
-  
 };
 
 #endif /* end of include guard: FILETOOL_HPP */
+
+#if 0
+#include <iostream>
+
+int main(int argc, char const *argv[]) {
+  if (fileTool::fileExists("./examples")) {
+    std::cout << "yep\n";
+  } else {
+
+    std::cout << "not yep\n";
+  }
+  return 0;
+}
+#endif

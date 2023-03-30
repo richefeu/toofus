@@ -19,10 +19,15 @@
 #include "AABB.hpp"
 #include "vec3.hpp"
 
+enum linkCellOptions {
+  PERIODIC_LINKCELLS = 1,
+  HALF_CONNECTED_LINKCELLS = 1 << 1,
+};
+
 // An axis aligned box used for neighbor tracking
 class AABB_Cell {
 public:
-  std::vector<size_t> bodies;      ///< Holded bodies
+  std::vector<size_t> bodies;      ///< Holded bodies identifiers
   std::vector<AABB_Cell *> pcells; ///< Surroundind cells (+ current cell)
 
   AABB_Cell() {}
@@ -40,14 +45,28 @@ public:
   AABB_Cell oversized_bodies;                             ///< A particular cell that hold only 'too big' bodies
   vec3ui N;                                               ///< Number of cells in each direction (x, y, and z)
 
-  linkCells(AABB &Box, vec3r &CellMinSizes) : box(Box), minSizes(CellMinSizes) { init(); }
+  /*
+  changements :
+  1. parametres optionnels pour gerer les cas periodic et demi connectes
+  2. parametre optionnel pour ajouter le lien ver oversized_bodies aux pcells
+  */
+
+  // Ctor
+  linkCells(AABB &Box, vec3r &CellMinSizes, int options = 0)
+      : box(Box), minSizes(CellMinSizes) {
+    init(options);
+  }
+  
+  // Dtor
   ~linkCells() {}
 
-  void init() {
+  void init(int options = 0) {
     // Partition
     N.x = (size_t)floor((box.max.x - box.min.x) / minSizes.x);
     N.y = (size_t)floor((box.max.y - box.min.y) / minSizes.y);
     N.z = (size_t)floor((box.max.z - box.min.z) / minSizes.z);
+
+    // We've got at least one element per side
     if (N.x < 1)
       N.x = 1;
     if (N.y < 1)
@@ -83,17 +102,42 @@ public:
       for (size_t iy = 0; iy < N.y; ++iy) {
         for (size_t iz = 0; iz < N.z; ++iz) {
 
-          ix0 = (ix > 0) ? ix - 1 : ix;
-          ix1 = (ix < N.x - 1) ? ix + 1 : ix;
-          iy0 = (iy > 0) ? iy - 1 : iy;
-          iy1 = (iy < N.y - 1) ? iy + 1 : iy;
-          iz0 = (iz > 0) ? iz - 1 : iz;
-          iz1 = (iz < N.z - 1) ? iz + 1 : iz;
+          if (options & PERIODIC_LINKCELLS) {
 
-          for (size_t iix = ix0; iix <= ix1; ++iix) {
-            for (size_t iiy = iy0; iiy <= iy1; ++iiy) {
-              for (size_t iiz = iz0; iiz <= iz1; ++iiz) {
-                cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
+            ix0 = (ix > 0) ? ix - 1 : ix;
+            ix1 = (ix < N.x - 1) ? ix + 1 : ix;
+            iy0 = (iy > 0) ? iy - 1 : iy;
+            iy1 = (iy < N.y - 1) ? iy + 1 : iy;
+            iz0 = (iz > 0) ? iz - 1 : iz;
+            iz1 = (iz < N.z - 1) ? iz + 1 : iz;
+
+          } else {
+
+            ix0 = (ix > 0) ? ix - 1 : N.x - 1;
+            ix1 = (ix < N.x - 1) ? ix + 1 : 0;
+            iy0 = (iy > 0) ? iy - 1 : N.y - 1;
+            iy1 = (iy < N.y - 1) ? iy + 1 : 0;
+            iz0 = (iz > 0) ? iz - 1 : N.z - 1;
+            iz1 = (iz < N.z - 1) ? iz + 1 : 0;
+          }
+
+          if (options & HALF_CONNECTED_LINKCELLS) {
+
+            for (size_t iix = ix0; iix <= ix1; ++iix) {
+              for (size_t iiy = iy0; iiy <= iy1; ++iiy) {
+                for (size_t iiz = iz0; iiz <= iz1; ++iiz) {
+                  cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
+                }
+              }
+            }
+
+          } else {
+
+            for (size_t iix = ix; iix <= ix1; ++iix) {
+              for (size_t iiy = iy; iiy <= iy1; ++iiy) {
+                for (size_t iiz = iz; iiz <= iz1; ++iiz) {
+                  cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
+                }
               }
             }
           }

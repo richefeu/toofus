@@ -25,10 +25,10 @@
 #include <vector>
 
 #include <sstream>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
-#define ZERO 1e-12
+#define ZERO 1.0e-12
 
 typedef double real;
 typedef unsigned int uint;
