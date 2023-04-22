@@ -83,6 +83,12 @@ public:
     zy = col2.z;
     zz = col3.z;
   }
+	
+	void set_col(int i, const vec3<T> &col) {
+		*(&xx + i) = col.x;
+		*(&xx + 3 + i) = col.y;
+		*(&xx + 6 + i) = col.z;
+	}
 
   void reset() {
     xx = xy = xz = 0.0;
@@ -104,7 +110,7 @@ public:
 
   T &operator[](int i) { return *(&xx + i); }
   T &operator[](size_t i) { return *(&xx + i); }
-  
+
   const T &operator[](int i) const { return *(&xx + i); }
   const T &operator[](size_t i) const { return *(&xx + i); }
 
@@ -242,10 +248,10 @@ public:
   mat9<T> transposed() { return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz); }
 
   vec3<T> get_xcol() const { return vec3<T>(xx, yx, zx); }
-
   vec3<T> get_ycol() const { return vec3<T>(xy, yy, zy); }
-
   vec3<T> get_zcol() const { return vec3<T>(xz, yz, zz); }
+  vec3<T> get_col(int i) const { return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i)); }
+  vec3<T> get_col(size_t i) const { return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i)); }
 
   mat9<T> get_inverse() const {
     double det = xx * (yy * zz - zy * yz) - xy * (yx * zz - yz * zx) + xz * (yx * zy - yy * zx);
@@ -435,6 +441,3 @@ int main (int argc, char const *argv[])
 }
 
 #endif
-
-
-
