@@ -46,6 +46,8 @@ template <typename T> T DiamondAngle(T x, T y) {
     return (x < 0.0 ? 2.0 - y / (-x - y) : 3.0 + x / (x - y));
 }
 
+template <typename T> T keepPositive(T value) { return (value > (T)0) ? value : (T)0; }
+
 /// @brief Return the sign of a value (1 is positive, -1 is negative)
 template <typename T> T sign(T value) { return std::copysign(1, value); }
 
@@ -65,6 +67,7 @@ template <typename T> T constrain(T num, T min, T max) {
   return num;
 }
 
+// This is floor towards 0
 template <typename T> T floor0(T value) {
   if (value < 0.0)
     return std::ceil(value);
@@ -167,7 +170,7 @@ template <typename T> T Q_rsqrt(T number) {
   union {
     T f;
     uint32_t i;
-  } conv;// = {.f = number};
+  } conv; // = {.f = number};
   conv.f = number;
   conv.i = 0x5f3759df - (conv.i >> 1);
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
@@ -180,7 +183,7 @@ template <typename T> T Q_accurate_rsqrt(T number) {
   union {
     T f;
     uint32_t i;
-  } conv;// = {.f = number};
+  } conv; // = {.f = number};
   conv.f = number;
   conv.i = 0x5f3759df - (conv.i >> 1);
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
@@ -221,6 +224,8 @@ template <typename T> T RSD(std::vector<T> &data) {
 #if 0
 #include <iostream>
 int main() {
+	
+	std::cout << Mth::keepPositive(18) << std::endl;
 
   /*
   std::cout << "dist = " << Mth::dist(-1.0, -2.0, 6.3 , 2.45) << "\n";
@@ -232,7 +237,7 @@ int main() {
   std::cout << "picked value = " << Mth::random(vec) << "\n";
   */
   
-  
+  /*
   double value = 1234.56876;
   std::cout << 1.0/sqrt(value) << "  vs  " << Mth::Q_rsqrt(value) << "  vs  " << Mth::Q_accurate_rsqrt(value) << '\n';
   
@@ -244,7 +249,7 @@ int main() {
     a+=f;
   }
   std::cout << "a="<<a<<'\n';
-
+  */
 
 
   return 0;
