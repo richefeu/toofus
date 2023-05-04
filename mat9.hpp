@@ -83,12 +83,12 @@ public:
     zy = col2.z;
     zz = col3.z;
   }
-	
-	void set_col(int i, const vec3<T> &col) {
-		*(&xx + i) = col.x;
-		*(&xx + 3 + i) = col.y;
-		*(&xx + 6 + i) = col.z;
-	}
+
+  void set_col(int i, const vec3<T> &col) {
+    *(&xx + i) = col.x;
+    *(&xx + 3 + i) = col.y;
+    *(&xx + 6 + i) = col.z;
+  }
 
   void reset() {
     xx = xy = xz = 0.0;
@@ -143,6 +143,15 @@ public:
                 a.zx * b.xx + a.zy * b.yx + a.zz * b.zx, a.zx * b.xy + a.zy * b.yy + a.zz * b.zy,
                 a.zx * b.xz + a.zy * b.yz + a.zz * b.zz);
   }
+
+  friend double inner_product(const mat9 &a, const mat9 &b) { return (a * b.transposed()).trace(); }
+
+  friend mat9 spheric(const mat9 &a) {
+    double tr_3 = (a.trace() / 3.0);
+    return mat9(tr_3, 0, 0, 0, tr_3, 0, 0, 0, tr_3);
+  }
+
+  friend mat9 deviatoric(const mat9 &a) { return a - spheric(a); }
 
   friend mat9 operator*(T k, const mat9 &a) {
     return mat9(k * a.xx, k * a.xy, k * a.xz, k * a.yx, k * a.yy, k * a.yz, k * a.zx, k * a.zy, k * a.zz);
