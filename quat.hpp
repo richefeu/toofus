@@ -258,11 +258,11 @@ public:
     double sum = 0.0;
     s = distrib(engine);
     sum += s * s;
-    v.x = sqrt(1 - sum) * distrib(engine);
+    v.x = sqrt(1.0 - sum) * distrib(engine);
     sum += v.x * v.x;
-    v.y = sqrt(1 - sum) * distrib(engine);
+    v.y = sqrt(1.0 - sum) * distrib(engine);
     sum += v.y * v.y;
-    v.z = sqrt(1 - sum) * (distrib(engine) < 0.0 ? -1.0 : 1.0);
+    v.z = sqrt(1.0 - sum) * (distrib(engine) < 0.0 ? -1.0 : 1.0);
   }
 
   // DEPRECATED!! use randomize(true) instead

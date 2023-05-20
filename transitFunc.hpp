@@ -84,7 +84,7 @@ public:
   double deriv(double x) {
     double a = exp((x - transit) * abruptness);
     double a1 = a + 1.0;
-    return -Ampl * (exp(-transit * abruptness) + 1) * a / (smoothness * a1 * a1);
+    return -Ampl * (exp(-transit * abruptness) + 1.0) * a / (smoothness * a1 * a1);
   }
 
 private:

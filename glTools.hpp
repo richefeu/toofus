@@ -17,14 +17,15 @@
 #include <cmath>
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy
+// #include <cstdint>
 
-#include "OBB.hpp"
 #include "ColorTable.hpp"
+#include "OBB.hpp"
 
 class facetSphere {
 protected:
   static void normalize(GLfloat *a) {
-    GLfloat d = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+    GLfloat d = std::sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
     a[0] /= d;
     a[1] /= d;
     a[2] /= d;
@@ -41,9 +42,9 @@ protected:
     } else {
       GLfloat ab[3], ac[3], bc[3];
       for (int i = 0; i < 3; i++) {
-        ab[i] = 0.5 * (a[i] + b[i]);
-        ac[i] = 0.5 * (a[i] + c[i]);
-        bc[i] = 0.5 * (b[i] + c[i]);
+        ab[i] = 0.5f * (a[i] + b[i]);
+        ac[i] = 0.5f * (a[i] + c[i]);
+        bc[i] = 0.5f * (b[i] + c[i]);
       }
       normalize(ab);
       normalize(ac);
@@ -67,11 +68,11 @@ public:
   }
 };
 
-#define X 0.525731112119133606
-#define Z 0.850650808352039932
-GLfloat facetSphere::vdata[12][3] = {{-X, 0.0, Z}, {X, 0.0, Z},  {-X, 0.0, -Z}, {X, 0.0, -Z},
-                                     {0.0, Z, X},  {0.0, Z, -X}, {0.0, -Z, X},  {0.0, -Z, -X},
-                                     {Z, X, 0.0},  {-Z, X, 0.0}, {Z, -X, 0.0},  {-Z, -X, 0.0}};
+#define X 0.525731112119133606f
+#define Z 0.850650808352039932f
+GLfloat facetSphere::vdata[12][3] = {{-X, 0.0f, Z}, {X, 0.0f, Z},  {-X, 0.0f, -Z}, {X, 0.0f, -Z},
+                                     {0.0f, Z, X},  {0.0f, Z, -X}, {0.0f, -Z, X},  {0.0f, -Z, -X},
+                                     {Z, X, 0.0f},  {-Z, X, 0.0f}, {Z, -X, 0.0f},  {-Z, -X, 0.0f}};
 #undef X
 #undef Z
 
@@ -89,8 +90,8 @@ public:
 
     glLineWidth(2.0f);
     glBegin(GL_LINES);
-    glVertex3f(orig.x, orig.y, orig.z);
-    glVertex3f(dest.x, dest.y, dest.z);
+    glVertex3d(orig.x, orig.y, orig.z);
+    glVertex3d(dest.x, dest.y, dest.z);
     glEnd();
 
     vec3r v = arrow;
@@ -111,12 +112,12 @@ public:
     vec3r c;
     double r = arrowSize * tan(0.5 * arrowAngle);
     glBegin(GL_TRIANGLE_FAN);
-    glVertex3f(dest.x, dest.y, dest.z);
+    glVertex3d(dest.x, dest.y, dest.z);
     for (double angle = 0.0; angle <= 2.0 * M_PI; angle += 0.2 * M_PI) {
       c = cos(angle) * a + sin(angle) * b;
-      glNormal3f(c.x, c.y, c.z); // Pas tout à fait juste (!)
+      glNormal3d(c.x, c.y, c.z); // Pas tout à fait juste (!)
       c = head + r * c;
-      glVertex3f(c.x, c.y, c.z);
+      glVertex3d(c.x, c.y, c.z);
     }
     glEnd();
   }
@@ -142,24 +143,24 @@ public:
     glBegin(GL_TRIANGLE_STRIP);
     for (double angle = 0.0; angle <= 2.0 * M_PI; angle += 0.05 * M_PI) {
       n = cos(angle) * a + sin(angle) * b;
-      glNormal3f(n.x, n.y, n.z);
+      glNormal3d(n.x, n.y, n.z);
       n *= r;
       c1 = orig + n;
       c2 = dest + n;
-      glVertex3f(c1.x, c1.y, c1.z);
-      glVertex3f(c2.x, c2.y, c2.z);
+      glVertex3d(c1.x, c1.y, c1.z);
+      glVertex3d(c2.x, c2.y, c2.z);
     }
     glEnd();
   }
 
   // Attention : jamais testé !!!!!
   static void triangle(vec3r &A, vec3r &B, vec3r &C, vec3r &NA, vec3r &NB, vec3r &NC) {
-    glNormal3f(NA.x, NA.y, NA.z);
-    glVertex3f(A.x, A.y, A.z);
-    glNormal3f(NB.x, NB.y, NB.z);
-    glVertex3f(B.x, B.y, B.z);
-    glNormal3f(NC.x, NC.y, NC.z);
-    glVertex3f(C.x, C.y, C.z);
+    glNormal3d(NA.x, NA.y, NA.z);
+    glVertex3d(A.x, A.y, A.z);
+    glNormal3d(NB.x, NB.y, NB.z);
+    glVertex3d(B.x, B.y, B.z);
+    glNormal3d(NC.x, NC.y, NC.z);
+    glVertex3d(C.x, C.y, C.z);
   }
 
   static void frame(const vec3r &pos, double lx = 1.0, double ly = 1.0, double lz = 1.0) {
@@ -203,31 +204,31 @@ public:
     vec3r p7 = orig + e0 + e1 - e2;
 
     glBegin(GL_LINE_LOOP);
-    glVertex3f(p0.x, p0.y, p0.z);
-    glVertex3f(p1.x, p1.y, p1.z);
-    glVertex3f(p2.x, p2.y, p2.z);
-    glVertex3f(p3.x, p3.y, p3.z);
+    glVertex3d(p0.x, p0.y, p0.z);
+    glVertex3d(p1.x, p1.y, p1.z);
+    glVertex3d(p2.x, p2.y, p2.z);
+    glVertex3d(p3.x, p3.y, p3.z);
     glEnd();
 
     glBegin(GL_LINE_LOOP);
-    glVertex3f(p4.x, p4.y, p4.z);
-    glVertex3f(p5.x, p5.y, p5.z);
-    glVertex3f(p6.x, p6.y, p6.z);
-    glVertex3f(p7.x, p7.y, p7.z);
+    glVertex3d(p4.x, p4.y, p4.z);
+    glVertex3d(p5.x, p5.y, p5.z);
+    glVertex3d(p6.x, p6.y, p6.z);
+    glVertex3d(p7.x, p7.y, p7.z);
     glEnd();
 
     glBegin(GL_LINES);
-    glVertex3f(p0.x, p0.y, p0.z);
-    glVertex3f(p4.x, p4.y, p4.z);
+    glVertex3d(p0.x, p0.y, p0.z);
+    glVertex3d(p4.x, p4.y, p4.z);
 
-    glVertex3f(p1.x, p1.y, p1.z);
-    glVertex3f(p5.x, p5.y, p5.z);
+    glVertex3d(p1.x, p1.y, p1.z);
+    glVertex3d(p5.x, p5.y, p5.z);
 
-    glVertex3f(p2.x, p2.y, p2.z);
-    glVertex3f(p6.x, p6.y, p6.z);
+    glVertex3d(p2.x, p2.y, p2.z);
+    glVertex3d(p6.x, p6.y, p6.z);
 
-    glVertex3f(p3.x, p3.y, p3.z);
-    glVertex3f(p7.x, p7.y, p7.z);
+    glVertex3d(p3.x, p3.y, p3.z);
+    glVertex3d(p7.x, p7.y, p7.z);
     glEnd();
   }
 };
@@ -264,8 +265,8 @@ public:
 
 class glText {
 public:
-	//static initialised = false;
-	
+  // static initialised = false;
+
   static void makeRasterFont() {
     GLuint i;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -285,7 +286,7 @@ public:
   static void init() {
     glShadeModel(GL_FLAT);
     makeRasterFont();
-		//initialised = true;
+    // initialised = true;
   }
 
   static void print(int x, int y, const char *fmt, ...) {
@@ -298,7 +299,7 @@ public:
     glRasterPos2i(x, y);
     glPushAttrib(GL_LIST_BIT);
     glListBase(fontOffset);
-    glCallLists(strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
+    glCallLists((GLsizei)strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
     glPopAttrib();
   }
 };
@@ -461,13 +462,79 @@ public:
     char buffer[128];
     vsnprintf(buffer, 128, fmt, args);
     for (int i = NB_LINE_MAX - 1; i > 0; i--) {
-      strcpy(textzone[i], textzone[i - 1]);
+      strncpy(textzone[i], textzone[i - 1], 128);
     }
     snprintf((char *)textzone[0], 128, "%s", buffer);
     va_end(args);
   }
 
 #undef NB_LINE_MAX
+};
+
+class glColorBar {
+protected:
+  // position is from top left
+  int xpos;
+  int ypos;
+  int wbox;
+  int hbox;
+  char title[128];
+
+public:
+  glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) { snprintf(title, 128, "notitle"); }
+
+  void setPos(int x, int y) {
+    xpos = x;
+    ypos = y;
+  }
+
+  void setSize(int w, int h) {
+    wbox = w;
+    hbox = h;
+  }
+
+  void setTitle(const char *t) { strncpy(title, t, 128); }
+
+  void show(int W, int H, ColorTable &ct) {
+    switch2D::go(W, H);
+
+    colorRGBA col;
+    float value;
+    float dval = (ct.getMax() - ct.getMin()) / (float)ct.getSize();
+    float dH = (float)hbox / (float)(ct.getSize());
+    float bottom = (float)(H - (ypos + hbox));
+
+    for (int i = 0; i < ct.getSize(); ++i) {
+      value = ct.getMin() + (float)i * dval;
+      ct.getRGB(value, &col);
+      glColor3ub((GLubyte)col.r, (GLubyte)col.g, (GLubyte)col.b);
+      glBegin(GL_QUADS);
+      glVertex2i(xpos, (int)floor(bottom + (float)i * dH));
+      glVertex2i((xpos + wbox), (int)floor(bottom + (float)i * dH));
+      glVertex2i((xpos + wbox), (int)floor(bottom + (float)(i + 1) * dH));
+      glVertex2i(xpos, (int)floor(bottom + (float)(i + 1) * dH));
+      glEnd();
+    }
+
+    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(xpos, H - ypos);
+    glVertex2i(xpos + wbox, H - ypos);
+    glVertex2i(xpos + wbox, H - (ypos + hbox));
+    glVertex2i(xpos, H - (ypos + hbox));
+    glEnd();
+
+    char strValMin[64];
+    char strValMax[64];
+    snprintf(strValMin, 64, "%.1E", ct.getMin());
+    snprintf(strValMax, 64, "%.1E", ct.getMax());
+    glText::print(xpos + wbox + 4, (int)floor(bottom), strValMin);
+    glText::print(xpos + wbox + 4, (int)floor(bottom) + hbox - 13, strValMax);
+
+    glText::print(xpos, H - ypos + 6, title);
+
+    switch2D::back();
+  }
 };
 
 class glTools {
@@ -495,10 +562,10 @@ public:
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_QUADS);
-    glColor3ub(bottomRed, bottomGreen, bottomBlue); // Bottom color
+    glColor3ub((GLubyte)bottomRed, (GLubyte)bottomGreen, (GLubyte)bottomBlue); // Bottom color
     glVertex2f(-1.0f, -1.0f);
     glVertex2f(1.0f, -1.0f);
-    glColor3ub(topRed, topGreen, topBlue); // Top color
+    glColor3ub((GLubyte)topRed, (GLubyte)topGreen, (GLubyte)topBlue); // Top color
     glVertex2f(1.0f, 1.0f);
     glVertex2f(-1.0f, 1.0f);
     glEnd();
@@ -509,78 +576,76 @@ public:
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
   }
-	
-	/*
-	static void show_colorTable (ColorTable & ct)
-	{
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glOrtho(0, width, 0, height, -1.0f, 1.0f);
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		
-		
-		//glPushAttrib(GL_DEPTH_TEST);
-		glDisable(GL_DEPTH_TEST);
-		//glPushAttrib(GL_LIGHTING);
-		glDisable(GL_LIGHTING);
 
-		int bottom = (int)(2.0 * height / 3.0);
-		int top = height - 20;
-		float H = top - bottom;
-		float dH = H / (ct.getSize());
-
-		glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-
-		colorRGBA col;
-		float value;
-		float dval = (ct.getMax() - ct.getMin()) / ct.getSize();
-
-		for (int i = 0 ; i < ct.getSize() ; ++i) {
-			value = ct.getMin() + (real)i * dval;
-			ct.getRGB(value, &col);
-			glColor3f ((real)col.r * to01, (real)col.g * to01, (real)col.b * to01);
-			glBegin(GL_QUADS);
-			glVertex2f(4., bottom + i * dH);
-			glVertex2f(20., bottom + i * dH);
-			glVertex2f(20., bottom + (i + 1)*dH);
-			glVertex2f(4., bottom + (i + 1)*dH);
-			glEnd();
-		}
-
-		glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(1.0f);
-		glColor3f(0.0, 0.0, 0.0);
-		glBegin(GL_QUADS);
-		glVertex2f(4., bottom);
-		glVertex2f(20., bottom);
-		glVertex2f(20., top);
-		glVertex2f(4., top);
-		glEnd();
-
-		glColor3f(0.0, 0.0, 0.0);
-		char str[30];
-		sprintf ((char *) str, "%+3.3e", (float) (ct.getMin()));
-		glRasterPos2i (22, bottom);
-		for (uint j = 0; str[j]; ++j)
-			glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
-		sprintf ((char *) str, "%+3.3e", (float) (ct.getMax()));
-		glRasterPos2i (22, top - 8);
-		for (uint j = 0; str[j]; ++j)
-			glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
+  /*
+  static void show_colorTable (ColorTable & ct)
+  {
+          glMatrixMode(GL_PROJECTION);
+          glPushMatrix();
+          glLoadIdentity();
+          glOrtho(0, width, 0, height, -1.0f, 1.0f);
+          glMatrixMode(GL_MODELVIEW);
+          glPushMatrix();
+          glLoadIdentity();
 
 
-		glPopAttrib();
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-	}
-	*/
-	
-	
+          //glPushAttrib(GL_DEPTH_TEST);
+          glDisable(GL_DEPTH_TEST);
+          //glPushAttrib(GL_LIGHTING);
+          glDisable(GL_LIGHTING);
+
+          int bottom = (int)(2.0 * height / 3.0);
+          int top = height - 20;
+          float H = top - bottom;
+          float dH = H / (ct.getSize());
+
+          glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+          colorRGBA col;
+          float value;
+          float dval = (ct.getMax() - ct.getMin()) / ct.getSize();
+
+          for (int i = 0 ; i < ct.getSize() ; ++i) {
+                  value = ct.getMin() + (real)i * dval;
+                  ct.getRGB(value, &col);
+                  glColor3f ((real)col.r * to01, (real)col.g * to01, (real)col.b * to01);
+                  glBegin(GL_QUADS);
+                  glVertex2f(4., bottom + i * dH);
+                  glVertex2f(20., bottom + i * dH);
+                  glVertex2f(20., bottom + (i + 1)*dH);
+                  glVertex2f(4., bottom + (i + 1)*dH);
+                  glEnd();
+          }
+
+          glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+          glLineWidth(1.0f);
+          glColor3f(0.0, 0.0, 0.0);
+          glBegin(GL_QUADS);
+          glVertex2f(4., bottom);
+          glVertex2f(20., bottom);
+          glVertex2f(20., top);
+          glVertex2f(4., top);
+          glEnd();
+
+          glColor3f(0.0, 0.0, 0.0);
+          char str[30];
+          sprintf ((char *) str, "%+3.3e", (float) (ct.getMin()));
+          glRasterPos2i (22, bottom);
+          for (uint j = 0; str[j]; ++j)
+                  glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
+          sprintf ((char *) str, "%+3.3e", (float) (ct.getMax()));
+          glRasterPos2i (22, top - 8);
+          for (uint j = 0; str[j]; ++j)
+                  glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
+
+
+          glPopAttrib();
+          glMatrixMode(GL_PROJECTION);
+          glPopMatrix();
+          glMatrixMode(GL_MODELVIEW);
+          glPopMatrix();
+  }
+  */
 };
 
 #endif /* end of include guard: GLTOOLS_HPP */

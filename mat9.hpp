@@ -72,6 +72,18 @@ public:
   static mat9 unit() { return mat9(1, 0, 0, 0, 1, 0, 0, 0, 1); }
   static mat9 one() { return mat9(1, 1, 1, 1, 1, 1, 1, 1, 1); }
 
+	void set(const T XX, const T XY, const T XZ, const T YX, const T YY, const T YZ, const T ZX, const T ZY, const T ZZ) {
+    xx = XX;
+    xy = XY;
+    xz = XZ;
+    yx = YX;
+    yy = YY;
+    yz = YZ;
+    zx = ZX;
+    zy = ZY;
+    zz = ZZ;
+	}
+
   void set(const vec3<T> &col1, const vec3<T> &col2, const vec3<T> &col3) {
     xx = col1.x;
     xy = col2.x;
@@ -144,7 +156,17 @@ public:
                 a.zx * b.xz + a.zy * b.yz + a.zz * b.zz);
   }
 
-  friend double inner_product(const mat9 &a, const mat9 &b) { return (a * b.transposed()).trace(); }
+  friend double inner_product(const mat9 &a, const mat9 &b) {
+    mat9 bt = b;
+    bt.transpose();
+    return (a * bt).trace();
+  }
+	
+	friend mat9 hadamard_product(const mat9 &a, const mat9 &b) {
+    return mat9(a.xx * b.xx, a.xy * b.xy, a.xz * b.xz, 
+		            a.yx * b.yx, a.yy * b.yy, a.yz * b.yz,
+                a.zx * b.zx, a.zy * b.zy, a.zz * b.zz);
+	}
 
   friend mat9 spheric(const mat9 &a) {
     double tr_3 = (a.trace() / 3.0);
@@ -168,18 +190,6 @@ public:
       k = 1.0 / K;
     return mat9(k * a.xx, k * a.xy, k * a.xz, k * a.yx, k * a.yy, k * a.yz, k * a.zx, k * a.zy, k * a.zz);
   }
-
-  /// Dyadic product (tensorial product or otimes)
-  // template<typename U>
-  /*
-        friend mat9<double> dyadic_product(const vec3<double> &a, const vec3<double> &b) {
-                return mat9<double> (
-                        a.x * b.x, a.x * b.y, a.x * b.z,
-                        a.y * b.x, a.y * b.y, a.y * b.z,
-                        a.z * b.x, a.z * b.y, a.z * b.z
-                );
-        }
-  */
 
   void operator+=(const mat9 &a) {
     xx += a.xx;

@@ -48,7 +48,7 @@ public:
   /*
   changements :
   1. parametres optionnels pour gerer les cas periodic et demi connectes
-  2. parametre optionnel pour ajouter le lien ver oversized_bodies aux pcells
+  2. parametre optionnel pour ajouter le lien vers oversized_bodies aux pcells
   */
 
   // Ctor
