@@ -30,9 +30,6 @@ public:
   T yx, yy, yz;
   T zx, zy, zz;
 
-  // static const mat9 zero;
-  // static const mat9 unit;
-
   mat9() : xx(0), xy(0), xz(0), yx(0), yy(0), yz(0), zx(0), zy(0), zz(0) {}
   mat9(const T XX, const T XY, const T XZ, const T YX, const T YY, const T YZ, const T ZX, const T ZY, const T ZZ)
       : xx(XX), xy(XY), xz(XZ), yx(YX), yy(YY), yz(YZ), zx(ZX), zy(ZY), zz(ZZ) {}
@@ -248,6 +245,15 @@ public:
     xx = yy = zz = 1.0;
     xy = xz = yx = yz = zx = zy = 0.0;
   }
+	
+	void symmetrize() {
+		xy = 0.5 * (xy + yx);
+		yx = xy;
+		xz = 0.5 * (xz + zx);
+		zx = xz;
+		yz = 0.5 * (yz + zy);
+		zy = yz;
+	}
 
   T normSup() const {
     return std::max({std::abs(xx), std::abs(xy), std::abs(xz), std::abs(yx), std::abs(yy), std::abs(yz), std::abs(zx),
@@ -264,7 +270,7 @@ public:
     std::swap(yz, zy);
   }
 
-  mat9<T> transposed() { return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz); }
+  mat9<T> transposed() const { return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz); }
 
   vec3<T> get_xcol() const { return vec3<T>(xx, yx, zx); }
   vec3<T> get_ycol() const { return vec3<T>(xy, yy, zy); }

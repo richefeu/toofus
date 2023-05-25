@@ -1,0 +1,64 @@
+#ifndef COMPLIANCE_HPP
+#define COMPLIANCE_HPP
+
+#include "mat9.hpp"
+
+class Compliance {
+public:
+  double Cinv1, Cinv2, Cinv3;
+
+  // Cinv1 Cinv2 Cinv2  0     0     0
+  // Cinv2 Cinv1 Cinv2  0     0     0
+  // Cinv2 Cinv2 Cinv1  0     0     0
+  // 0     0     0	    Cinv3 0     0
+  // 0     0     0      0     Cinv3 0
+  // 0	   0     0      0     0     Cinv3
+
+  Compliance() { set(5e6, 0.3); }
+  Compliance(double Young, double Poisson) { set(Young, Poisson); }
+
+  void set(double Young, double Poisson) {
+    double factor = 1.0 / Young;
+    Cinv1 = factor;
+    Cinv2 = -factor * Poisson;
+    Cinv3 = factor * (1.0 + Poisson);
+  }
+
+  mat9r getStrain(const mat9r &stress) {
+    double Exx = Cinv1 * stress.xx + Cinv2 * (stress.yy + stress.zz);
+    double Eyy = Cinv1 * stress.yy + Cinv2 * (stress.xx + stress.zz);
+    double Ezz = Cinv1 * stress.zz + Cinv2 * (stress.xx + stress.yy);
+    double Eyz = Cinv3 * stress.yz;
+    double Exz = Cinv3 * stress.xz;
+    double Exy = Cinv3 * stress.xy;
+    // clang-format off
+		return mat9r(
+			Exx, Exy, Exz,
+		  Exy, Eyy, Eyz,
+		  Exz, Eyz, Ezz
+		);
+    // clang-format on
+  }
+};
+
+#endif /* end of include guard: COMPLIANCE_HPP */
+
+#if 0
+#include <iostream>
+#include "Rigidity.hpp"
+int main(int argc, char const *argv[]) {
+  Rigidity C(1e6, 0.3);
+  Compliance Cinv(1e6, 0.3);
+  mat9r eps(0.1, 0.01, 0, 0.01, 0.12, 0, 0, 0, -0.01);
+	mat9r Sig = C.getStress(eps);
+	mat9r dfds(0.1, 0.2, 0.1, 0.6, 0.3, 0.2, 0.1, 0.4, 0.1);
+	
+	std::cout << Sig << '\n';
+	std::cout << C.bigDenum(dfds, Sig) << '\n';
+	
+	std::cout << eps << '\n';
+	std::cout << Cinv.getStrain(Sig) << '\n'; 
+  return 0;
+}
+
+#endif

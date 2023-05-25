@@ -18,10 +18,8 @@
 
 class linearToPlateau {
 public:
-  static linearToPlateau *get() {
-    static linearToPlateau instance;
-    return &instance;
-  }
+
+  linearToPlateau() { set(1.0, 0.05, 0.01); }
 
   void set(double Plateau, double Transit, double Smoothness) {
     plateau = Plateau;
@@ -47,25 +45,21 @@ public:
 
 private:
   // the 3 parameters
-  double transit;
-  double plateau;
-  double smoothness;
+  double transit{0.0};
+  double plateau{0.0};
+  double smoothness{0.0};
 
   // some precomputed values
-  double abruptness;
-  double Lfactor;
-  double C;
-  double Cfactor;
-
-  linearToPlateau() { set(1.0, 0.5, 0.02); }
+  double abruptness{0.0};
+  double Lfactor{0.0};
+  double C{0.0};
+  double Cfactor{0.0};
 };
 
 class plateauToPlateau {
 public:
-  static plateauToPlateau *get() {
-    static plateauToPlateau instance;
-    return &instance;
-  }
+
+  plateauToPlateau() { set(0.0, 1.0, 0.5, 0.02); }
 
   void set(double Plateau_beg, double Plateau_end, double Transit, double Smoothness) {
     plateau_beg = Plateau_beg;
@@ -89,16 +83,14 @@ public:
 
 private:
   // the 3 parameters
-  double transit;
-  double plateau_beg;
-  double plateau_end;
-  double smoothness;
+  double transit{0.0};
+  double plateau_beg{0.0};
+  double plateau_end{0.0};
+  double smoothness{0.0};
 
   // some precomputed values
-  double abruptness;
-  double Ampl;
-
-  plateauToPlateau() { set(0.0, 1.0, 0.5, 0.02); }
+  double abruptness{0.0};
+  double Ampl{0.0};
 };
 
 #endif /* end of include guard: TRANSIT_FUNC_HPP */
@@ -110,20 +102,20 @@ private:
 int main(int argc, char const *argv[]) {
   std::ofstream file("test.txt");
 
-  /*
-linearToPlateau *evol = linearToPlateau::get();
-evol->set(0.8, 0.4, 0.02);
-for (double x = 0.0; x < 1.0; x += 0.02) {
-file << x << "\t" << evol->func(x) << "\t" << evol->deriv(x) << std::endl;
-}
-*/
-
-  plateauToPlateau *evol = plateauToPlateau::get();
-  evol->set(0., 1., .5, 0.02);
-  for (double x = 0.0; x < 2.0; x += 0.01) {
-    file << x << "\t" << evol->func(x) << "\t" << evol->deriv(x) << std::endl;
+  linearToPlateau evol;
+  evol.set(1.0, 0.05, 0.01); // double Plateau, double Transit, double Smoothness
+  for (double x = 0.0; x < 1.0; x += 0.005) {
+    file << x << "\t" << evol.func(x) << "\t" << evol.deriv(x) << std::endl;
+    std::cout << x << "\t" << evol.func(x) << "\t" << evol.deriv(x) << std::endl;
   }
 
+  /*
+plateauToPlateau evol;
+evol.set(0., 1., .5, 0.04);
+for (double x = 0.0; x < 2.0; x += 0.01) {
+file << x << "\t" << evol.func(x) << "\t" << evol.deriv(x) << std::endl;
+
+*/
   return 0;
 }
 
