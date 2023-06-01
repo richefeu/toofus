@@ -39,11 +39,11 @@ public:
   bool verbose;
   double rmin;
   double rmax;
-  double gapTol;       // une tolerance (positive) sur l'espace entre les spheres
-  double distNeighbor; // distance inter-spheres pour les listes de voisinage
-  double distMin;      // distance min pour placer des spheres
-  size_t max;             // nombre maxi de spheres placées
-  size_t k; // nombre de tentatives de placement autour d'une sphere placée avant de l'enlever de la liste des actifs
+  double gapTol;       // a (positive) tolerance on the space between the spheres
+  double distNeighbor; // inter-sphere distance for neighbourhood lists
+  double distMin;      // minimum distance for placing spheres
+  size_t max;          // maximum number of spheres placed
+  size_t k; // number of placement attempts around a placed sphere before removing it from the asset list
 
   size_t limitLocalNumberNeighbors;
   size_t localNumberNeighborsMax;
@@ -300,7 +300,7 @@ public:
 
         if (verbose == true) {
           std::cout << "packed: " << sample.size() << ", ";
-          std::cout << "active: " << active.size() << std::endl;  
+          std::cout << "active: " << active.size() << std::endl;
         }
       }
     } // end-while
@@ -357,14 +357,20 @@ public:
         double testx = sample[currentSphere].x + m * sc * ux;
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
-        
-        if (testx < xmin) testx += Lx;
-        if (testx > xmax) testx -= Lx;
-        if (testy < ymin) testy += Ly;
-        if (testy > ymax) testy -= Ly;
-        if (testz < zmin) testz += Lz;
-        if (testz > zmax) testz -= Lz;
-        
+
+        if (testx < xmin)
+          testx += Lx;
+        if (testx > xmax)
+          testx -= Lx;
+        if (testy < ymin)
+          testy += Ly;
+        if (testy > ymax)
+          testy -= Ly;
+        if (testz < zmin)
+          testz += Lz;
+        if (testz > zmax)
+          testz -= Lz;
+
         bool ok = true;
 
         // boundary limits
@@ -377,7 +383,7 @@ public:
           double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
-                
+
             for (size_t i = 0; i < boundaries.size(); i++) {
               size_t neighborDisk = boundaries[i];
 
@@ -406,11 +412,11 @@ public:
             double dx = sample[neighborSphere].x - testx;
             double dy = sample[neighborSphere].y - testy;
             double dz = sample[neighborSphere].z - testz;
-            
+
             dx -= floor(dx / Lx + 0.5) * Lx;
             dy -= floor(dy / Ly + 0.5) * Ly;
             dz -= floor(dz / Lz + 0.5) * Lz;
-            
+
             double d = sqrt(dx * dx + dy * dy + dz * dz);
             if (d < testr + sample[neighborSphere].r + distMin) {
               ok = false;
@@ -438,7 +444,7 @@ public:
             double dx = sample[i].x - testx;
             double dy = sample[i].y - testy;
             double dz = sample[i].z - testz;
-            
+
             dx -= floor(dx / Lx + 0.5) * Lx;
             dy -= floor(dy / Ly + 0.5) * Ly;
             dz -= floor(dz / Lz + 0.5) * Lz;
@@ -470,7 +476,7 @@ public:
         if (verbose == true) {
           std::cout << "packed: " << sample.size() << ", ";
           std::cout << "active: " << active.size() << std::endl;
-        }   
+        }
       }
     } // end-while
   }   // end-execPeriodic

@@ -26,7 +26,7 @@ It is also possible to simply add the path of the folder at compilation:
 ```sh
 g++ ... -I /path/to/toofus ...
 ```
-For example: `g++ ... -I ~ ...` if the recommended installation has been chosen.
+For example: `g++ ... -I ~/toofus ...` if the recommended installation has been chosen.
 
 In this case, the inclusion in a C++ source file can be reduced to:
 
