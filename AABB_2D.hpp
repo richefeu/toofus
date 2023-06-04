@@ -30,6 +30,10 @@ public:
   explicit AABB_2D(const vec2r &v) : min(v), max(v) {}
   AABB_2D(const vec2r &v1, const vec2r &v2) : min(component_min(v1, v2)), max(component_max(v1, v2)) {}
   AABB_2D(const AABB_2D &aabb) : min(aabb.min), max(aabb.max) {}
+  AABB_2D(double xmin, double xmax, double ymin, double ymax) {
+    min.set(xmin, ymin);
+    max.set(xmax, ymax);
+  }
 
   explicit AABB_2D(const std::vector<vec2r> &cloud) : min(cloud[0]), max(cloud[0]) {
     for (size_t i = 1; i < cloud.size(); ++i) {
@@ -111,7 +115,7 @@ public:
       return false;
     return true;
   }
-  
+
   /**
     @brief Check intersection only in the Y direction
   */
