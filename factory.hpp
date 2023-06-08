@@ -20,9 +20,9 @@
 
 #include <functional>
 #include <map>
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
 /// The factory - implements singleton pattern!
 template <class BaseClass, typename Key = std::string> class Factory {
@@ -66,4 +66,51 @@ public:
   }
 };
 
+#define REGISTRER_BASE_DERIVED(BASE_CLASS, DERIVED_CLASS)                                                              \
+  Factory<BASE_CLASS, std::string>::Instance()->RegisterFactoryFunction(                                               \
+      #DERIVED_CLASS, [](void) -> BASE_CLASS * { return new DERIVED_CLASS(); })
+
 #endif /* end of include guard: FACTORY_HPP */
+
+#if 0
+
+#include <iostream>
+
+// Base class
+class Product {
+public:
+  virtual void doSomething() = 0;
+};
+
+// Derived class 1
+class ConcreteProduct1 : public Product {
+public:
+  void doSomething() override { std::cout << "ConcreteProduct1 doing something." << std::endl; }
+};
+
+// Derived class 2
+class ConcreteProduct2 : public Product {
+public:
+  void doSomething() override { std::cout << "ConcreteProduct2 doing something." << std::endl; }
+};
+
+int main() {
+
+  REGISTRER_BASE_DERIVED(Product, ConcreteProduct1);
+  REGISTRER_BASE_DERIVED(Product, ConcreteProduct2);
+
+  // Create instances of registered classes using the factory
+  Product *product1 = Factory<Product>::Instance()->Create("ConcreteProduct1");
+  Product *product2 = Factory<Product>::Instance()->Create("ConcreteProduct2");
+
+  // Call the doSomething() method of the created objects
+  if (product1)
+    product1->doSomething();
+
+  if (product2)
+    product2->doSomething();
+
+  return 0;
+}
+
+#endif
