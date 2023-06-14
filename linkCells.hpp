@@ -15,6 +15,7 @@
 #define LINKCELLS_HPP
 
 #include <vector>
+// #include <iostream>
 
 #include "AABB.hpp"
 #include "vec3.hpp"
@@ -52,19 +53,16 @@ public:
   */
 
   // Ctor
-  linkCells(AABB &Box, vec3r &CellMinSizes, int options = 0)
-      : box(Box), minSizes(CellMinSizes) {
-    init(options);
-  }
-  
+  linkCells(AABB &Box, vec3r &CellMinSizes, int options = 0) : box(Box), minSizes(CellMinSizes) { init(options); }
+
   // Dtor
   ~linkCells() {}
 
   void init(int options = 0) {
     // Partition
-    N.x = (size_t)floor((box.max.x - box.min.x) / minSizes.x);
-    N.y = (size_t)floor((box.max.y - box.min.y) / minSizes.y);
-    N.z = (size_t)floor((box.max.z - box.min.z) / minSizes.z);
+    N.x = (unsigned int)floor((box.max.x - box.min.x) / minSizes.x);
+    N.y = (unsigned int)floor((box.max.y - box.min.y) / minSizes.y);
+    N.z = (unsigned int)floor((box.max.z - box.min.z) / minSizes.z);
 
     // We've got at least one element per side
     if (N.x < 1)
@@ -73,6 +71,8 @@ public:
       N.y = 1;
     if (N.z < 1)
       N.z = 1;
+
+    // std::cout << "N: " << N << std::endl;
 
     // Cell dimensions
     double dx, dy, dz;
@@ -121,23 +121,38 @@ public:
             iz1 = (iz < N.z - 1) ? iz + 1 : 0;
           }
 
-          if (options & HALF_CONNECTED_LINKCELLS) {
+          /*
+if (options & HALF_CONNECTED_LINKCELLS) {
 
-            for (size_t iix = ix0; iix <= ix1; ++iix) {
-              for (size_t iiy = iy0; iiy <= iy1; ++iiy) {
-                for (size_t iiz = iz0; iiz <= iz1; ++iiz) {
-                  cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
-                }
-              }
-            }
+for (size_t iix = ix0; iix <= ix1; ++iix) {
+for (size_t iiy = iy0; iiy <= iy1; ++iiy) {
+for (size_t iiz = iz0; iiz <= iz1; ++iiz) {
+cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
+}
+}
+}
 
-          } else {
+} else {
 
-            for (size_t iix = ix; iix <= ix1; ++iix) {
-              for (size_t iiy = iy; iiy <= iy1; ++iiy) {
-                for (size_t iiz = iz; iiz <= iz1; ++iiz) {
-                  cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
-                }
+for (size_t iix = ix; iix <= ix1; ++iix) {
+for (size_t iiy = iy; iiy <= iy1; ++iiy) {
+for (size_t iiz = iz; iiz <= iz1; ++iiz) {
+cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
+}
+}
+}
+
+          }
+          */
+
+          std::vector<size_t> xxx{ix0, ix, ix1};
+          std::vector<size_t> yyy{iy0, iy, iy1};
+          std::vector<size_t> zzz{iz0, iz, iz1};
+
+          for (auto iix : xxx) {
+            for (auto iiy : yyy) {
+              for (auto iiz : zzz) {
+                cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
               }
             }
           }
@@ -210,6 +225,30 @@ public:
       }
       cells[ix][iy][iz].bodies.push_back(B);
     }
+  }
+
+  void add_body(size_t B, vec3r &pos) {
+    int ix, iy, iz;
+
+    ix = (int)trunc((pos.x - box.min.x) * factor.x);
+    iy = (int)trunc((pos.y - box.min.y) * factor.y);
+    iz = (int)trunc((pos.z - box.min.z) * factor.z);
+
+    /*
+if (ix < 0 || ix >= (int)N.x) {
+oversized_bodies.bodies.push_back(B);
+return;
+}
+if (iy < 0 || iy >= (int)N.y) {
+oversized_bodies.bodies.push_back(B);
+return;
+}
+if (iz < 0 || iz >= (int)N.z) {
+oversized_bodies.bodies.push_back(B);
+return;
+}
+    */
+    cells[ix][iy][iz].bodies.push_back(B);
   }
 };
 
