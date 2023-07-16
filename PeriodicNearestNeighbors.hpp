@@ -123,9 +123,9 @@ private:
     for (int dz = -1; dz <= 1; ++dz) {
       for (int dy = -1; dy <= 1; ++dy) {
         for (int dx = -1; dx <= 1; ++dx) {
-          const int nx = (x + dx + gridSizeInt) % gridSizeInt;
-          const int ny = (y + dy + gridSizeInt) % gridSizeInt;
-          const int nz = (z + dz + gridSizeInt) % gridSizeInt;
+          const int nx = ((int)x + dx + gridSizeInt) % gridSizeInt;
+          const int ny = ((int)y + dy + gridSizeInt) % gridSizeInt;
+          const int nz = ((int)z + dz + gridSizeInt) % gridSizeInt;
 
           const size_t neighborIndex =
               static_cast<size_t>(nz) * gridSizeSquared + static_cast<size_t>(ny) * gridSize + static_cast<size_t>(nx);
