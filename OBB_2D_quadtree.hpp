@@ -317,7 +317,7 @@ int main() {
     }
   }
   std::cout << "nb OBBs: " << obbs.size() << std::endl;
-  size_t objectId = 3;//obbs.size() / 2 + 130;
+  size_t objectId = 13;//obbs.size() / 2 + 130;
 
   // O(N^2) complexity
   std::vector<std::pair<size_t, size_t>> VerletListSlow;
@@ -345,7 +345,7 @@ int main() {
   // Building the quadtree
   start = std::chrono::steady_clock::now();
   OBB_2D bounds(0, 0, 33, 33, 0);
-  OBB_2D_quadtree quadTree(bounds, 128, 30);
+  OBB_2D_quadtree quadTree(bounds, 10, 30);
   quadTree.setObjectInfoSize(obbs.size());
   for (size_t i = 0; i < obbs.size(); i++) {
     quadTree.insert(obbs[i], i);
@@ -360,12 +360,14 @@ int main() {
       VerletListFast.push_back(std::make_pair(i, tmp[k]));
     }
 
+		/*
     if (i == objectId) {
       intersectingOBBs = quadTree.query(objectId);
       __SHOW(tmp.size());
 			__SHOW(obbs[tmp[tmp.size()-1]].position);
 			__SHOW(intersectingOBBs[tmp.size()-1].position);
     }
+		*/
   }
 
   end = std::chrono::steady_clock::now();
@@ -375,6 +377,7 @@ int main() {
   __SHOW(VerletListFast.size());
   __SHOW(intersectingOBBs.size());
 	
+	/*
 	for (size_t i = 0 ; i < 20; i++) {
 		__SHOW(VerletListSlow[i].first);
 		__SHOW(VerletListSlow[i].second);
@@ -382,6 +385,7 @@ int main() {
 		__SHOW(VerletListFast[i].second);
 		std::cerr << std::endl;
 	}
+	*/
 	
 
   // Generate SVG file with colored OBBs

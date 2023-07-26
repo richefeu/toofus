@@ -54,6 +54,8 @@ public:
   */
   double getRadius() const { return 0.25 * (max - min).length(); }
 
+  vec2r getCenter() const { return 0.5 * (min + max); }
+
   /**
     @brief The AABB_2D is set to a single point
   */
@@ -81,11 +83,11 @@ public:
     max.y += more.y;
   }
 
-  /**
-    @brief Join the 2 AABB_2D
-    TODO : rename it 'union', 'merge' or something like this
-  */
-  void enlarge(const AABB_2D &more) {
+  void merge(const AABB_2D &more) {
+    min = component_min(min, more.min);
+    max = component_max(max, more.max);
+  }
+  void enlarge(const AABB_2D &more) { // for compability
     min = component_min(min, more.min);
     max = component_max(max, more.max);
   }

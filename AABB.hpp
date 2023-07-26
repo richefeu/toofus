@@ -49,6 +49,8 @@ public:
            centered at the AABB center
   */
   double getRadius() const { return 0.25 * (max - min).length(); }
+	
+	vec3r getCenter() const { return 0.5 * (min + max); }
 
   /**
     @brief The AABB is set to a single point
@@ -81,11 +83,11 @@ public:
     max.z += more.z;
   }
 
-  /**
-    @brief Join the 2 AABB
-    TODO : rename it 'union', 'merge' or something like this
-  */
-  void enlarge(const AABB &more) {
+  void merge(const AABB &more) {
+    min = component_min(min, more.min);
+    max = component_max(max, more.max);
+  }
+  void enlarge(const AABB &more) { // for compability
     min = component_min(min, more.min);
     max = component_max(max, more.max);
   }
