@@ -140,7 +140,7 @@ public:
     }
 
     // step 2
-    while (active.size() > 0 && sample.size() < max) {
+    while (active.size() > 0 && sample.size() < (size_t)max) {
       int randIndex = rand() % active.size();
       int currentDisk = active[randIndex];
       double packedx = sample[currentDisk].x;
@@ -164,7 +164,7 @@ public:
 
         // inter-particles
         if (ok == true) {
-          for (int i = 0; i < prox[currentDisk].size(); i++) {
+          for (size_t i = 0; i < prox[currentDisk].size(); i++) {
 
             int neighborDisk = prox[currentDisk][i];
 
@@ -222,7 +222,7 @@ public:
     }
 
     // step 2
-    while (active.size() > 0 && sample.size() < max) {
+    while (active.size() > 0 && sample.size() < (size_t)max) {
       int randIndex = rand() % active.size();
       int currentDisk = active[randIndex];
       double packedx = sample[currentDisk].x;
@@ -250,7 +250,7 @@ public:
           double ly = ymax - ymin;
           double half_ly = 0.5 * ly;
 
-          for (int i = 0; i < boundaries.size(); i++) {
+          for (size_t i = 0; i < boundaries.size(); i++) {
 
             int neighborDisk = boundaries[i];
 
@@ -278,7 +278,7 @@ public:
 
         // inter-particles
         if (ok == true) {
-          for (int i = 0; i < prox[currentDisk].size(); i++) {
+          for (size_t i = 0; i < prox[currentDisk].size(); i++) {
             int neighborDisk = prox[currentDisk][i];
 
             double dx = sample[neighborDisk].x - testx;
