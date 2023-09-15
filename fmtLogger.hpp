@@ -48,7 +48,7 @@ enum class LogLevel { trace, debug, info, warn, error, critical, off };
 
 class Logger {
 private:
-  static LogLevel level{LogLevel::info};
+  static LogLevel level = LogLevel::info;
   Logger() = delete;
   Logger(const Logger &) = delete;
 
