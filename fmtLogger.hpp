@@ -20,7 +20,7 @@
 /*
 #define FMT_HEADER_ONLY
 #include "fmtLogger.hpp"
-// g++-13 -std=c++11 -I /usr/local/include test.cpp -o test 
+// g++-13 -std=c++11 -I /usr/local/include test.cpp -o test
 
 int main(int argc, char const *argv[]) {
   Logger::setLevel(LogLevel::trace);
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[]) {
 #include <fmt/core.h>
 #include <iostream>
 
-enum class LogLevel { trace, debug, info, warn, error, critical };
+enum class LogLevel { trace, debug, info, warn, error, critical, off };
 
 class Logger {
 private:
@@ -107,4 +107,3 @@ public:
 LogLevel Logger::level = LogLevel::info;
 
 #endif /* end of include guard: LOGGER_HPP */
-
