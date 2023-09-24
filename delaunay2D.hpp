@@ -16,6 +16,8 @@
 #ifndef DELAUNAY2D_HPP
 #define DELAUNAY2D_HPP
 
+#include "nr3_things.hpp"
+
 typedef unsigned long int ulint;
 // for windows which is a 32 bits OS
 // it may be nessesary to replace the line above by:
@@ -53,8 +55,8 @@ struct Ranhash {
 template <class keyT, class hfnT> struct Hashtable {
   hfnT hash;
   int nhash, nmax, nn, ng;
-  vector<int> htable, next, garbg;
-  vector<ulint> thehash;
+  std::vector<int> htable, next, garbg;
+  std::vector<ulint> thehash;
   Hashtable(int nh, int nv);
   int iget(const keyT &key);
   int iset(const keyT &key);
@@ -101,7 +103,7 @@ template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::iset(const keyT &ke
     next[kprev] = k;
   }
   if (k >= nmax)
-    cerr << "storing too many values" << endl;
+    std::cerr << "storing too many values" << std::endl;
   thehash[k] = pp;
   next[k] = -1;
   return k;
@@ -131,7 +133,7 @@ template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::ierase(const keyT &
 template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::ireserve() {
   int k = ng ? garbg[--ng] : nn++;
   if (k >= nmax)
-    cerr << "reserving too many values" << endl;
+    std::cerr << "reserving too many values" << std::endl;
   next[k] = -2;
   return k;
 }
@@ -148,7 +150,7 @@ template <class keyT, class elT, class hfnT> struct Hash : Hashtable<keyT, hfnT>
   using Hashtable<keyT, hfnT>::iget;
   using Hashtable<keyT, hfnT>::iset;
   using Hashtable<keyT, hfnT>::ierase;
-  vector<elT> els;
+  std::vector<elT> els;
 
   Hash(int nh, int nm) : Hashtable<keyT, hfnT>(nh, nm), els(nm) {}
 
@@ -195,7 +197,7 @@ Circle circumcircle(Point2D a, Point2D b, Point2D c) {
   c1 = c.y - b.y;
   det = a0 * c1 - c0 * a1;
   if (det == 0.0)
-    cerr << "no circle thru colinear points" << endl;
+    std::cerr << "no circle thru colinear points" << std::endl;
   det = 0.5 / det;
   asq = a0 * a0 + a1 * a1;
   csq = c0 * c0 + c1 * c1;
@@ -249,14 +251,14 @@ struct Nullhash {
 struct Delaunay {
   int npts, ntri, ntree, ntreemax, opt;
   double delx, dely;
-  vector<Point2D> pts;
-  vector<Triel> thelist;
+  std::vector<Point2D> pts;
+  std::vector<Triel> thelist;
   Hash<ulint, int, Nullhash> *linehash;
   Hash<ulint, int, Nullhash> *trihash;
   int *perm;
-  Delaunay(vector<Point2D> &pvec, int options = 0);
+  Delaunay(std::vector<Point2D> &pvec, int options = 0);
   Ranhash hashfn;
-  double interpolate(const Point2D &p, const vector<double> &fnvals, double defaultval = 0.0);
+  double interpolate(const Point2D &p, const std::vector<double> &fnvals, double defaultval = 0.0);
   void insertapoint(int r);
   int whichcontainspt(const Point2D &p, int strict = 0);
   int storetriangle(int a, int b, int c);
@@ -269,7 +271,7 @@ const double Delaunay::fuzz = 1.0e-6;
 const double Delaunay::bigscale = 1000.0;
 unsigned int Delaunay::jran = 14921620;
 
-Delaunay::Delaunay(vector<Point2D> &pvec, int options)
+Delaunay::Delaunay(std::vector<Point2D> &pvec, int options)
     : npts(pvec.size()), ntri(0), ntree(0), ntreemax(10 * npts + 1000), opt(options), pts(npts + 3),
       thelist(ntreemax) {
   int j;
@@ -327,7 +329,7 @@ void Delaunay::insertapoint(int r) {
     pts[r].y += fuzz * dely * (hashfn.doub(jran++) - 0.5);
   }
   if (j == 3)
-    cerr << "points degenerate even after fuzzing" << endl;
+    std::cerr << "points degenerate even after fuzzing" << std::endl;
   ntask = 0;
   i = thelist[tno].p[0];
   j = thelist[tno].p[1];
@@ -398,7 +400,7 @@ void Delaunay::erasetriangle(int a, int b, int c, int d0, int d1, int d2) {
   int j = 0;
   key = hashfn.int64(a) ^ hashfn.int64(b) ^ hashfn.int64(c);
   if (trihash->get(key, j) == 0)
-    cerr << "nonexistent triangle" << endl;
+    std::cerr << "nonexistent triangle" << std::endl;
   trihash->erase(key);
   thelist[j].d[0] = d0;
   thelist[j].d[1] = d1;
@@ -419,12 +421,12 @@ int Delaunay::storetriangle(int a, int b, int c) {
   key = hashfn.int64(a) - hashfn.int64(b);
   linehash->set(key, c);
   if (++ntree == ntreemax)
-    cerr << "thelist is sized too small" << endl;
+    std::cerr << "thelist is sized too small" << std::endl;
   ntri++;
   return (ntree - 1);
 }
 
-double Delaunay::interpolate(const Point2D &p, const vector<double> &fnvals, double defaultval) {
+double Delaunay::interpolate(const Point2D &p, const std::vector<double> &fnvals, double defaultval) {
   int n, i, j, k;
   double wgts[3];
   int ipts[3];
@@ -444,7 +446,7 @@ double Delaunay::interpolate(const Point2D &p, const vector<double> &fnvals, dou
   }
   sum = wgts[0] + wgts[1] + wgts[2];
   if (sum == 0)
-    cerr << "degenerate triangle" << endl;
+    std::cerr << "degenerate triangle" << std::endl;
   for (i = 0; i < 3; i++)
     ans += wgts[i] * fnvals[ipts[i]] / sum;
   return ans;

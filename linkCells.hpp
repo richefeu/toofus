@@ -15,7 +15,6 @@
 #define LINKCELLS_HPP
 
 #include <vector>
-// #include <iostream>
 
 #include "AABB.hpp"
 #include "vec3.hpp"
@@ -71,8 +70,6 @@ public:
       N.y = 1;
     if (N.z < 1)
       N.z = 1;
-
-    // std::cout << "N: " << N << std::endl;
 
     // Cell dimensions
     double dx, dy, dz;
