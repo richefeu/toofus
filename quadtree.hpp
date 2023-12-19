@@ -124,7 +124,6 @@ public:
   }
 
   QuadTree(qdt_Rectangle &boundary_, size_t capacity_) : boundary(boundary_) {
-    //boundary = boundary_;
     capacity = capacity_;
     divided = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
