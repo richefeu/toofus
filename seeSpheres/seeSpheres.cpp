@@ -68,6 +68,14 @@ void keyboard(unsigned char Key, int x, int y) {
       show_images = 1 - show_images;
     } break;
 
+    case 'k': {
+      show_connections = 1 - show_connections;
+    } break;
+
+    case 'l': {
+      show_BBs = 1 - show_BBs;
+    } break;
+
     case 'q':
       exit(0);
       break;
@@ -269,8 +277,8 @@ void display() {
   // Display things
   drawParticles();
   if (show_images == 1) drawParticleImages();
-  drawConnections();
-  drawBoundingBox();
+  if (show_connections == 1) drawConnections();
+  if (show_BBs == 1) drawBoundingBox();
 
   glFlush();
   glutSwapBuffers();
@@ -415,7 +423,7 @@ void drawParticleImages() {
       {0, -1, -1},  {0, -1, 0},  {0, -1, 1},  {0, 0, -1},  {0, 0, 0},  {0, 0, 1},  {0, 1, -1},  {0, 1, 0},  {0, 1, 1},
       {1, -1, -1},  {1, -1, 0},  {1, -1, 1},  {1, 0, -1},  {1, 0, 0},  {1, 0, 1},  {1, 1, -1},  {1, 1, 0},  {1, 1, 1}};
   const double rate = 0.1;
-  
+
   if (mouse_mode != NOTHING && spheres.size() > 2000) return;
 
   glColor4f(0.337254901960784, 0.505882352941176, 0.768627450980392, 0.08);
@@ -424,7 +432,7 @@ void drawParticleImages() {
   double Lx = xmax - xmin;
   double Ly = ymax - ymin;
   double Lz = zmax - zmin;
-  
+
   for (size_t i = 0; i < spheres.size(); ++i) {
 
     for (size_t im = 0; im < 27; im++) {

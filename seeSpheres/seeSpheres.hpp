@@ -49,7 +49,9 @@ double center_x, center_y, center_z;
 double up_x, up_y, up_z;
 
 int show_background = 0;
-int show_images = 1;
+int show_images = 0;
+int show_connections = 0;
+int show_BBs = 0;
 
 struct Sphere {
   double x, y, z;

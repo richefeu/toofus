@@ -1,3 +1,16 @@
+// Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
+//
+// This file is part of TOOFUS (TOols OFten USued)
+//
+// It can not be copied and/or distributed without the express
+// permission of the authors.
+// It is coded for academic purposes.
+//
+// Note
+// Without a license, the code is copyrighted by default.
+// People can read the code, but they have no legal right to use it.
+// To use the code, you must contact the author directly and ask permission.
+
 #pragma once
 
 #include <algorithm>
@@ -6,9 +19,8 @@
 #include <functional>
 #include <string>
 
-
 class levmar {
-private:
+public:
   static double enorm(int n, const double *x) {
     double ret_val, d1;
 
@@ -70,11 +82,8 @@ private:
     return ret_val;
   }
 
-  static int
-  fdjac2(std::function<int(void *, int, int, const double *, double *, int)>
-             fcn_mn,
-         void *p, int m, int n, double *x, const double *fvec, double *fjac,
-         int ldfjac, double epsfcn, double *wa) {
+  static int fdjac2(std::function<int(void *, int, int, const double *, double *, int)> fcn_mn, void *p, int m, int n,
+                    double *x, const double *fvec, double *fjac, int ldfjac, double epsfcn, double *wa) {
     double h;
     int i, j;
     double eps, temp, epsmch;
@@ -108,8 +117,8 @@ private:
     return 0;
   }
 
-  static void qrfac(int m, int n, double *a, int lda, int pivot, int *ipvt,
-                    int lipvt, double *rdiag, double *acnorm, double *wa) {
+  static void qrfac(int m, int n, double *a, int lda, int pivot, int *ipvt, int lipvt, double *rdiag, double *acnorm,
+                    double *wa) {
 
     double d1;
 
@@ -210,8 +219,7 @@ private:
     }
   }
 
-  static void qrsolv(int n, double *r, int ldr, const int *ipvt,
-                     const double *diag, const double *qtb, double *x,
+  static void qrsolv(int n, double *r, int ldr, const int *ipvt, const double *diag, const double *qtb, double *x,
                      double *sdiag, double *wa) {
 
     int i, j, k, l;
@@ -330,10 +338,8 @@ private:
     return;
   }
 
-  static void lmpar(int n, double *r, int ldr, const int *ipvt,
-                    const double *diag, const double *qtb, double delta,
-                    double *par, double *x, double *sdiag, double *wa1,
-                    double *wa2) {
+  static void lmpar(int n, double *r, int ldr, const int *ipvt, const double *diag, const double *qtb, double delta,
+                    double *par, double *x, double *sdiag, double *wa1, double *wa2) {
 
     double d1, d2;
 
@@ -480,8 +486,7 @@ private:
       // of par. also test for the exceptional cases where parl
       // is zero or the number of iterations has reached 10
 
-      if (fabs(fp) <= 0.1 * delta || (parl == 0.0 && fp <= temp && temp < 0.0) ||
-          iter == 10) {
+      if (fabs(fp) <= 0.1 * delta || (parl == 0.0 && fp <= temp && temp < 0.0) || iter == 10) {
         goto TERMINATE;
       }
 
@@ -528,14 +533,10 @@ private:
     }
   }
 
-  static int
-  lmdif(std::function<int(void *, int, int, const double *, double *, int)>
-            fcn_mn,
-        void *p, int m, int n, double *x, double *fvec, double ftol,
-        double xtol, double gtol, int maxfev, double epsfcn, double *diag,
-        int mode, double factor, int nprint, int *nfev, double *fjac,
-        int ldfjac, int *ipvt, double *qtf, double *wa1, double *wa2,
-        double *wa3, double *wa4) {
+  static int lmdif(std::function<int(void *, int, int, const double *, double *, int)> fcn_mn, void *p, int m, int n,
+                   double *x, double *fvec, double ftol, double xtol, double gtol, int maxfev, double epsfcn,
+                   double *diag, int mode, double factor, int nprint, int *nfev, double *fjac, int ldfjac, int *ipvt,
+                   double *qtf, double *wa1, double *wa2, double *wa3, double *wa4) {
 
     // System generated locals
     double d1, d2;
@@ -560,8 +561,7 @@ private:
 
     // check the input parameters for errors
 
-    if (n <= 0 || m < n || ldfjac < m || ftol < 0.0 || xtol < 0.0 ||
-        gtol < 0.0 || maxfev <= 0 || factor <= 0.0) {
+    if (n <= 0 || m < n || ldfjac < m || ftol < 0.0 || xtol < 0.0 || gtol < 0.0 || maxfev <= 0 || factor <= 0.0) {
       goto TERMINATE;
     }
     if (mode == 2) {
@@ -703,8 +703,7 @@ private:
       do {
 
         // determine the levenberg-marquardt parameter
-        lmpar(n, fjac, ldfjac, ipvt, diag, qtf, delta, &par, wa1, wa2, wa3,
-              wa4);
+        lmpar(n, fjac, ldfjac, ipvt, diag, qtf, delta, &par, wa1, wa2, wa3, wa4);
 
         // store the direction p and x + p. calculate the norm of p
         for (j = 0; j < n; ++j) {
@@ -809,8 +808,7 @@ private:
         if (delta <= xtol * xnorm) {
           info = 2;
         }
-        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0 &&
-            info == 2) {
+        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0 && info == 2) {
           info = 3;
         }
         if (info != 0) {
@@ -856,12 +854,8 @@ private:
     return info;
   }
 
-public:
-  static int
-  lmdif1(std::function<int(void *, int, int, const double *, double *, int)>
-             fcn_mn,
-         void *p, int m, int n, double *x, double *fvec, double tol, int *iwa,
-         double *wa, int lwa) {
+  static int lmdif1(std::function<int(void *, int, int, const double *, double *, int)> fcn_mn, void *p, int m, int n,
+                    double *x, double *fvec, double tol, int *iwa, double *wa, int lwa) {
 
     const double factor = 100.0;
 
@@ -885,18 +879,15 @@ public:
     mode = 1;
     nprint = 0;
     mp5n = m + n * 5;
-    info = lmdif(fcn_mn, p, m, n, x, fvec, ftol, xtol, gtol, maxfev, epsfcn, wa,
-                 mode, factor, nprint, &nfev, &wa[mp5n], m, iwa, &wa[n],
-                 &wa[(n << 1)], &wa[n * 3], &wa[(n << 2)], &wa[n * 5]);
+    info = lmdif(fcn_mn, p, m, n, x, fvec, ftol, xtol, gtol, maxfev, epsfcn, wa, mode, factor, nprint, &nfev, &wa[mp5n],
+                 m, iwa, &wa[n], &wa[(n << 1)], &wa[n * 3], &wa[(n << 2)], &wa[n * 5]);
     if (info == 8) {
       info = 4;
     }
     return info;
   }
 
-  static int get_lwa(int m, int n) {
-    return m * n + 5 * n + m;
-  }
+  static int get_lwa(int m, int n) { return m * n + 5 * n + m; }
 
   static std::string getInfo(int info) {
     std::string txt;
@@ -912,7 +903,8 @@ public:
       txt = "(info = 2) algorithm estimates that the relative error between x and the solution is at most tol";
     } break;
     case 3: {
-      txt = "(info = 3) conditions for info = 1 and info = 2 both hold";
+      txt = "(info = 3) conditions for info = 1 and info = 2 both hold. algorithm estimates that the relative error "
+            "(1) in the sum of squares is at most tol, (2) between x and the solution is at most tol";
     } break;
     case 4: {
       txt = "(info = 4) fvec is orthogonal to the columns of the jacobian to machine precision";

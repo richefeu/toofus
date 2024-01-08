@@ -43,7 +43,7 @@ public:
   double distNeighbor; // inter-sphere distance for neighbourhood lists
   double distMin;      // minimum distance for placing spheres
   size_t max;          // maximum number of spheres placed
-  size_t k; // number of placement attempts around a placed sphere before removing it from the asset list
+  size_t k;            // number of placement attempts around a placed sphere before removing it from the asset list
 
   size_t limitLocalNumberNeighbors;
   size_t localNumberNeighborsMax;
@@ -166,6 +166,7 @@ public:
     limitLocalNumberNeighbors = 1;
     distProbingConnectivity = dst;
     localNumberNeighborsMax = value;
+    std::cout << "localNumberNeighborsMax = " << localNumberNeighborsMax << '\n';
   }
 
   void limit_localSolidFraction(double dst, double value) {
@@ -324,10 +325,14 @@ public:
     while (active.size() > 0 && sample.size() < (size_t)max) {
 
       size_t randIndex = static_cast<size_t>(rand()) % active.size();
+      
+      //std::cout << sample[active[randIndex]].nbNeighbors << '\n';
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
+        //std::cout << "**** deactivate " << active[randIndex] << '\n'; 
         deActivate(randIndex);
         continue;
       }
+      
       if (limitLocalSolidFraction == 1 &&
           localSolidFraction(active[randIndex], distProbingSolidFraction, true) > localSolidFractionMax) {
         deActivate(randIndex);
@@ -335,10 +340,12 @@ public:
       }
       size_t currentSphere = active[randIndex];
 
+      /*
       if (sample[currentSphere].nbNeighbors > 2) {
         deActivate(randIndex);
         continue;
       }
+      */
 
       bool found = false;
 
@@ -430,17 +437,17 @@ public:
           Sphere P(testx, testy, testz, testr);
           sample.push_back(P);
           prox.push_back(std::vector<size_t>());
-
           size_t particleIndex = sample.size() - 1;
+          
           double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
             boundaries.push_back(particleIndex);
           }
 
-          for (size_t i = 0; i < sample.size(); i++) {
-            if (i == particleIndex)
-              continue;
+          for (size_t i = 0; i < particleIndex; i++) {
+            //if (i == particleIndex)
+            //  continue;
             double dx = sample[i].x - testx;
             double dy = sample[i].y - testy;
             double dz = sample[i].z - testz;
