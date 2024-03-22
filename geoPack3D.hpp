@@ -36,12 +36,12 @@ public:
     }
   };
 
-  bool verbose;
-  double rmin;
-  double rmax;
-  double gapTol;       // a (positive) tolerance on the space between the spheres
+  bool verbose{true};  // verbosity during packing
+  double rmin;         // minimuum radius
+  double rmax;         // maximum radius
+  double gapTol{0.0};  // a (positive) tolerance on the space between the spheres
   double distNeighbor; // inter-sphere distance for neighbourhood lists
-  double distMin;      // minimum distance for placing spheres
+  double distMin{0.0}; // minimum distance for placing spheres
   size_t max;          // maximum number of spheres placed
   size_t k;            // number of placement attempts around a placed sphere before removing it from the asset list
 
@@ -53,14 +53,14 @@ public:
   double distProbingSolidFraction;
   double localSolidFractionMax;
 
-  std::vector<Sphere> sample;
-  std::vector<std::vector<size_t>> prox;
-  std::vector<size_t> boundaries;
-  std::vector<size_t> active;
+  std::vector<Sphere> sample;            // the packed spheres
+  std::vector<std::vector<size_t>> prox; // each sphere has a list of neighbors
+  std::vector<size_t> boundaries;        // indices of spheres that are close to the periodic boundaries
+  std::vector<size_t> active;            // indices of active spheres
 
-  double xmin, xmax;
-  double ymin, ymax;
-  double zmin, zmax;
+  double xmin{0.0}, xmax{1.0};
+  double ymin{0.0}, ymax{1.0};
+  double zmin{0.0}, zmax{1.0};
 
   // Ctor
   GeoPack3D() {
@@ -192,7 +192,7 @@ public:
     active.pop_back();
   }
 
-  // execute the algorithm
+  // execute the Poisson Sampling algorithm
   void exec(bool skipFirstStep = false) {
     // step 1
     if (skipFirstStep == false) {
@@ -307,6 +307,7 @@ public:
     } // end-while
   }   // end-method-run
 
+  // Periodic version of the Poisson Sampling algorithm
   void execPeriodic(bool skipFirstStep = false) {
     double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
 
@@ -325,14 +326,14 @@ public:
     while (active.size() > 0 && sample.size() < (size_t)max) {
 
       size_t randIndex = static_cast<size_t>(rand()) % active.size();
-      
-      //std::cout << sample[active[randIndex]].nbNeighbors << '\n';
+
+      // std::cout << sample[active[randIndex]].nbNeighbors << '\n';
       if (limitLocalNumberNeighbors == 1 && sample[active[randIndex]].nbNeighbors >= localNumberNeighborsMax) {
-        //std::cout << "**** deactivate " << active[randIndex] << '\n'; 
+        // std::cout << "**** deactivate " << active[randIndex] << '\n';
         deActivate(randIndex);
         continue;
       }
-      
+
       if (limitLocalSolidFraction == 1 &&
           localSolidFraction(active[randIndex], distProbingSolidFraction, true) > localSolidFractionMax) {
         deActivate(randIndex);
@@ -340,16 +341,9 @@ public:
       }
       size_t currentSphere = active[randIndex];
 
-      /*
-      if (sample[currentSphere].nbNeighbors > 2) {
-        deActivate(randIndex);
-        continue;
-      }
-      */
-
       bool found = false;
 
-      // will try k times to add a sphere arround it
+      // try k times to add a sphere arround it
       for (size_t n = 0; n < k; n++) {
 
         // an attempt of positionning
@@ -365,18 +359,24 @@ public:
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
 
-        if (testx < xmin)
+        if (testx < xmin) {
           testx += Lx;
-        if (testx > xmax)
+        }
+        if (testx > xmax) {
           testx -= Lx;
-        if (testy < ymin)
+        }
+        if (testy < ymin) {
           testy += Ly;
-        if (testy > ymax)
+        }
+        if (testy > ymax) {
           testy -= Ly;
-        if (testz < zmin)
+        }
+        if (testz < zmin) {
           testz += Lz;
-        if (testz > zmax)
+        }
+        if (testz > zmax) {
           testz -= Lz;
+        }
 
         bool ok = true;
 
@@ -438,7 +438,7 @@ public:
           sample.push_back(P);
           prox.push_back(std::vector<size_t>());
           size_t particleIndex = sample.size() - 1;
-          
+
           double dv = 2.0 * rmax + distMin + gapTol;
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv || testz < zmin + dv ||
               testz > zmax - dv) {
@@ -446,8 +446,6 @@ public:
           }
 
           for (size_t i = 0; i < particleIndex; i++) {
-            //if (i == particleIndex)
-            //  continue;
             double dx = sample[i].x - testx;
             double dy = sample[i].y - testy;
             double dz = sample[i].z - testz;

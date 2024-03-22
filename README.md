@@ -1,3 +1,7 @@
+<p align="center">
+<img src="./toofus_logo.png" width="50%"/>
+</p>
+
 `toofus` brings together a collection of tools in the form of standalone header files that can be included in C++ sources without further complication. 
 
 They are **TO**ols **OF**ten **US**ed in my various simulation codes.
