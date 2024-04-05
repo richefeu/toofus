@@ -8,6 +8,7 @@
 struct IdPoint {
   size_t id;
   double x, y, z;
+  IdPoint(size_t t_id, double t_x, double t_y, double t_z) : id(t_id), x(t_x), y(t_y), z(t_z) {}
 };
 
 class PeriodicNearestNeighbors {
@@ -48,45 +49,34 @@ public:
         }
       }
 
-      neighbors[i].reserve(uniqueNeighborIndices.size());
+      // neighbors[i].reserve(uniqueNeighborIndices.size());
       for (size_t neighborIndex : uniqueNeighborIndices) {
-        neighbors[i].emplace_back(neighborIndex);
+        neighbors[i].push_back(neighborIndex);
       }
     }
 
     return neighbors;
   }
 
-  /// Returns the neighbors of each point within the given radius.
-  ///
-  /// @param dmax The search radius.
-  /// @return A vector of vectors containing the indices of neighbors for each point.
-  ///
-  std::vector<std::vector<size_t>> getNeighbors_old(double dmax) {
+  std::vector<std::vector<size_t>> getNeighbors() {
     const size_t numPoints = points.size();
     std::vector<std::vector<size_t>> neighbors(numPoints);
 
     for (size_t i = 0; i < numPoints; ++i) {
       const IdPoint &point = points[i];
       size_t cellIndex = calculateCellIndex(point);
-
       std::set<size_t> uniqueNeighborIndices;
 
-      for (size_t neighborCellIndex : getNeighborCellIndices(cellIndex)) {
+      const std::vector<size_t> &neighborIndices = neighborCellIndices[cellIndex];
+      for (size_t neighborCellIndex : neighborIndices) {
         for (size_t neighborIndex : grid[neighborCellIndex]) {
-          if (neighborIndex <= i) // Skip points with smaller or equal identifiers
+          if (neighborIndex <= i)
             continue;
-
-          const IdPoint &neighbor = points[neighborIndex];
-          double sqrDistance = calculateSqrDistance(point, neighbor);
-
-          if (sqrDistance <= dmax * dmax) {
-            uniqueNeighborIndices.insert(neighborIndex);
-          }
+          uniqueNeighborIndices.insert(neighborIndex);
         }
       }
 
-      neighbors[i].reserve(uniqueNeighborIndices.size());
+      // neighbors[i].reserve(uniqueNeighborIndices.size());
       for (size_t neighborIndex : uniqueNeighborIndices) {
         neighbors[i].push_back(neighborIndex);
       }
@@ -102,78 +92,45 @@ private:
   /// @return The cell index.
   ///
   size_t calculateCellIndex(const IdPoint &point) const {
-    //double gridSizeDouble = static_cast<double>(gridSize);
     size_t ix = (size_t)floor(point.x * gridSizeDouble);
     size_t iy = (size_t)floor(point.y * gridSizeDouble);
     size_t iz = (size_t)floor(point.z * gridSizeDouble);
 
-    return iz * gridSize * gridSize + iy * gridSize + ix;
+    return iz * gridSizeSquared + iy * gridSize + ix;
   }
 
   std::vector<size_t> calculateNeighborCellIndices(size_t cellIndex) const {
-    //const size_t gridSizeSquared = gridSize * gridSize;
     const size_t z = cellIndex / gridSizeSquared;
     const size_t y = (cellIndex % gridSizeSquared) / gridSize;
     const size_t x = cellIndex % gridSize;
 
     std::vector<size_t> neighborIndices;
-    neighborIndices.reserve(27);
+    // neighborIndices.reserve(27);
 
-    //const int gridSizeInt = static_cast<int>(gridSize);
-    for (int dz = -1; dz <= 1; ++dz) {
-      for (int dy = -1; dy <= 1; ++dy) {
-        for (int dx = -1; dx <= 1; ++dx) {
-          const int nx = ((int)x + dx + gridSizeInt) % gridSizeInt;
-          const int ny = ((int)y + dy + gridSizeInt) % gridSizeInt;
-          const int nz = ((int)z + dz + gridSizeInt) % gridSizeInt;
-
-          const size_t neighborIndex =
-              static_cast<size_t>(nz) * gridSizeSquared + static_cast<size_t>(ny) * gridSize + static_cast<size_t>(nx);
-          neighborIndices.emplace_back(neighborIndex);
-        }
-      }
-    }
-
-    return neighborIndices;
-  }
-
-  /// Returns the indices of the neighboring cells for a given cell index.
-  ///
-  /// @param cellIndex The cell index.
-  /// @return A vector of neighboring cell indices.
-  ///
-  std::vector<size_t> getNeighborCellIndices(size_t cellIndex) const {
-
-    //size_t gridSizeSquared = gridSize * gridSize;
-    size_t z = cellIndex / gridSizeSquared;
-    size_t y = (cellIndex % gridSizeSquared) / gridSize;
-    size_t x = cellIndex % gridSize;
-
-    std::vector<size_t> neighborIndices;
-    neighborIndices.reserve(27);
-
-    //int gridSizeInt = static_cast<int>(gridSize);
     for (int dz = -1; dz <= 1; ++dz) {
       for (int dy = -1; dy <= 1; ++dy) {
         for (int dx = -1; dx <= 1; ++dx) {
 
           int nx = (int)x + dx;
-          if (nx < 0)
+          if (nx < 0) {
             nx = gridSizeInt - 1;
-          else if (nx >= gridSizeInt)
+          } else if (nx >= gridSizeInt) {
             nx = 0;
+          }
 
           int ny = (int)y + dy;
-          if (ny < 0)
+          if (ny < 0) {
             ny = gridSizeInt - 1;
-          else if (ny >= gridSizeInt)
+          } else if (ny >= gridSizeInt) {
             ny = 0;
+          }
 
           int nz = (int)z + dz;
-          if (nz < 0)
+          if (nz < 0) {
             nz = gridSizeInt - 1;
-          else if (nz >= gridSizeInt)
+          } else if (nz >= gridSizeInt) {
             nz = 0;
+          }
 
           size_t neighborIndex =
               static_cast<size_t>(nz) * gridSizeSquared + static_cast<size_t>(ny) * gridSize + static_cast<size_t>(nx);
@@ -217,16 +174,16 @@ private:
     for (size_t i = 0; i < points.size(); ++i) {
       const IdPoint &point = points[i];
       size_t cellIndex = calculateCellIndex(point);
-      grid[cellIndex].emplace_back(i);
+      grid[cellIndex].push_back(i);
     }
   }
 
   std::vector<IdPoint> points;
   size_t gridSize;
   size_t numCells;
-	double gridSizeDouble;
-	  int gridSizeInt;
-	  size_t gridSizeSquared;
+  double gridSizeDouble;
+  int gridSizeInt;
+  size_t gridSizeSquared;
   std::vector<std::vector<size_t>> grid;
   std::vector<std::vector<size_t>> neighborCellIndices;
 };
@@ -235,10 +192,10 @@ private:
 
 #if 0
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <random>
-#include <chrono>
 
 int main() {
 
