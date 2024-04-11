@@ -136,12 +136,30 @@ public:
   }
 
   void curve(viewZone &vz, std::vector<double> &x, std::vector<double> &y, const char *style) {
+    if (x.size() != y.size()) {
+      std::cerr << "Error: x and y vectors must have the same size.\n";
+      return;
+    }
+    
     os << "<path d=\"";
     os << "M " << vz.scalex * x[0] + vz.x0 << "," << vz.scaley * y[0] + vz.y0;
     for (size_t i = 1; i < x.size(); i++) {
       os << " L " << vz.scalex * x[i] + vz.x0 << "," << vz.scaley * y[i] + vz.y0;
     }
     os << "\" style=\"" << style << "\" />\n";
+  }
+  
+  void scatter(viewZone &vz, std::vector<double> &x, std::vector<double> &y, double radius, const char *style) {
+    if (x.size() != y.size()) {
+      std::cerr << "Error: x and y vectors must have the same size.\n";
+      return;
+    }
+
+    for (size_t i = 0; i < x.size(); i++) {
+      double cx = vz.scalex * x[i] + vz.x0;
+      double cy = vz.scaley * y[i] + vz.y0;
+      os << "<circle cx=\"" << cx << "\" cy=\"" << cy << "\" r=\"" << radius << "\" style=\"" << style << "\" />\n";
+    }
   }
 };
 
@@ -174,6 +192,7 @@ int main(int argc, char const *argv[]) {
   viewZone vz(0, 0, 100, 100);
   vz.adjustRange(-10, 10, -1.1, 1.1);
   svg.curve(vz, xvec, yvec, "stroke:blue;fill:none");
+  svg.scatter(vz, xvec, yvec,2, "stroke:blue;fill:none");
   svg.line(vz, 0, 0.5, 10, 0.5, "stroke:red;fill:none");
 
   svg.text(100, 100, "stroke:none;fill:black", "coucou");
