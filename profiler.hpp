@@ -10,7 +10,7 @@
 // To use the code, you must contact the author directly and ask permission.
 
 // Credit
-// This tool has been written by Raphael Prat (CEA)
+// This tool has been initially written by Raphael Prat (CEA)
 // and then adapted and added into TOOFUS
 #ifndef PROFILER_HPP
 #define PROFILER_HPP

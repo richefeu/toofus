@@ -90,13 +90,15 @@ T subdivide_icosahedron_sphere(std::vector<vec3<T>> &points, T R, int num_subdiv
 
 #if 0
 
+#include <iomanip>
 int main() {
-  double R = 1.0;
+  double R = 0.01;
   std::vector<vec3r> points;
   std::vector<std::vector<int>> faces;
-  double dst = subdivide_icosahedron_sphere(points, R, 1, &faces);
+  double dst = subdivide_icosahedron_sphere(points, R, 0, &faces);
 
   std::ofstream file("points.txt");
+  file << std::setprecision(15);
   for (const auto& p : points) {
     file << p << ' ' << dst * 0.5 << std::endl;
   }

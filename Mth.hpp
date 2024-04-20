@@ -51,6 +51,8 @@ template <typename T> T keepPositive(T value) { return (value > (T)0) ? value : 
 /// @brief Return the sign of a value (1 is positive, -1 is negative)
 template <typename T> T sign(T value) { return std::copysign(1, value); }
 
+template <typename T> T sqr(T value) { return value * value; }
+
 template <typename T> T map(T value, T minA, T maxA, T minB, T maxB) {
   return (value - minA) / (maxA - minA) * (maxB - minB) + minB;
 }
