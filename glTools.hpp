@@ -14,6 +14,10 @@
 #ifndef GLTOOLS_HPP
 #define GLTOOLS_HPP
 
+#ifndef GL_SILENCE_DEPRECATION
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <cmath>
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy

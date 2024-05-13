@@ -40,10 +40,11 @@ const double randFactor = 1.0 / (double)(RAND_MAX);
 /// @brief Gives angle between 0 and 4,
 /// while atan2 gives an angle between -PI and PI
 template <typename T> T DiamondAngle(T x, T y) {
-  if (y >= 0.0)
+  if (y >= 0.0) {
     return (x >= 0.0 ? y / (x + y) : 1.0 - x / (-x + y));
-  else
+  } else {
     return (x < 0.0 ? 2.0 - y / (-x - y) : 3.0 + x / (x - y));
+  }
 }
 
 template <typename T> T keepPositive(T value) { return (value > (T)0) ? value : (T)0; }
@@ -62,20 +63,24 @@ template <typename T> T lerp(T min, T max, T amount) { return min + amount * (ma
 template <typename T> T norm(T num, T min, T max) { return (num - min) / (max - min); }
 
 template <typename T> T constrain(T num, T min, T max) {
-  if (num < min)
+  if (num < min) {
     return min;
-  else if (num > max)
+  } else if (num > max) {
     return max;
+  }
   return num;
 }
 
 // This is floor towards 0
 template <typename T> T floor0(T value) {
-  if (value < 0.0)
+  if (value < 0.0) {
     return std::ceil(value);
-  else
+  } else {
     return std::floor(value);
+  }
 }
+
+template <typename T> double heaviside(T x) { return (x >= 0) ? 1.0 : 0.0; }
 
 template <typename T> T round(T value) { return std::floor(value + 0.5); }
 
@@ -88,6 +93,21 @@ template <typename T> T random(std::vector<T> &data) {
   std::uniform_int_distribution<> dis(0, data.size() - 1);
   size_t index = static_cast<size_t>(dis(gen));
   return data[index];
+}
+
+template <typename T> T getPulse(double t, double period, double delta, T VAL_WAIT, T VAL_PULSE) {
+  if (t < 0 || period <= 0 || delta <= 0 || delta > period) {
+    return 0;
+  }
+
+  double start = std::floor(t / period) * period;
+  double end = start + delta;
+
+  if (t >= start && t < end) {
+    return VAL_PULSE;
+  } else {
+    return VAL_WAIT;
+  }
 }
 
 /// @brief Generate a sobol sequence

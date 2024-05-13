@@ -16,6 +16,10 @@
 
 // FIXME: THIS FILE WILL BE REPLACED BY glTools.hpp with the aim of not using glut !!!!
 
+#ifndef GL_SILENCE_DEPRECATION
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <cmath>
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy

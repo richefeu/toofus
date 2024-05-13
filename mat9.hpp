@@ -69,7 +69,7 @@ public:
   static mat9 unit() { return mat9(1, 0, 0, 0, 1, 0, 0, 0, 1); }
   static mat9 one() { return mat9(1, 1, 1, 1, 1, 1, 1, 1, 1); }
 
-	void set(const T XX, const T XY, const T XZ, const T YX, const T YY, const T YZ, const T ZX, const T ZY, const T ZZ) {
+  void set(const T XX, const T XY, const T XZ, const T YX, const T YY, const T YZ, const T ZX, const T ZY, const T ZZ) {
     xx = XX;
     xy = XY;
     xz = XZ;
@@ -79,7 +79,7 @@ public:
     zx = ZX;
     zy = ZY;
     zz = ZZ;
-	}
+  }
 
   void set(const vec3<T> &col1, const vec3<T> &col2, const vec3<T> &col3) {
     xx = col1.x;
@@ -158,12 +158,11 @@ public:
     bt.transpose();
     return (a * bt).trace();
   }
-	
-	friend mat9 hadamard_product(const mat9 &a, const mat9 &b) {
-    return mat9(a.xx * b.xx, a.xy * b.xy, a.xz * b.xz, 
-		            a.yx * b.yx, a.yy * b.yy, a.yz * b.yz,
-                a.zx * b.zx, a.zy * b.zy, a.zz * b.zz);
-	}
+
+  friend mat9 hadamard_product(const mat9 &a, const mat9 &b) {
+    return mat9(a.xx * b.xx, a.xy * b.xy, a.xz * b.xz, a.yx * b.yx, a.yy * b.yy, a.yz * b.yz, a.zx * b.zx, a.zy * b.zy,
+                a.zz * b.zz);
+  }
 
   friend mat9 spheric(const mat9 &a) {
     double tr_3 = (a.trace() / 3.0);
@@ -245,15 +244,15 @@ public:
     xx = yy = zz = 1.0;
     xy = xz = yx = yz = zx = zy = 0.0;
   }
-	
-	void symmetrize() {
-		xy = 0.5 * (xy + yx);
-		yx = xy;
-		xz = 0.5 * (xz + zx);
-		zx = xz;
-		yz = 0.5 * (yz + zy);
-		zy = yz;
-	}
+
+  void symmetrize() {
+    xy = 0.5 * (xy + yx);
+    yx = xy;
+    xz = 0.5 * (xz + zx);
+    zx = xz;
+    yz = 0.5 * (yz + zy);
+    zy = yz;
+  }
 
   T normSup() const {
     return std::max({std::abs(xx), std::abs(xy), std::abs(xz), std::abs(yx), std::abs(yy), std::abs(yz), std::abs(zx),
@@ -447,6 +446,53 @@ typedef mat9<bool> mat9b;
 /// Dyadic product (tensorial product or otimes)
 template <typename U> mat9<U> dyadic_product(const vec3<U> &a, const vec3<U> &b) {
   return mat9<U>(a.x * b.x, a.x * b.y, a.x * b.z, a.y * b.x, a.y * b.y, a.y * b.z, a.z * b.x, a.z * b.y, a.z * b.z);
+}
+
+// Build the covariance matrix of points
+template <typename T> mat9<T> CovarianceMatrix(std::vector<vec3<T>> &points) {
+  vec3<T> mu;
+  mat9<T> C;
+
+  // loop over the points to find the mean point location
+  size_t nbP = 0;
+  for (size_t p = 0; p < points.size(); p++) {
+    mu += points[p];
+    nbP++;
+  }
+
+  if (nbP == 0) {
+    std::cerr << "@getCovarianceMatrix, no points!\n";
+    return C;
+  }
+  mu /= (T)nbP;
+
+  // loop over the points again to build the
+  // covariance matrix.  Note that we only have
+  // to build terms for the upper trianglular
+  // portion since the matrix is symmetric
+  T cxx = 0.0, cxy = 0.0, cxz = 0.0, cyy = 0.0, cyz = 0.0, czz = 0.0;
+
+  for (size_t p = 0; p < points.size(); p++) {
+    cxx += points[p].x * points[p].x - mu.x * mu.x;
+    cxy += points[p].x * points[p].y - mu.x * mu.y;
+    cxz += points[p].x * points[p].z - mu.x * mu.z;
+    cyy += points[p].y * points[p].y - mu.y * mu.y;
+    cyz += points[p].y * points[p].z - mu.y * mu.z;
+    czz += points[p].z * points[p].z - mu.z * mu.z;
+  }
+
+  // now build the covariance matrix
+  C.xx = cxx;
+  C.xy = cxy;
+  C.xz = cxz;
+  C.yx = cxy;
+  C.yy = cyy;
+  C.yz = cyz;
+  C.zx = cxz;
+  C.zy = cyz;
+  C.zz = czz;
+
+  return C;
 }
 
 #endif /* end of include guard: MAT9_HPP */
