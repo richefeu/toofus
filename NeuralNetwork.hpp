@@ -13,7 +13,7 @@
 //
 // This is a stand-alone header file that implement a Neural Network
 // with a single hidden layer (Non-deep Neural Network)
- 
+
 #ifndef NN_HPP
 #define NN_HPP
 
@@ -176,7 +176,7 @@ void print(cvector &v) {
 int SIGMOID_ACTIVATOR_ID = 0;
 double sigmoid(double x) { return (1.0 / (1.0 + exp(-x))); }
 double dsigmoid(double s) { return (s * (1.0 - s)); }
-double invSigmoid(double y) { return (log(y / (1.0 - y))); } // A VERIFIER
+double invSigmoid(double y) { return (log(y / (1.0 - y))); }
 
 // TANH
 int TANH_ACTIVATOR_ID = 1;
@@ -185,7 +185,7 @@ double dTanh(double s) {
   double th = tanh(s);
   return (1.0 - th * th);
 }
-double invTanh(double y) { return 0.0; } // TODO
+double invTanh(double y) { return 0.5 * log((1.0 + y) / (1.0 - y)); }
 
 // BINARY STEP
 int BINARY_STEP_ACTIVATOR_ID = 2;
@@ -221,7 +221,11 @@ double dReLU(double x) {
     return 0.0;
   return 1.0;
 }
-double invReLU(double x) { return 0.0; } // TODO
+double invReLU(double y) {
+  if (y < 0.0)
+    return -1.0;
+  return y;
+}
 
 // ===================================================================
 

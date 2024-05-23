@@ -466,10 +466,8 @@ template <typename T> mat9<T> CovarianceMatrix(std::vector<vec3<T>> &points) {
   }
   mu /= (T)nbP;
 
-  // loop over the points again to build the
-  // covariance matrix.  Note that we only have
-  // to build terms for the upper trianglular
-  // portion since the matrix is symmetric
+  // loop over the points again to build the covariance matrix.  Note that we only have
+  // to build terms for the upper trianglular portion since the matrix is symmetric
   T cxx = 0.0, cxy = 0.0, cxz = 0.0, cyy = 0.0, cyz = 0.0, czz = 0.0;
 
   for (size_t p = 0; p < points.size(); p++) {

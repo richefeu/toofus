@@ -14,6 +14,7 @@
 #ifndef ELEMENT_SELECTOR_HPP
 #define ELEMENT_SELECTOR_HPP
 
+#include <cmath>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -24,17 +25,31 @@ public:
   std::string inputOption;
   size_t ID;
   std::vector<size_t> ID_LIST;
-  
-	double BOX_X0;
+
+  double BOX_X0;
   double BOX_Y0;
   double BOX_X1;
   double BOX_Y1;
-	
+
   double GRID_X0;
   double GRID_Y0;
   double GRID_LX;
   double GRID_LY;
   double GRID_TOL;
+
+  // TODO: use less variables
+  /*
+  double X0;
+  double Y0;
+  double X1;
+  double Y1;
+  double LX;
+  double LY;
+  double TOL;
+  double P1;
+  double P2;
+  double P3;
+  */
 
   std::function<void(T *)> actionForNone;
   std::function<void(T *, size_t id)> actionForId;
@@ -71,8 +86,8 @@ public:
       for (size_t p = 0; p < ContainerSize(Obj); p++) {
         double x, y;
         getXY(Obj, p, x, y);
-        double X0 = round((x - GRID_X0) / GRID_LX) * GRID_LX - 0.5*GRID_TOL;
-        double Y0 = round((y - GRID_Y0) / GRID_LY) * GRID_LY - 0.5*GRID_TOL;
+        double X0 = std::round((x - GRID_X0) / GRID_LX) * GRID_LX - 0.5 * GRID_TOL;
+        double Y0 = std::round((y - GRID_Y0) / GRID_LY) * GRID_LY - 0.5 * GRID_TOL;
         double X1 = X0 + GRID_TOL;
         double Y1 = Y0 + GRID_TOL;
         if ((x >= X0 && x <= X1) || (y >= Y0 && y <= Y1)) {
@@ -81,7 +96,7 @@ public:
       }
 
     } else if (inputOption == "BOX") {
-			
+
       for (size_t p = 0; p < ContainerSize(Obj); p++) {
         double x, y;
         getXY(Obj, p, x, y);
@@ -89,7 +104,6 @@ public:
           actionForId(Obj, p);
         }
       }
-			
     }
   }
 

@@ -81,13 +81,12 @@ void keyboard(unsigned char Key, int x, int y) {
       break;
 
     case 't': {
-      transparency -= 0.1;
-      transparency = std::max(0.0, transparency);
+      transparency = std::max(0.0, transparency - 0.05);
     } break;
 
     case 'T': {
-      transparency += 0.1;
-      transparency = std::min(1.0, transparency);
+
+      transparency = std::min(1.0, transparency + 0.05);
     } break;
 
     case '=': {
@@ -714,16 +713,21 @@ int main(int argc, char* argv[]) {
   glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
   glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
   glLightfv(GL_LIGHT1, GL_POSITION, positionLight1);
+  
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambientLight);
+  //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuseLight);
+  //glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specularLight);
 
   glShadeModel(GL_SMOOTH);
   glEnable(GL_POINT_SMOOTH);
-  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+  //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
   glEnable(GL_BLEND);
   // glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glEnable(GL_DEPTH_TEST);
+  glDisable(GL_DEPTH_TEST);
+  // glEnable(GL_DEPTH_TEST);
   // glDepthFunc(GL_LEQUAL);
 
   // ==== Enter GLUT event processing cycle

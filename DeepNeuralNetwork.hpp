@@ -200,8 +200,7 @@ public:
       Function = [](double x) -> double { return x; };
       FunctionDerivative = [](double x) -> double { return 1.0; };
     }
-    
-    
+
     if (hiddenOrOutput == HIDDEN_LAYERS) {
       Neuron::hiddenLayerActivationFunction = Function;
       Neuron::hiddenLayerActivationFunctionDerivative = FunctionDerivative;
@@ -209,7 +208,11 @@ public:
       Neuron::outputLayerActivationFunction = Function;
       Neuron::outputLayerActivationFunctionDerivative = FunctionDerivative;
     }
-    
+  }
+
+  static void setWeightinitialization(double range, double shift) {
+    Neuron::weightInitMultiplier = range;
+    Neuron::weightInitShift = shift;
   }
 
   static void setWeightinitialization(std::string model) {
@@ -382,12 +385,12 @@ double DANN::m_biasValue = 1.0;
 /*
 class DANNData {
 public:
-  
+
   DANNData() {
-    
+
   }
-  
-  
+
+
 };
 */
 
