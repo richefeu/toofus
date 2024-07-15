@@ -128,17 +128,21 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
   static double fac;
 
   if (n < 0) {
-    for (k = 0; k < MAXDIM; k++)
-      ix[k] = 0;
-    in = 0;
-    if (iv[0] != 1)
-      return;
-    fac = 1.0 / (1 << MAXBIT);
-    for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM)
-      iu[j] = &iv[k];
     for (k = 0; k < MAXDIM; k++) {
-      for (j = 0; j < mdeg[k]; j++)
+      ix[k] = 0;
+    }
+    in = 0;
+    if (iv[0] != 1) {
+      return;
+    }
+    fac = 1.0 / (1 << MAXBIT);
+    for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM) {
+      iu[j] = &iv[k];
+    }
+    for (k = 0; k < MAXDIM; k++) {
+      for (j = 0; j < mdeg[k]; j++) {
         iu[j][k] <<= (MAXBIT - 1 - j);
+      }
       for (j = mdeg[k]; j < MAXBIT; j++) {
         ipp = ip[k];
         i = iu[j - mdeg[k]][k];
@@ -154,12 +158,14 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
   } else { // n >= 0
     im = in++;
     for (j = 0; j < MAXBIT; j++) {
-      if (!(im & 1))
+      if (!(im & 1)) {
         break;
+      }
       im >>= 1;
     }
-    if (j >= MAXBIT)
-      return; // std::cerr << "MAXBIT too small in sobseq" << std::endl;
+    if (j >= MAXBIT) {
+      return;
+    } // std::cerr << "MAXBIT too small in sobseq" << std::endl;
     im = j * MAXDIM;
     size_t kmax = (static_cast<size_t>(n) < MAXDIM) ? static_cast<size_t>(n) : MAXDIM;
     for (k = 0; k < kmax; k++) {
@@ -217,10 +223,12 @@ template <typename T> T Q_accurate_rsqrt(T number) {
 template <typename T> void MeanAndVariance(std::vector<T> &data, double &mean, double &var) {
   mean = 0.0;
   var = 0.0;
-  if (data.size() < 2)
+  if (data.size() < 2) {
     return;
-  for (size_t i = 0; i < data.size(); i++)
+  }
+  for (size_t i = 0; i < data.size(); i++) {
     mean += data[i];
+  }
   mean /= (double)data.size();
   double s = 0.0;
   for (size_t i = 0; i < data.size(); i++) {
@@ -236,8 +244,8 @@ template <typename T> T RSD(std::vector<T> &data) {
   double var = 0.0;
   MeanAndVariance(data, mean, var);
   double CV = 0.0;
-  if (fabs(mean) > 1e-20)
-    CV = sqrt(var) / mean;
+  if (std::fabs(mean) > 1e-20)
+    CV = std::sqrt(var) / mean;
   return CV;
 }
 

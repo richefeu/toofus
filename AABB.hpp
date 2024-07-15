@@ -49,8 +49,8 @@ public:
            centered at the AABB center
   */
   double getRadius() const { return 0.25 * (max - min).length(); }
-	
-	vec3r getCenter() const { return 0.5 * (min + max); }
+
+  vec3r getCenter() const { return 0.5 * (min + max); }
 
   /**
     @brief The AABB is set to a single point
@@ -117,7 +117,7 @@ public:
       return false;
     return true;
   }
-  
+
   /**
     @brief Check intersection only in the Y direction
   */
@@ -126,7 +126,7 @@ public:
       return false;
     return true;
   }
-  
+
   /**
     @brief Check intersection only in the Z direction
   */
