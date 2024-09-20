@@ -11,6 +11,8 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
+// !!!! c++11 is required !!!!
+
 #ifndef TERMMENU_CPP
 #define TERMMENU_CPP
 
@@ -29,7 +31,12 @@ private:
   int startCol;
 
 public:
-  TermMenu() : selected(0), startRow(0), startCol(0) {}
+  // Default constructor
+  TermMenu() : prompt("Please select an option:"), selected(0), startRow(0), startCol(0) {}
+
+  // Constructor that takes a prompt and an initializer list of choices
+  TermMenu(const std::string &prompt, std::initializer_list<std::string> choices)
+      : prompt(prompt), choices(choices), selected(0), startRow(0), startCol(0) {}
 
   void setPrompt(const std::string &p) { prompt = p; }
 
@@ -93,6 +100,7 @@ public:
       displayMenu();
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
     return selected + 1;
   }
 };
