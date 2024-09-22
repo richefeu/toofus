@@ -69,6 +69,42 @@ public:
     center = Q * center;
   }
 
+  quat getQuaternion() {
+    // Compute quaternion components directly from orthonormal vectors
+    double tr = e[0].x + e[1].y + e[2].z;
+    if (tr > 0) {
+      double s = 0.5 / sqrt(tr + 1.0);
+      double w = 0.25 / s;
+      double x = (e[1].z - e[2].y) * s;
+      double y = (e[2].x - e[0].z) * s;
+      double z = (e[0].y - e[1].x) * s;
+      return quat(-x, -y, -z, -w);
+    } else {
+      if (e[0].x > e[1].y && e[0].x > e[2].z) {
+        double s = 2.0 * sqrt(1.0 + e[0].x - e[1].y - e[2].z);
+        double w = (e[1].z - e[2].y) / s;
+        double x = 0.25 * s;
+        double y = (e[0].y + e[1].x) / s;
+        double z = (e[0].z + e[2].x) / s;
+        return quat(-x, -y, -z, -w);
+      } else if (e[1].y > e[2].z) {
+        double s = 2.0 * sqrt(1.0 + e[1].y - e[0].x - e[2].z);
+        double w = (e[2].x - e[0].z) / s;
+        double x = (e[0].y + e[1].x) / s;
+        double y = 0.25 * s;
+        double z = (e[1].z + e[2].y) / s;
+        return quat(-x, -y, -z, -w);
+      } else {
+        double s = 2.0 * sqrt(1.0 + e[2].z - e[0].x - e[1].y);
+        double w = (e[0].y - e[1].x) / s;
+        double x = (e[0].z + e[2].x) / s;
+        double y = (e[1].z + e[2].y) / s;
+        double z = 0.25 * s;
+        return quat(-x, -y, -z, -w);
+      }
+    }
+  }
+
   // see page 101 of the book 'Real-Time Collision Detection' (Christer Ericson)
   bool intersect(const OBB &obb, double tol = FLT_EPSILON) const {
     double ra, rb;
@@ -206,3 +242,23 @@ public:
 };
 
 #endif /* end of include guard: OBB_HPP */
+
+#if 0
+
+#include <iostream>
+
+int main (int argc, char const *argv[])
+{
+  OBB obb;
+  quat qimposed;
+  qimposed.randomize();
+  obb.rotate(qimposed);
+  std::cout << "qimposed = " << qimposed << std::endl;
+  quat q = obb.getQuaternion();
+  std::cout << "  qfound = " << q << std::endl;
+  
+  return 0;
+}
+
+#endif
+
