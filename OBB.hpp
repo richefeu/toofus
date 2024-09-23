@@ -29,7 +29,7 @@
 class OBB {
 public:
   vec3r center; //< Center
-  vec3r e[3];   //< 3 directions (normalized vectors)
+  vec3r e[3];   //< 3 directions (unit vectors)
   vec3r extent; //< 3 extents (half box-length in the 3 directions)
 
   // Constructors

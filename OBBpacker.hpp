@@ -36,7 +36,7 @@ private:
   double xOBB = 0.8e-3;
   double yOBB = 0.8e-3;
   double zOBB = 0.8e-3;
-  
+
   double homothety_min = 1.0;
   double homothety_max = 1.0;
 
@@ -53,15 +53,15 @@ private:
 public:
   OBBPacker() : generator(seed), random01(0.0, 1.0) {}
 
-  void setOBBDimensions(double xobb,  double yobb, double zobb) {
+  void setOBBDimensions(double xobb, double yobb, double zobb) {
     xOBB = xobb;
     yOBB = yobb;
     zOBB = zobb;
   }
-  
+
   void setHomothetyRange(double from, double to) {
     homothety_min = from;
-    homothety_max = to;    
+    homothety_max = to;
   }
 
   void setNbOBBsTarget(size_t nb_obbs) {
@@ -118,13 +118,13 @@ public:
     std::vector<vec3r> Ltab;
     double Vs = 0.0;
     for (size_t i = 0; i < nb_obbs; i++) {
-      vec3r extent;
+      vec3r full_extent;
       double homothety = homothety_min + (homothety_max - homothety_min) * random01(generator);
-      extent.x = xOBB * homothety;
-      extent.y = yOBB * homothety;
-      extent.z = zOBB * homothety;
-      Ltab.push_back(extent);
-      Vs += extent.x * extent.y * extent.z;
+      full_extent.x = xOBB * homothety;
+      full_extent.y = yOBB * homothety;
+      full_extent.z = zOBB * homothety;
+      Ltab.push_back(full_extent);
+      Vs += full_extent.x * full_extent.y * full_extent.z;
       if (Vs / Vbox >= SolidFractionTarget) {
         break;
       }
@@ -155,13 +155,16 @@ public:
       size_t nb_trials = 1;
     retry:
 
+      ori.randomize();
+      obbi.rotate(ori);
+
       double distBound = 0.5 * Ltab[i].length();
       if (containerType == CUBOID) {
 
         obbi.center.x = distBound + (LX - 2.0 * distBound) * random01(generator);
         obbi.center.y = distBound + (LY - 2.0 * distBound) * random01(generator);
         obbi.center.z = distBound + (LZ - 2.0 * distBound) * random01(generator);
-        
+
       } else {
         double angle = 2 * M_PI * random01(generator);
         switch (packingDirection) {
@@ -192,8 +195,6 @@ public:
         }
       }
       obbi.extent = 0.5 * Ltab[i];
-      ori.randomize();
-      obbi.rotate(ori);
 
       for (long k = 0; k < obbs.size(); k++) {
         if (obbi.intersect(obbs[k])) {
@@ -207,23 +208,25 @@ public:
           goto retry;
         }
       }
+
       obbs.push_back(obbi);
       cumul_trials += nb_trials;
       sumV += Vi;
     }
-    std::cerr << "Okay ! The " << nb_obbs << " OBBs have been packed" << std::endl;
+
+    std::cerr << "Okay! " << obbs.size() << " OBBs have been packed" << std::endl;
     std::cerr << "Solid fraction = " << sumV / Vbox << std::endl;
   }
-  
-  void sort(std::vector<OBB>& obbs) {
-    std::sort(obbs.begin(), obbs.end(), [&](const OBB& a, const OBB& b) {
+
+  void sort(std::vector<OBB> &obbs) {
+    std::sort(obbs.begin(), obbs.end(), [&](const OBB &a, const OBB &b) {
       switch (packingDirection) {
-        case X:
-          return a.center.x < b.center.x;
-        case Y:
-          return a.center.y < b.center.y;
-        case Z:
-          return a.center.z < b.center.z;
+      case X:
+        return a.center.x < b.center.x;
+      case Y:
+        return a.center.y < b.center.y;
+      case Z:
+        return a.center.z < b.center.z;
       }
       return false;
     });
@@ -236,10 +239,11 @@ public:
 
 int main() {
   OBBPacker packer;
-  packer.setOBBDimensions(1.5e-3, 0.5e-3, 0.5e-3);
-  packer.setNbOBBsTarget(5000);
-  packer.setSolidFractionTarget(0.5);
-  packer.setContainerLength(20.0e-3, 20.0e-3, 20.0e-3);
+  packer.setOBBDimensions(1e-3, 1e-3, 1e-3);
+  packer.setHomothetyRange(1.0, 1.0);
+  packer.setNbOBBsTarget(8000);
+  packer.setSolidFractionTarget(0.7);
+  packer.setContainerLength(20.0e-3, 20.0e-3, 30.0e-3);
   packer.setContainerType(OBBPacker::CUBOID);
   packer.setPackingDirection(OBBPacker::Z);
   std::vector<OBB> obbs;
