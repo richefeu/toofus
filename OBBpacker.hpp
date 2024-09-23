@@ -33,12 +33,12 @@ private:
   double LY = 20e-3;
   double LZ = 20e-3;
 
-  double xOBBmin = 0.8e-3;
-  double xOBBmax = 1.2e-3;
-  double yOBBmin = 0.8e-3;
-  double yOBBmax = 1.2e-3;
-  double zOBBmin = 0.8e-3;
-  double zOBBmax = 1.2e-3;
+  double xOBB = 0.8e-3;
+  double yOBB = 0.8e-3;
+  double zOBB = 0.8e-3;
+  
+  double homothety_min = 1.0;
+  double homothety_max = 1.0;
 
   size_t nb_obbs = 4000;
   size_t nb_trials_max = nb_obbs * 30;
@@ -53,14 +53,15 @@ private:
 public:
   OBBPacker() : generator(seed), random01(0.0, 1.0) {}
 
-  void setOBBDimensions(double xobbmin, double xobbmax, double yobbmin, double yobbmax, double zobbmin,
-                        double zobbmax) {
-    xOBBmin = xobbmin;
-    xOBBmax = xobbmax;
-    yOBBmin = yobbmin;
-    yOBBmax = yobbmax;
-    zOBBmin = zobbmin;
-    zOBBmax = zobbmax;
+  void setOBBDimensions(double xobb,  double yobb, double zobb) {
+    xOBB = xobb;
+    yOBB = yobb;
+    zOBB = zobb;
+  }
+  
+  void setHomothetyRange(double from, double to) {
+    homothety_min = from;
+    homothety_max = to;    
   }
 
   void setNbOBBsTarget(size_t nb_obbs) {
@@ -72,7 +73,7 @@ public:
 
   void setSolidFractionTarget(double solid_fraction_target) { SolidFractionTarget = solid_fraction_target; }
 
-  void setLength(double t_LX, double t_LY, double t_LZ) {
+  void setContainerLength(double t_LX, double t_LY, double t_LZ) {
     LX = t_LX;
     LY = t_LY;
     LZ = t_LZ;
@@ -118,9 +119,10 @@ public:
     double Vs = 0.0;
     for (size_t i = 0; i < nb_obbs; i++) {
       vec3r extent;
-      extent.x = xOBBmin + (xOBBmax - xOBBmin) * random01(generator);
-      extent.y = yOBBmin + (yOBBmax - yOBBmin) * random01(generator);
-      extent.z = zOBBmin + (zOBBmax - zOBBmin) * random01(generator);
+      double homothety = homothety_min + (homothety_max - homothety_min) * random01(generator);
+      extent.x = xOBB * homothety;
+      extent.y = yOBB * homothety;
+      extent.z = zOBB * homothety;
       Ltab.push_back(extent);
       Vs += extent.x * extent.y * extent.z;
       if (Vs / Vbox >= SolidFractionTarget) {
@@ -156,9 +158,10 @@ public:
       double distBound = 0.5 * Ltab[i].length();
       if (containerType == CUBOID) {
 
-        obbi.center.x = distBound + (LX - 2 * distBound) * random01(generator);
-        obbi.center.y = distBound + (LY - 2 * distBound) * random01(generator);
-        obbi.center.z = distBound + (LZ - 2 * distBound) * random01(generator);
+        obbi.center.x = distBound + (LX - 2.0 * distBound) * random01(generator);
+        obbi.center.y = distBound + (LY - 2.0 * distBound) * random01(generator);
+        obbi.center.z = distBound + (LZ - 2.0 * distBound) * random01(generator);
+        
       } else {
         double angle = 2 * M_PI * random01(generator);
         switch (packingDirection) {
@@ -233,10 +236,10 @@ public:
 
 int main() {
   OBBPacker packer;
-  packer.setOBBDimensions(1.5e-3, 1.5e-3, 0.5e-3, 0.5e-3, 0.5e-3, 0.5e-3);
+  packer.setOBBDimensions(1.5e-3, 0.5e-3, 0.5e-3);
   packer.setNbOBBsTarget(5000);
   packer.setSolidFractionTarget(0.5);
-  packer.setLength(20.0e-3, 20.0e-3, 20.0e-3);
+  packer.setContainerLength(20.0e-3, 20.0e-3, 20.0e-3);
   packer.setContainerType(OBBPacker::CUBOID);
   packer.setPackingDirection(OBBPacker::Z);
   std::vector<OBB> obbs;
