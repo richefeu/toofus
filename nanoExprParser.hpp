@@ -25,6 +25,7 @@
 template <typename T> class nanoExprParser {
 public:
   nanoExprParser() {
+    constants.reserve(5); // so that the address T* in the map 'variables' will not change
     addConstant("pi", 3.14159265358979323846);
     addConstant("e", 2.71828182845904523536);
     addConstant("phi", 1.61803398874989484820);
@@ -38,14 +39,16 @@ public:
     return pos == (expr.size() - 1);
   }
 
-  void addVariable(const std::string &name, T *value) { variables[name] = value; }
+  void addVariable(const std::string &name, T *value) {
+    variables[name] = value;
+  }
 
   void addConstant(const std::string &name, T value) {
     if (variables.find(name) != variables.end()) {
       return;
     }
     constants.push_back(value);
-    variables[name] = &constants[constants.size() - 1];
+    variables[name] = &(constants[constants.size() - 1]);
   }
 
 private:
@@ -145,6 +148,7 @@ private:
         unget_char();
         // return parse_number();
         if (variables.find(func) != variables.end()) {
+          //std::cout << "'" << func << "' = " << *variables[func] << std::endl;
           return *variables[func];
         } else {
           return parse_number();
@@ -183,6 +187,22 @@ private:
       }
       result += static_cast<T>(fraction) / static_cast<T>(denominator);
     }
+    if (c == 'e' || c == 'E') {
+      bool exp_negative = false;
+      c = get_next_char();
+      if (c == '-') {
+        exp_negative = true;
+        c = get_next_char();
+      } else if (c == '+') {
+        c = get_next_char();
+      }
+      int exponent = 0;
+      while (c >= '0' && c <= '9') {
+        exponent = exponent * 10 + (c - '0');
+        c = get_next_char();
+      }
+      result *= std::pow(10, exp_negative ? -exponent : exponent);
+    }
     unget_char();
     return negative ? -result : result;
   }
@@ -218,7 +238,8 @@ int main() {
   nanoExprParser<double> parser;
   double x = 3.0;
   parser.addVariable("x", &x);
-  std::string expr = "2 + pow(x,2) + cos(pi)";
+  std::string expr = "2.1 + pow(x,2) + cos(pi)";
+  //std::string expr = "pi";
   double result;
   if (parser.parse(expr, result)) {
     std::cout << expr << " = " << result << std::endl;
