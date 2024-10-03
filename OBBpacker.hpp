@@ -196,7 +196,7 @@ public:
       }
       obbi.extent = 0.5 * Ltab[i];
 
-      for (long k = 0; k < obbs.size(); k++) {
+      for (size_t k = 0; k < obbs.size(); k++) {
         if (obbi.intersect(obbs[k])) {
           nb_trials++;
           if (nb_trials >= nb_trials_max) {
