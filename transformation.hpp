@@ -112,6 +112,36 @@ public:
     zz = 1;
     tz = 0;
   }
+  
+  void reset_translation() {
+    //xx = 1;
+    //xy = 0;
+    //xz = 0;
+    tx = 0;
+    //yx = 0;
+    //yy = 1;
+    //yz = 0;
+    ty = 0;
+    //zx = 0;
+    //zy = 0;
+    //zz = 1;
+    tz = 0;
+  }
+  
+  void reset_rotation() {
+    xx = 1;
+    xy = 0;
+    xz = 0;
+    //tx = 0;
+    yx = 0;
+    yy = 1;
+    yz = 0;
+    //ty = 0;
+    zx = 0;
+    zy = 0;
+    zz = 1;
+    //tz = 0;
+  }
 
   void print() {
     std::cout << xx << '\t' << xy << '\t' << xz << '\t' << tx << std::endl;
