@@ -144,7 +144,7 @@ public:
     obb1.center.z = 0.5 * LZ;
     obbs.push_back(obb1);
     double sumV = Ltab[0].x * Ltab[0].y * Ltab[0].z;
-    size_t cumul_trials = 1;
+    //size_t cumul_trials = 1;
 
     std::cerr << "OBBPacker is Running...\n" << std::flush;
     for (size_t i = 1; i < Ltab.size(); i++) {
@@ -210,7 +210,7 @@ public:
       }
 
       obbs.push_back(obbi);
-      cumul_trials += nb_trials;
+      //cumul_trials += nb_trials;
       sumV += Vi;
     }
 

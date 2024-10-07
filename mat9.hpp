@@ -306,7 +306,7 @@ public:
     V.setIdentity();
     // Set B and D values to the diagonal of the input matrix
     for (size_t i = 0; i < 3; i++)
-      B[i] = D[i] = A[i * 3 + i];
+      {B[i] = D[i] = A[i * 3 + i];}
 
     // Rotate until off-diagonal elements of input matrix are zero
     for (int sweep = 0; sweep++ < 50;) {
@@ -314,7 +314,7 @@ public:
       double thresh;
 
       if (fabs(sum) < 1.0e-15)
-        return rot;
+        {return rot;}
 
       thresh = (sweep < 4) ? sum * 0.2 / 9.0 : 0.0; // First three sweeps?
 
