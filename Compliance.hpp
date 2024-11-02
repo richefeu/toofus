@@ -16,6 +16,13 @@
 
 #include "mat9.hpp"
 
+/**
+ * @brief Compliance matrix
+ *
+ * Compliance matrix is the inverse of the Rigidity matrix.
+ * It is used to compute the strain from the stress.
+ * The compliance matrix is a 3x3 symmetric matrix.
+ */
 class Compliance {
 public:
   double Cinv1, Cinv2, Cinv3;
@@ -27,9 +34,22 @@ public:
   // 0     0     0      0     Cinv3 0
   // 0	   0     0      0     0     Cinv3
 
+  /**
+   * @brief Constructor with default values
+   */
   Compliance() { set(5e6, 0.3); }
+  /**
+   * @brief Constructor with given values
+   * @param Young Young modulus
+   * @param Poisson Poisson's ratio
+   */
   Compliance(double Young, double Poisson) { set(Young, Poisson); }
 
+  /**
+   * @brief Set the compliance matrix
+   * @param Young Young modulus
+   * @param Poisson Poisson's ratio
+   */
   void set(double Young, double Poisson) {
     double factor = 1.0 / Young;
     Cinv1 = factor;
@@ -37,6 +57,11 @@ public:
     Cinv3 = factor * (1.0 + Poisson);
   }
 
+  /**
+   * @brief Compute the strain from the stress
+   * @param stress Stress matrix
+   * @return Strain matrix
+   */
   mat9r getStrain(const mat9r &stress) {
     double Exx = Cinv1 * stress.xx + Cinv2 * (stress.yy + stress.zz);
     double Eyy = Cinv1 * stress.yy + Cinv2 * (stress.xx + stress.zz);
@@ -75,3 +100,4 @@ int main(int argc, char const *argv[]) {
 }
 
 #endif
+

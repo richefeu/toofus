@@ -35,6 +35,13 @@ public:
     max.set(xmax, ymax);
   }
 
+  /**
+    @brief Constructs the AABB_2D to encompass all points in a given cloud.
+
+    @param cloud A vector of vec2r points used to determine the bounding box.
+                 Initializes the min and max with the first point and iteratively
+                 updates to include all points in the cloud.
+  */
   explicit AABB_2D(const std::vector<vec2r> &cloud) : min(cloud[0]), max(cloud[0]) {
     for (size_t i = 1; i < cloud.size(); ++i) {
       min = component_min(min, cloud[i]);
@@ -64,11 +71,24 @@ public:
     max = v;
   }
 
+  /**
+    @brief Expands the AABB_2D to include a given point.
+
+    @param v A vec2r point used to update the bounding box.
+             Adjusts the min and max to ensure the point is within the AABB_2D.
+  */
   void add(const vec2r &v) {
     min = component_min(min, v);
     max = component_max(max, v);
   }
 
+  /**
+    @brief Expands the AABB_2D by a given amount in all directions.
+
+    @param more A double value used to increase the size of the AABB_2D.
+               The min coordinates are decremented by more, and the max
+               coordinates are incremented by more.
+  */
   void enlarge(double more) {
     min.x -= more;
     min.y -= more;
@@ -76,6 +96,13 @@ public:
     max.y += more;
   }
 
+/**
+  @brief Expands the AABB_2D by a specified amount in each direction.
+
+  @param more A vec2r object specifying the amount to expand the AABB_2D.
+              The min coordinates are decremented by the respective components of more,
+              and the max coordinates are incremented by the respective components of more.
+*/
   void enlarge(const vec2r &more) {
     min.x -= more.x;
     min.y -= more.y;
@@ -83,26 +110,65 @@ public:
     max.y += more.y;
   }
 
+  /**
+    @brief Merges the current AABB_2D with another AABB_2D.
+
+    @param more The AABB_2D to merge with the current one. The min and max
+                values of the current AABB_2D are updated to encompass both
+                AABB_2Ds.
+  */
   void merge(const AABB_2D &more) {
     min = component_min(min, more.min);
     max = component_max(max, more.max);
   }
+  
+  /**
+    @brief Expands the AABB_2D to include the given AABB_2D.
+
+    @param more The AABB_2D to include in the current AABB_2D.
+                The min and max values of the current AABB_2D are updated
+                to ensure that the given AABB_2D is fully enclosed.
+  */
   void enlarge(const AABB_2D &more) { // for compability
     min = component_min(min, more.min);
     max = component_max(max, more.max);
   }
 
+  /**
+    @brief Translates the AABB_2D by a given vec2r vector.
+
+    @param v The vec2r vector used to translate the AABB_2D. The min and max
+             coordinates of the AABB_2D are incremented by the corresponding
+             values in the vector.
+  */
   void translate(const vec2r &v) {
     min += v;
     max += v;
   }
 
+  /**
+    @brief Checks if the current AABB_2D intersects with another AABB_2D.
+
+    @param a The AABB_2D to intersect with the current one. The AABB_2Ds are
+             considered to intersect if they have a non-zero area in common.
+
+    @returns true if the AABB_2Ds intersect, false otherwise.
+  */
   bool intersect(const AABB_2D &a) const {
     if (max.x < a.min.x || a.max.x < min.x || max.y < a.min.y || a.max.y < min.y)
       return false;
     return true;
   }
 
+  /**
+    @brief Checks if the current AABB_2D intersects with a given point.
+
+    @param a The point to intersect with the current AABB_2D. The AABB_2D is
+             considered to intersect with the point if the point is inside the
+             AABB_2D.
+
+    @returns true if the AABB_2D intersects with the point, false otherwise.
+  */
   bool intersect(const vec2r &a) const {
     if (max.x < a.x || a.x < min.x || max.y < a.y || a.y < min.y)
       return false;

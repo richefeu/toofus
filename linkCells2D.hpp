@@ -19,7 +19,7 @@
 #include "AABB_2D.hpp"
 #include "vec2.hpp"
 
-// An axis aligned box used for neighbor tracking
+/// An axis aligned box used for neighbor tracking
 class AABB_2D_Cell {
 public:
   std::vector<size_t> bodies;         ///< Holded bodies identifiers
@@ -46,6 +46,15 @@ public:
   // Dtor
   ~linkCells2D() {}
 
+  /**
+   * Initializes the linkCells2D object by partitioning the overall bounding box
+   * into a grid of smaller cells. The function calculates the number of cells
+   * in each direction (x and y) based on the minimum cell sizes and ensures
+   * there is at least one cell per direction. It then computes the cell
+   * dimensions and sets up a conversion factor for mapping positions to cell
+   * indices. Memory is allocated for the cell grid, and each cell is linked to
+   * its neighboring cells and the oversized bodies cell.
+   */
   void init() {
     // Partition
     N.x = (unsigned int)floor((box.max.x - box.min.x) / minSizes.x);
@@ -97,6 +106,12 @@ public:
     }
   }
 
+  /**
+   * @brief Clear all cells and oversized bodies.
+   *
+   * This method clears all cells and oversized bodies of any body. It is
+   * typically called after all bodies have been updated.
+   */
   void clear() {
     for (size_t ix = 0; ix < N.x; ++ix) {
       for (size_t iy = 0; iy < N.y; ++iy) {
@@ -106,6 +121,17 @@ public:
     oversized_bodies.bodies.clear();
   }
 
+  /**
+   * @brief Add a body to a cell.
+   *
+   * This method adds a body to a cell given its position and AABB. If the
+   * body is too large for the grid, it is added to the list of oversized
+   * bodies.
+   *
+   * @param B the body ID
+   * @param pos the position of the body
+   * @param aabb the AABB of the body
+   */
   void add_body(size_t B, vec2r &pos, AABB_2D &aabb) {
     int ix, iy;
     //vec2r diag =  aabb.max - aabb.min;
@@ -129,6 +155,16 @@ public:
     }
   }
 
+  /**
+   * @brief Add a body to a cell based on its position.
+   *
+   * This method calculates the cell indices for the given position and adds
+   * the body to the corresponding cell. It assumes that the position is within
+   * the bounds of the overall bounding box.
+   *
+   * @param B The body ID to add.
+   * @param pos The position of the body.
+   */
   void add_body(size_t B, vec2r &pos) {
     int ix, iy;
 

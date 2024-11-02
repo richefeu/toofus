@@ -37,6 +37,11 @@ struct qdt_Circle {
   qdt_Circle() : x(0.0), y(0.0), r(0.0) {}
   qdt_Circle(double x_, double y_, double r_) : x(x_), y(y_), r(r_) {}
 
+  /// \brief Check if a point is inside the circle.
+  ///
+  /// This function checks if a point is inside the circle. The point is
+  /// considered inside the circle if its distance from the center of the
+  /// circle is not greater than the circle radius.
   bool contains(const qdt_Point &p) {
     double dx = p.x - x;
     double dy = p.y - y;
@@ -53,15 +58,52 @@ struct qdt_Rectangle {
   double ymax;
 
   qdt_Rectangle() : xmin(0.0), ymin(0.0), xmax(0.0), ymax(0.0) {}
+
+  /// \brief Construct a rectangle with specified bounds.
+  ///
+  /// This constructor initializes a rectangle using the given minimum and
+  /// maximum x and y coordinates.
+  ///
+  /// \param xmin_ The minimum x-coordinate (left edge) of the rectangle.
+  /// \param ymin_ The minimum y-coordinate (bottom edge) of the rectangle.
+  /// \param xmax_ The maximum x-coordinate (right edge) of the rectangle.
+  /// \param ymax_ The maximum y-coordinate (top edge) of the rectangle.
   qdt_Rectangle(double xmin_, double ymin_, double xmax_, double ymax_)
       : xmin(xmin_), ymin(ymin_), xmax(xmax_), ymax(ymax_) {}
 
+  /// \brief Check if a point is inside the rectangle.
+  ///
+  /// This function determines if a given point is inside the rectangle
+  /// by checking if the point's coordinates are within the rectangle's bounds.
+  ///
+  /// \param p The point to check.
+  /// \return True if the point is inside the rectangle, false otherwise.
   bool contains(const qdt_Point &p) { return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax); }
 
+  /// \brief Check if the rectangle intersects with the given range.
+  ///
+  /// This function determines if the current rectangle intersects with the
+  /// given range by checking if any of the rectangle's bounds are outside of
+  /// the range.
+  ///
+  /// \param range The range to check for intersection.
+  /// \return True if the rectangle intersects with the given range, false
+  ///         otherwise.
   bool intersects(const qdt_Rectangle &range) {
     return !(xmin > range.xmax || xmax < range.xmin || ymin > range.ymax || ymax < range.ymin);
   }
 
+  /// \brief Check if the rectangle intersects with the given circle.
+  ///
+  /// This function determines if the current rectangle intersects with the
+  /// given circle by calculating the distance between the center of the circle
+  /// and the closest point on the rectangle, and checking if this distance is
+  /// less than the circle's radius.  This is done using the formula for the
+  /// distance between a point and a line segment.
+  ///
+  /// \param c The circle to check for intersection.
+  /// \return True if the rectangle intersects with the given circle, false
+  ///         otherwise.
   bool intersects(const qdt_Circle &c) {
     double dx = c.x - std::max(xmin, std::min(c.x, xmax));
     double dy = c.y - std::max(ymin, std::min(c.y, ymax));
@@ -82,6 +124,14 @@ private:
   QuadTree *xmax_ymax;
   QuadTree *xmin_ymax;
 
+  /// \brief Subdivide the current quadtree node into four smaller quadrants.
+  ///
+  /// This function splits the current quadtree node into four smaller
+  /// quadrants, creating four new child nodes. Each child node represents
+  /// a quadrant of the current node's boundary. The division is performed
+  /// by calculating the midpoint of the current boundary, and using these
+  /// midpoints to define the boundaries of the new quadrants. After
+  /// subdividing, the quadtree node is marked as divided.
   void subdivide() {
     double xmid = 0.5 * (boundary.xmin + boundary.xmax);
     double ymid = 0.5 * (boundary.ymin + boundary.ymax);
@@ -97,6 +147,15 @@ private:
     divided = true;
   }
 
+  /// \brief Recursively deletes all nodes in the quadtree.
+  ///
+  /// This function traverses the quadtree starting from the given node,
+  /// recursively deleting all child nodes and then the node itself. This
+  /// ensures that all dynamically allocated memory used by the quadtree
+  /// is properly deallocated.
+  ///
+  /// \param node The root node of the subtree to delete. If nullptr, the
+  ///             function does nothing.
   void deleteTree(QuadTree *node) {
     if (node == nullptr)
       return;
@@ -113,6 +172,10 @@ private:
   }
 
 public:
+  /// \brief Construct a quadtree node with default values.
+  ///
+  /// All boundary values are set to zero, and the node is not divided.
+  /// The capacity is also set to zero.
   QuadTree() {
     boundary.xmin = 0.0;
     boundary.ymin = 0.0;
@@ -123,12 +186,32 @@ public:
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
+  /// \brief Construct a quadtree node with specified boundary and capacity.
+  ///
+  /// This constructor initializes a quadtree node using the provided
+  /// rectangle boundary and capacity. The node is initially not divided,
+  /// and all child nodes are set to nullptr.
+  ///
+  /// \param boundary_ The rectangle boundary of the quadtree node.
+  /// \param capacity_ The maximum number of points the quadtree node can hold.
   QuadTree(qdt_Rectangle &boundary_, size_t capacity_) : boundary(boundary_) {
     capacity = capacity_;
     divided = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
+  /// \brief Construct a quadtree node with specified boundary and capacity.
+  ///
+  /// This constructor initializes a quadtree node using the provided
+  /// coordinates for the rectangle boundary and the maximum number of points
+  /// the quadtree node can hold. The node is initially not divided,
+  /// and all child nodes are set to nullptr.
+  ///
+  /// \param xmin_ The minimum x-coordinate of the quadtree node's boundary.
+  /// \param ymin_ The minimum y-coordinate of the quadtree node's boundary.
+  /// \param xmax_ The maximum x-coordinate of the quadtree node's boundary.
+  /// \param ymax_ The maximum y-coordinate of the quadtree node's boundary.
+  /// \param capacity_ The maximum number of points the quadtree node can hold.
   QuadTree(double xmin_, double ymin_, double xmax_, double ymax_, size_t capacity_) {
     boundary.xmin = xmin_;
     boundary.ymin = ymin_;
@@ -139,6 +222,11 @@ public:
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
+  /// \brief Reset the quadtree node to its original state.
+  ///
+  /// This function deletes all child nodes, resets the divided flag to false,
+  /// and sets all child pointers to nullptr. The quadtree node is then
+  /// back in its original state, as if it had just been constructed.
   void reset() {
     deleteTree(xmin_ymin);
     deleteTree(xmax_ymin);
@@ -148,6 +236,17 @@ public:
     divided = false;
   }
 
+  /// \brief Reset the quadtree node to its original state with new boundary and capacity.
+  ///
+  /// This function deletes all child nodes, resets the divided flag to false,
+  /// and sets all child pointers to nullptr. The quadtree node is then
+  /// back in its original state, as if it had just been constructed.
+  ///
+  /// \param xmin_ The minimum x-coordinate of the quadtree node's boundary.
+  /// \param ymin_ The minimum y-coordinate of the quadtree node's boundary.
+  /// \param xmax_ The maximum x-coordinate of the quadtree node's boundary.
+  /// \param ymax_ The maximum y-coordinate of the quadtree node's boundary.
+  /// \param capacity_ The maximum number of points the quadtree node can hold.
   void reset(double xmin_, double ymin_, double xmax_, double ymax_, size_t capacity_) {
     boundary.xmin = xmin_;
     boundary.ymin = ymin_;
@@ -162,6 +261,17 @@ public:
     divided = false;
   }
 
+  /// \brief Insert a point into the quadtree node.
+  ///
+  /// This function attempts to insert a point into the quadtree node. If the
+  /// point is not within the node's boundary, the function returns false.
+  /// Otherwise, if the node is not divided, the function divides the node and
+  /// inserts the point into one of the child nodes. If the node is already
+  /// divided, the function inserts the point into one of the child nodes.
+  ///
+  /// \param point The point to be inserted.
+  ///
+  /// \return true if the point was inserted, false otherwise.
   bool insert(qdt_Point &point) {
     if (!boundary.contains(point)) {
       return false;
@@ -188,6 +298,14 @@ public:
     return false;
   }
 
+  /// \brief Find all points within a given range.
+  ///
+  /// This function finds all points within a given range and adds them to the
+  /// found vector. If the node is divided, the function is recursively called
+  /// for each child node.
+  ///
+  /// \param range The range to search for points in.
+  /// \param found The vector of points found in the range.
   void query(qdt_Rectangle &range, std::vector<qdt_Point> &found) {
     if (!boundary.intersects(range)) {
       return;
@@ -206,8 +324,21 @@ public:
     return;
   }
 
-  // to obtain a sorted vector, use this after the call of 'query':
-  // std::vector found_vector(found_set.begin(), found_set.end());
+  /// \brief Find all points within a given rectangle range with a minimum order.
+  ///
+  /// This function finds all points within a given rectangle range that have an
+  /// order greater than or equal to the specified minimum order and adds them
+  /// to the 'found' set. If the quadtree node is divided, the function is
+  /// recursively called for each child node.
+  ///
+  /// \remark To obtain a sorted vector, use this after the call of 'query':
+  /// \code
+  /// std::vector found_vector(found_set.begin(), found_set.end());
+  /// \endcode
+  ///
+  /// \param range The rectangle range to search for points in.
+  /// \param found The set of points found in the range with the specified order.
+  /// \param order_min The minimum order of points to be included in the result.
   void query(qdt_Rectangle &range, std::set<qdt_Point> &found, size_t order_min = 0) {
     if (!boundary.intersects(range)) {
       return;
@@ -226,6 +357,14 @@ public:
     return;
   }
 
+  /// \brief Find all points within a given circle range.
+  ///
+  /// This function finds all points within a given circle range and adds them
+  /// to the 'found' vector. If the quadtree node is divided, the function is
+  /// recursively called for each child node.
+  ///
+  /// \param crange The circle range to search for points in.
+  /// \param found The vector of points found in the range.
   void query(qdt_Circle &crange, std::vector<qdt_Point> &found) {
     if (!boundary.intersects(crange)) {
       return;
@@ -244,6 +383,21 @@ public:
     return;
   }
 
+  /// \brief Find all points within a given circle range with a minimum order.
+  ///
+  /// This function finds all points within a given circle range that have an
+  /// order greater than or equal to the specified minimum order and adds them
+  /// to the 'found' set. If the quadtree node is divided, the function is
+  /// recursively called for each child node.
+  ///
+  /// \remark To obtain a sorted vector, use this after the call of 'query':
+  /// \code
+  /// std::vector found_vector(found_set.begin(), found_set.end());
+  /// \endcode
+  ///
+  /// \param crange The circle range to search for points in.
+  /// \param found The set of points found in the range with the specified order.
+  /// \param order_min The minimum order of points to be included in the result.
   void query(qdt_Circle &crange, std::set<qdt_Point> &found, size_t order_min = 0) {
     if (!boundary.intersects(crange)) {
       return;
@@ -262,6 +416,14 @@ public:
     return;
   }
 
+  /// \brief Find all points within a given rectangle range in a periodic domain.
+  ///
+  /// This function finds all points within a given rectangle range in a periodic
+  /// domain and adds them to the 'found' vector. If the node is divided, the
+  /// function is recursively called for each child node.
+  ///
+  /// \param range The rectangle range to search for points in.
+  /// \param found The vector of points found in the range.
   void query_periodic(qdt_Rectangle &range, std::vector<qdt_Point> &found) {
     double cpyX = 0;
     double cpyY = 0;
@@ -308,6 +470,14 @@ public:
     }
   }
 
+  /// \brief Find all points within a given circle range in a periodic domain.
+  ///
+  /// This function finds all points within a given circle range in a periodic
+  /// domain and adds them to the 'found' vector. If the node is divided, the
+  /// function is recursively called for each child node.
+  ///
+  /// \param crange The circle range to search for points in.
+  /// \param found The vector of points found in the range.
   void query_periodic(qdt_Circle &crange, std::vector<qdt_Point> &found) {
     double cpyX = 0;
     double cpyY = 0;

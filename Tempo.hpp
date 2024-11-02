@@ -39,8 +39,19 @@ template <class T> struct Tempo {
   */
   ~Tempo() {}
 
+  /**
+   @brief Add a target to send the value to.
+   @details Add a pointer to the list of targets to send the value to.
+   @param[in] add pointer to a value of type T
+   */
   void plug(T *add) { addresses.push_back(add); }
 
+  /**
+   @brief Send a value to all targets.
+   @details For each target that has been plugged (i.e. added to the list of targets to send the value to) with `plug`,
+   set the value of the target to the given parameter.
+   @param[in] value the value to send to all targets
+   */
   void send(T value) {
     for (size_t i = 0; i < addresses.size(); i++) {
       T *add = addresses[i];
@@ -49,14 +60,30 @@ template <class T> struct Tempo {
     }
   }
 
+  /**
+   * @brief Configures the update function based on the specified command.
+   *
+   * @details This function sets the update function for the Tempo object. The behavior of the update
+   * function is determined by the command string. If the command is "Range", the update function
+   * sends `p3` to all targets if the input time `t` is between `p1` and `p2`, otherwise it sends `p4`.
+   * If the command is "Ramp", the update function performs a linear interpolation between `p3` and `p4`
+   * for times between `p1` and `p2`, sending the interpolated value to all targets. Before `p1`, it
+   * sends `p3`, and after `p2`, it sends `p4`.
+   *
+   * @param command The command string that determines the update behavior ("Range" or "Ramp").
+   * @param p1 The starting point of the time interval.
+   * @param p2 The ending point of the time interval.
+   * @param p3 The value to send at the start of the interval or for "Range" mode.
+   * @param p4 The value to send at the end of the interval or for "Range" mode.
+   */
   void set(const std::string command, double p1 = 0, double p2 = 0, T p3 = 0, T p4 = 0) {
     if (command == "Range") {
-			//     ^
-			//  p3 |      +-------+
-			//     |      |       |
-			//  p4 |------+       +-----
-			//     +------------------------> t
-			//            p1     p2
+      //     ^
+      //  p3 |      +-------+
+      //     |      |       |
+      //  p4 |------+       +-----
+      //     +------------------------> t
+      //            p1     p2
       update = [this, p1, p2, p3, p4](double t) -> T {
         if (t >= p1 && t <= p2) {
           send(p3);
@@ -66,12 +93,12 @@ template <class T> struct Tempo {
         return p4;
       };
     } else if (command == "Ramp") {
-			//     ^
-			//  p4 |        +---------------
-			//     |       / 
-			//  p3 |------+   
-			//     +------------------------> t
-			//           p1  p2
+      //     ^
+      //  p4 |        +---------------
+      //     |       /
+      //  p3 |------+
+      //     +------------------------> t
+      //           p1  p2
       update = [this, p1, p2, p3, p4](double t) -> T {
         if (t < p1) {
           send(p3);

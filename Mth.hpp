@@ -47,6 +47,11 @@ template <typename T> T DiamondAngle(T x, T y) {
   }
 }
 
+/// @brief Ensures that a value is non-negative.
+///
+/// @tparam T The type of the value.
+/// @param value The value to be checked.
+/// @return The original value if it is positive, or zero if it is negative.
 template <typename T> T keepPositive(T value) { return (value > (T)0) ? value : (T)0; }
 
 /// @brief Return the sign of a value (1 is positive, -1 is negative)
@@ -54,6 +59,13 @@ template <typename T> T sign(T value) { return std::copysign(1, value); }
 
 template <typename T> T sqr(T value) { return value * value; }
 
+/// @brief Maps a value from one range to another.
+///
+/// @param value the value to be mapped
+/// @param minA the minimum of the range to be mapped from
+/// @param maxA the maximum of the range to be mapped from
+/// @param minB the minimum of the range to be mapped to
+/// @param maxB the maximum of the range to be mapped to
 template <typename T> T map(T value, T minA, T maxA, T minB, T maxB) {
   return (value - minA) / (maxA - minA) * (maxB - minB) + minB;
 }
@@ -62,6 +74,14 @@ template <typename T> T lerp(T min, T max, T amount) { return min + amount * (ma
 
 template <typename T> T norm(T num, T min, T max) { return (num - min) / (max - min); }
 
+/// @brief Constrains a number to be within a specified range.
+///
+/// @param num The number to be constrained.
+/// @param min The minimum value of the range.
+/// @param max The maximum value of the range.
+///
+/// @returns The constrained value, which will be min if num is less than min,
+/// max if num is greater than max, or num itself if it is within the range.
 template <typename T> T constrain(T num, T min, T max) {
   if (num < min) {
     return min;
@@ -204,6 +224,11 @@ template <typename T> T Q_rsqrt(T number) {
   conv.f *= threehalfs - (x2 * conv.f * conv.f); // iteration 1
   return conv.f;
 }
+
+/// @brief Compute the inverse square root of a number, with 2 iterations of
+/// Newton-Raphson method to improve accuracy.
+/// @param[in] number the input number
+/// @return the inverse square root of the input number
 template <typename T> T Q_accurate_rsqrt(T number) {
   const T x2 = number * 0.5F;
   const T threehalfs = 1.5F;

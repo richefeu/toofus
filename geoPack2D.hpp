@@ -58,11 +58,37 @@ public:
     xmin = xmax = ymin = ymax = 0.0;
   }
 
+  /**
+   * @brief Constructs a GeoPack2D object with specified parameters.
+   *
+   * @param rmin_ Minimum radius of disks.
+   * @param rmax_ Maximum radius of disks.
+   * @param k_ Parameter related to the number of disks or iterations.
+   * @param xmin_ Minimum x-coordinate of the domain.
+   * @param xmax_ Maximum x-coordinate of the domain.
+   * @param ymin_ Minimum y-coordinate of the domain.
+   * @param ymax_ Maximum y-coordinate of the domain.
+   * @param gap_ (Optional) Gap tolerance between disks, default is 0.0.
+   * @param max_ (Optional) Maximum number of iterations or disks, default is 0.
+   */
   GeoPack2D(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_,
             double gap_ = 0.0, int max_ = 0) {
     parameters(rmin_, rmax_, k_, xmin_, xmax_, ymin_, ymax_, gap_, max_);
   }
 
+  /**
+   * @brief Sets the parameters of the GeoPack2D instance.
+   *
+   * @param rmin_ Minimum radius of disks.
+   * @param rmax_ Maximum radius of disks.
+   * @param k_ Parameter related to the number of disks or iterations.
+   * @param xmin_ Minimum x-coordinate of the domain.
+   * @param xmax_ Maximum x-coordinate of the domain.
+   * @param ymin_ Minimum y-coordinate of the domain.
+   * @param ymax_ Maximum y-coordinate of the domain.
+   * @param gap_ (Optional) Gap tolerance between disks, default is 0.0.
+   * @param max_ (Optional) Maximum number of iterations or disks, default is 0.
+   */
   void parameters(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_,
                   double gapTol_ = 0.0, int max_ = 0) {
     rmin = rmin_;
@@ -86,7 +112,18 @@ public:
     }
   }
 	
-  // Overall solid fraction by assuming there is no overlap
+  
+  /**
+   * @brief Calculates the solid fraction of the 2D domain.
+   *
+   * @details This function computes the overall solid fraction by assuming 
+   * there is no overlap between disks. It calculates the total area of the 
+   * disks and divides it by the area of the domain. If the area of the 
+   * domain is non-positive, it returns 0.0.
+   *
+   * @return The solid fraction as a double value, representing the ratio of 
+   * the total area of the disks to the total area of the domain.
+   */
   double getSolidFraction() {
     double Vtot = (xmax - xmin) * (ymax - ymin);
     if (Vtot <= 0.0)
@@ -99,8 +136,30 @@ public:
     return Vs / Vtot;
   }
 
-  void seedTime() { srand(time(NULL)); }
+  /**
+   * @brief Seeds the random number generator with the current time.
+   *
+   * This function calls srand() with the current time to seed the random
+   * number generator. This is useful for generating different sequences of
+   * random numbers.
+   */
+  void seedTime() 
+  { srand(time(NULL)); }
 
+  /**
+   * @brief Adds a disk at given coordinates and radius.
+   *
+   * @details This function adds a disk at the specified coordinates and radius
+   * to the sample and proximity data structures. The proximity data structure
+   * is a vector of vectors, where each inner vector contains the indices of
+   * disks that are within distNeighbor + distMin of the disk at the same index
+   * in the sample vector. The active vector is also updated to include the
+   * index of the newly added disk.
+   *
+   * @param x_ x-coordinate of the disk.
+   * @param y_ y-coordinate of the disk.
+   * @param r_ radius of the disk.
+   */
   void appendDisk(double x_, double y_, double r_) {
     Disk D(x_, y_, r_);
     sample.push_back(D);
@@ -120,6 +179,18 @@ public:
     active.push_back(particleIndex);
   }
 
+  /**
+   * @brief Reactivates a range of indices in the active list.
+   *
+   * @details This function appends indices from a specified range [from, to) 
+   * into the active vector. If the 'to' parameter is not provided or is zero, 
+   * it defaults to the size of the sample vector. This effectively reactivates 
+   * all indices from the 'from' position to the end of the sample vector.
+   *
+   * @param from The starting index of the range to reactivate (inclusive).
+   * @param to The ending index of the range to reactivate (exclusive). 
+   * Defaults to the size of the sample vector if set to 0.
+   */
   void reActivate(int from = 0, int to = 0) {
     if (to == 0)
       to = sample.size();
@@ -128,7 +199,16 @@ public:
     }
   }
 
-  // execute the algorithm
+  
+  /**
+   * @brief Executes the packing algorithm.
+   *
+   * @details This function starts the iterative process of adding disks
+   * to the sample vector. It stops when the sample vector has reached the
+   * maximum size or when no more disks can be added.
+   *
+   * @sa Packing parameters (e.g. k, max, gapTol, distMin, distNeighbor)
+   */
   void exec() {
     // step 1
     if (sample.empty()) {
@@ -211,6 +291,14 @@ public:
     } // end-while
   }   // end-method-run
 
+  /**
+   * @brief Periodic execution of the packing algorithm.
+   *
+   * This is the version of the algorithm with periodic boundary conditions.
+   *
+   * @note This method is more efficient than the non-periodic version, but
+   * is only suitable for packing disks in a periodic domain (i.e. a torus).
+   */
   void execPeriodic() {
     // step 1
     if (sample.empty()) {
@@ -369,3 +457,4 @@ int main(int argc, char const *argv[]) {
 }
 
 #endif
+

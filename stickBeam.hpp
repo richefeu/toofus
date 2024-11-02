@@ -61,6 +61,29 @@ struct beam {
   std::vector<double> tauMido;
   std::vector<double> tauMide;
 
+  /*!
+   * \brief Clear all the vectors (nodes and elements)
+   *
+   * The following vectors are cleared:
+   * - xpos
+   * - force
+   * - Nxo
+   * - Nxe
+   * - Vyo
+   * - Vye
+   * - Vzo
+   * - Vze
+   * - Mzo
+   * - Mze
+   * - Myo
+   * - Mye
+   * - sigmaSupo
+   * - sigmaSupe
+   * - sigmaInfo
+   * - sigmaInfe
+   * - tauMido
+   * - tauMide
+   */
   void clear() {
     xpos.clear();
     force.clear();
@@ -83,6 +106,14 @@ struct beam {
     tauMide.clear();
   }
 
+  /**
+   * Adds a node to the stick beam model.
+   *
+   * @param[in] x the position of the node in the direction of the beam.
+   * @param[in] fx the x component of the force at the node.
+   * @param[in] fy the y component of the force at the node.
+   * @param[in] fz the z component of the force at the node.
+   */
   void addNode(double x, double fx, double fy, double fz) {
     xpos.push_back(x);
     vec3r f(fx, fy, fz);
@@ -109,6 +140,16 @@ struct beam {
     }
   }
 
+  /**
+   * Connects the nodes by assigning the appropriate values to the
+   * member variables Nxo, Nxe, Vyo, Vye, Vzo, Vze, Mzo, Mze, Myo,
+   * Mye, sigmaSupo, sigmaSupe, sigmaInfo, sigmaInfe, tauMido, and
+   * tauMide.
+   *
+   * @pre The nodes must be sorted by increasing x position.
+   * @pre The nodes must be added using the addNode() member function.
+   * @post The nodes are connected.
+   */
   void connect() {
     if (xpos.empty()) {
       std::cout << "Cannot connect the nodes!\n";
@@ -136,8 +177,22 @@ struct beam {
     tauMide.resize(nbElems, 0.0);
   }
 
-  // The static force balance is supposed to be statisfied
-  // in this method
+  /**
+   * Computes the internal actions of the beam.
+   *
+   * The method computes the internal actions Nxo, Nxe, Vyo, Vye, Vzo,
+   * Vze, Mzo, Mze, Myo, and Mye of the beam elements. The internal
+   * actions are computed by summing the external forces and moments
+   * on the left of each node and on the right of each node. The
+   * results are stored in the member variables Nxo, Nxe, Vyo, Vye,
+   * Vzo, Vze, Mzo, Mze, Myo, and Mye.
+   *
+   * @pre The nodes must be sorted by increasing x position.
+   * @pre The nodes must be added using the addNode() member function.
+   * @pre The connect() member function must be called before this
+   * member function.
+   * @post The internal actions are computed.
+   */
   void computeInternalActions() {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
@@ -161,8 +216,23 @@ struct beam {
     }
   }
 
-  // The method computeInternalActions needs to be called
-  // before calling this method
+  /**
+   * Computes the stress at the nodes of the beam.
+   *
+   * The method computes the stress at the nodes of the beam. The
+   * stress is computed using the internal actions computed by the
+   * computeInternalActions() member function. The results are stored
+   * in the member variables sigmaInfo, sigmaInfe, sigmaSupo, and
+   * sigmaSupe.
+   *
+   * @pre The nodes must be sorted by increasing x position.
+   * @pre The nodes must be added using the addNode() member function.
+   * @pre The connect() member function must be called before this
+   * member function.
+   * @pre The computeInternalActions() member function must be called
+   * before this member function.
+   * @post The stress at the nodes is computed.
+   */
   void computeNodeStress() {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
@@ -185,11 +255,24 @@ struct beam {
     }
   }
 
-  // sigmaMax = yielding tensile normal stress
-  // tauMax = yielding shear stress
-  //
-  // The cause (tensile or shear yielding) of the breakage is not saved,
-  // The exact location within the section is not saved also
+  /**
+   * Determines the breakage status of nodes based on stress limits.
+   *
+   * This function evaluates each element in the beam to determine if it
+   * exceeds the specified maximum tensile normal stress (`sigmaMax`) or
+   * shear stress (`tauMax`). It returns a vector indicating which nodes
+   * are considered broken.
+   *
+   * @param sigmaMax The maximum allowable tensile normal stress.
+   * @param tauMax The maximum allowable shear stress.
+   * @return A vector of boolean values indicating the breakage status
+   *         of each node. `true` indicates the node is broken.
+   *
+   * @pre The stress at each node must be computed before calling this
+   * function.
+   * @post The vector returned represents the breakage status of nodes
+   *       based on the given stress limits.
+   */
   std::vector<bool> getNodeBreakageStatus(double sigmaMax, double tauMax) {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
@@ -212,6 +295,21 @@ struct beam {
     return broken;
   }
 
+  /**
+   * Computes the lengths of the broken parts of the beam.
+   *
+   * This function takes the breakage status of nodes as input and returns
+   * a vector of the lengths of the broken parts of the beam.
+   *
+   * @param brk A vector of boolean values indicating the breakage status
+   *            of each node. `true` indicates the node is broken.
+   * @return A vector of the lengths of the broken parts of the beam.
+   *
+   * @pre The `getNodeBreakageStatus` function must be called before this
+   * function to compute the breakage status of nodes.
+   * @post The vector returned represents the lengths of the broken parts
+   *       of the beam.
+   */
   std::vector<double> getBrokenParts(std::vector<bool> &brk) {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
@@ -236,6 +334,14 @@ struct beam {
     std::cout << "sum f = " << sumf << "\n";
   }
 
+  /**
+   * Prints the external forces applied to each node of the beam.
+   *
+   * This function simply prints the external forces applied to each node of
+   * the beam. The forces are printed at the same x-coordinate as the node.
+   *
+   * @post The external forces at each node of the beam are printed.
+   */
   void print_node_force() {
 
     for (size_t i = 0; i < xpos.size(); i++) {
@@ -243,6 +349,17 @@ struct beam {
     }
   }
 
+  /**
+   * Prints the values of the internal forces and moments at the nodes of each
+   * element of the beam.
+   *
+   * This function prints the values of the internal forces and moments at the
+   * nodes of each element of the beam. The values are printed at the same
+   * x-coordinate as the node.
+   *
+   * @post The values of the internal forces and moments at the nodes of each
+   * element of the beam are printed.
+   */
   void print() {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;

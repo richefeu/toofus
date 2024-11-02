@@ -39,6 +39,14 @@ public:
     e[2].set(0.0, 0.0, 1.0);
   }
 
+  /**
+   * Copy constructor for the OBB class.
+   *
+   * This constructor initializes a new OBB instance by copying the center,
+   * extents, and orientation vectors from an existing OBB instance.
+   *
+   * @param obb The OBB object to copy from.
+   */
   OBB(const OBB &obb) : center(obb.center), extent(obb.extent) {
     e[0] = obb.e[0];
     e[1] = obb.e[1];
@@ -54,14 +62,41 @@ public:
     return (*this);
   }
 
+  /**
+   * Increase the size of the OBB by a given amount.
+   *
+   * This method increases the size of the OBB by adding the given amount
+   * to all three dimensions of the OBB. The center of the OBB remains
+   * unchanged.
+   *
+   * @param more The amount to increase the size of the OBB.
+   */
   void enlarge(double more) {
     extent.x += more;
     extent.y += more;
     extent.z += more;
   }
 
+  /**
+   * Translate the OBB by a given vector.
+   *
+   * This method changes the position of the OBB by adding the given vector
+   * to the center of the OBB. The orientation and size of the OBB remain
+   * unchanged.
+   *
+   * @param v The vector to translate the OBB by.
+   */
   void translate(const vec3r &v) { center += v; }
 
+  /**
+   * Rotate the OBB by a given quaternion.
+   *
+   * This method rotates the OBB by the given quaternion. The quaternion is
+   * expected to be a unit quaternion, i.e. a quaternion with a norm of 1. The
+   * rotation is applied to the center, orientation and size of the OBB.
+   *
+   * @param Q The quaternion to rotate the OBB by.
+   */
   void rotate(const quat &Q) {
     e[0] = Q * e[0];
     e[1] = Q * e[1];
@@ -69,6 +104,17 @@ public:
     center = Q * center;
   }
 
+  /**
+   * Compute the quaternion representation of the OBB's orientation.
+   *
+   * This method derives a quaternion from the orthonormal basis vectors
+   * of the OBB. It calculates the quaternion components directly from
+   * the rotation matrix formed by these vectors. The method returns a
+   * quaternion that represents the rotation applied to align the
+   * OBB with its current orientation.
+   *
+   * @return A quaternion representing the OBB's orientation.
+   */
   quat getQuaternion() {
     // Compute quaternion components directly from orthonormal vectors
     double tr = e[0].x + e[1].y + e[2].z;
@@ -105,8 +151,29 @@ public:
     }
   }
 
-  // see page 101 of the book 'Real-Time Collision Detection' (Christer Ericson)
+  /**
+   * Check if two OBBs intersect.
+   *
+   * This function implements the separating axis theorem to check if two
+   * OBBs intersect. The separating axis theorem states that two convex shapes
+   * do not intersect if there exists a line onto which one shape can be
+   * projected and not intersect the other shape. This theorem is used to
+   * compute the intersection of two OBBs.
+   *
+   * The function takes an OBB as parameter and returns true if the two
+   * OBBs intersect, false otherwise.
+   *
+   * The algorithm is based on the paper 'Real-Time Collision Detection'
+   * by Christer Ericson. The algorithm is described on page 101 of the
+   * book.
+   *
+   * @param obb The OBB to check for intersection.
+   * @param tol Tolerance for the intersection test.
+   * @return true if the two OBBs intersect, false otherwise.
+   */
   bool intersect(const OBB &obb, double tol = FLT_EPSILON) const {
+    // see page 101 of the book 'Real-Time Collision Detection' (Christer Ericson)
+
     double ra, rb;
     mat9r R, AbsR;
 
@@ -225,7 +292,11 @@ public:
     return true;
   }
 
-  // To know wether a point lies inside the OBB
+  /**
+   * @brief Check if a given point is inside the OBB.
+   * @param a The point to check.
+   * @return true if the point is inside the OBB, false otherwise.
+   */
   bool intersect(const vec3r &a) const {
     vec3r v = a - center;
     return !((fabs(v * e[0]) > extent.x) || (fabs(v * e[1]) > extent.y) || (fabs(v * e[2]) > extent.z));
@@ -261,4 +332,3 @@ int main (int argc, char const *argv[])
 }
 
 #endif
-

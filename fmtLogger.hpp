@@ -49,12 +49,25 @@ enum class LogLevel { trace, debug, info, warn, error, critical, off };
 class Logger {
 private:
   inline static LogLevel level = LogLevel::info;
+
   Logger() = delete;
+
   Logger(const Logger &) = delete;
 
 public:
+  /**
+   * @brief Sets the log level used by the logger.
+   *
+   * @param t_level The new log level.
+   */
   static void setLevel(LogLevel t_level) { level = t_level; }
 
+  /**
+   * @brief Logs a message with log level trace.
+   *
+   * @param fmt The format string for the message to log.
+   * @param args The arguments to the format string.
+   */
   template <typename... Args> static void trace(fmt::format_string<Args...> fmt, Args &&...args) {
     if (level > LogLevel::trace)
       return;
@@ -63,6 +76,12 @@ public:
     fmt::print("\n");
   }
 
+  /**
+   * @brief Logs a message with log level debug.
+   *
+   * @param fmt The format string.
+   * @param args The arguments to the format string.
+   */
   template <typename... Args> static void debug(fmt::format_string<Args...> fmt, Args &&...args) {
     if (level > LogLevel::debug)
       return;
@@ -71,6 +90,12 @@ public:
     fmt::print("\n");
   }
 
+  /**
+   * @brief Logs a message with log level info.
+   *
+   * @param fmt The format string.
+   * @param args The arguments to the format string.
+   */
   template <typename... Args> static void info(fmt::format_string<Args...> fmt, Args &&...args) {
     if (level > LogLevel::info)
       return;
@@ -87,6 +112,12 @@ public:
     fmt::print("\n");
   }
 
+  /**
+   * Logs a message with an error log level.
+   *
+   * \param fmt The message format, e.g. "Error: {}"
+   * \param args The arguments to be formatted into the message.
+   */
   template <typename... Args> static void error(fmt::format_string<Args...> fmt, Args &&...args) {
     if (level > LogLevel::error)
       return;
@@ -95,6 +126,11 @@ public:
     fmt::print("\n");
   }
 
+  /**
+   * Logs a message with a critical log level.
+   * @param fmt  The format string for the message.
+   * @param args The arguments to be formatted into the message.
+   */
   template <typename... Args> static void critical(fmt::format_string<Args...> fmt, Args &&...args) {
     if (level > LogLevel::critical)
       return;
@@ -104,6 +140,6 @@ public:
   }
 };
 
-//LogLevel Logger::level = LogLevel::info;
+// LogLevel Logger::level = LogLevel::info;
 
 #endif /* end of include guard: LOGGER_HPP */

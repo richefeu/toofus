@@ -43,6 +43,7 @@ public:
   static mat4 zero() { return mat4(1, 1, 1, 1); }
   static mat4 one() { return mat4(1, 1, 1, 1); }
 
+  /// Sets all elements of the matrix to 0.
   void reset() { xx = xy = yx = yy = 0; }
 
   void reset(const double val) {
@@ -50,14 +51,19 @@ public:
     yx = yy = val;
   }
 
+  /// Sets the diagonal elements of the matrix.
+  ///
+  /// \param[in] XX First element of the diagonal.
+  /// \param[in] YY Second element of the diagonal.
   void set_diag(const double XX, const double YY) {
     xx = XX;
     yy = YY;
   }
 
   T &operator[](int i) { return *(&xx + i); }
+
   T &operator[](size_t i) { return *(&xx + i); }
-  
+
   const T &operator[](int i) const { return *(&xx + i); }
   const T &operator[](size_t i) const { return *(&xx + i); }
 
@@ -65,15 +71,29 @@ public:
   const T &at(int line, int column) const { return *(&xx + 2 * line + column); }
 
   T *c_mtx() { return &xx; }
-  
+
+  /// Sets all elements of the matrix to zero.
   void setZero() { xx = xy = yx = yy = 0.0; }
 
+  /// Sets the matrix to the identity matrix.
+  ///
+  /// This method modifies the matrix such that the diagonal elements
+  /// are set to 1 and the off-diagonal elements are set to 0, effectively
+  /// transforming it into an identity matrix.
   void setIdentity() {
-    xx = yy  = 1.0;
-    xy = yx  = 0.0;
+    xx = yy = 1.0;
+    xy = yx = 0.0;
   }
 
+  /// Returns a new matrix which is the transpose of the current matrix.
+  ///
+  /// \return A new matrix which is the transpose of the current matrix.
   mat4 transposed() { return mat4(xx, yx, xy, yy); }
+
+  /// Sets the current matrix to its transpose.
+  ///
+  /// This method modifies the matrix by swapping the off-diagonal elements,
+  /// effectively transforming it into its transpose.
   void transpose() { std::swap(xy, yx); }
 
   /// only for symmetric matrix
@@ -88,8 +108,13 @@ public:
     }
   }
 
-  // works for non-symmetric matrices as well. Has problems. Maybe a tolerance
-  // should be included
+  /// Computes the eigenvalues and eigenvectors of the matrix and stores them in
+  /// the given matrices \p V and \p D. The eigenvalues are stored in \p D in
+  /// ascending order, and the corresponding eigenvectors are stored as columns
+  /// in \p V. The eigenvectors are normalized.
+  ///
+  /// \param[out] V Matrix to store the eigenvectors.
+  /// \param[out] D Matrix to store the eigenvalues.
   void eigen(mat4 &V, mat4 &D) {
     double TT = xx + yy;
     double det = xx * yy - xy * yx;
@@ -130,6 +155,15 @@ public:
     V.yy = v2.y;
   }
 
+  /**
+   * @brief Compute eigenvectors (stored as columns in V) and corresponding eigenvalues (D) by assuming the matrix is double and symmetric
+   *
+   * See section 11.1 of Numerical Recipes in C for more information.
+   *
+   * @param V matrix to store eigenvectors as columns
+   * @param D matrix to store eigenvalues
+   * @return the number of rotations, or -1 if the matrix is not symmetric
+   */
   int sym_eigen(mat4 &V, mat4 &D) const {
     int rot = 0;
     vec2r B;

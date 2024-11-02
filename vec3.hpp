@@ -47,14 +47,28 @@ public:
 
   void reset() { x = y = z = 0; }
 
+  /// @brief Set the components of the vector.
+  ///
+  /// @param X first component
+  /// @param Y second component
+  /// @param Z third component
   void set(T X, T Y, T Z) {
     x = X;
     y = Y;
     z = Z;
   }
 
+  /// @brief Set all components of the vector to the same value.
+  ///
+  /// @param val The value to set each component of the vector (x, y, z).
   void set(T val) { x = y = z = val; }
 
+  /// @brief Randomize the direction of the vector.
+  ///
+  /// The direction is random but the length is the same as the original
+  /// vector. The vector is then multiplied by @a val.
+  ///
+  /// @param val The value to multiply the vector with.
   void randomize_direction(double val) {
     static std::default_random_engine engine;
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
@@ -67,6 +81,14 @@ public:
     z *= val;
   }
 
+  /// @brief Randomize the direction of the vector.
+  ///
+  /// The direction is random but the length is the same as the original
+  /// vector. The vector is then multiplied by @a val.
+  ///
+  /// The y component of the vector is set to 0.0.
+  ///
+  /// @param val The value to multiply the vector with.
   void randomize_direction_xz(double val) {
     static std::default_random_engine engine;
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
@@ -78,13 +100,32 @@ public:
     z *= val;
   }
 
+  /// @brief Test if the vector is null.
+  ///
+  /// A vector is said to be null if all its components are less than
+  /// @a tol in absolute value. The default value of @a tol is 1e-20.
   bool isnull(const T tol = 1e-20) const { return (fabs(x) < tol && fabs(y) < tol && fabs(z) < tol); }
 
+  /// @brief Get a pointer to the components of the vector as a C array.
+  ///
+  /// The components of the vector are stored in the order (x, y, z).
   T *c_vec() { return &x; }
 
+  /// @brief Get a reference to the i-th component of the vector.
+  ///
+  /// Components are indexed as follows: x = 0, y = 1, z = 2.
+  ///
+  /// @param i The index of the component to get.
+  /// @return A reference to the i-th component of the vector.
   T &operator[](int i) { return *(&x + i); }
   T &operator[](size_t i) { return *(&x + i); }
 
+  /// @brief Get a constant reference to the i-th component of the vector.
+  ///
+  /// Components are indexed as follows: x = 0, y = 1, z = 2.
+  ///
+  /// @param i The index of the component to get.
+  /// @return A constant reference to the i-th component of the vector.
   const T &operator[](int i) const { return *(&x + i); }
   const T &operator[](size_t i) const { return *(&x + i); }
 
@@ -194,6 +235,12 @@ public:
     return N;
   }
 
+  /// @brief Normalize the vector and return its original length.
+  ///
+  /// This function normalizes the vector and sets the non-dominant components to zero
+  /// if one of the components becomes exactly 1 after normalization.
+  ///
+  /// @return The length of the vector before normalization.
   T normalizeTested() {
     T N = norm2(*this);
     if (N > 0.0) {
@@ -210,6 +257,34 @@ public:
     return N;
   }
 
+  /// Normalize the vector using the quotient algorithm.
+  ///
+  /// This function normalizes the vector in a way that is robust against
+  /// floating-point cancellation. It works by computing a quotient of the
+  /// vector components, which helps to avoid small values of the components
+  /// (which can occur due to floating-point cancellation) and thus avoid
+  /// NaNs. The algorithm is described in the following paper:
+  ///
+  ///   @article{Blinn:1997:QNA:265319.265320,
+  ///     author = {Blinn, Jim},
+  ///     title = {Quaternions, Norman's Quaternions, and the Quotient
+  ///         Algorithm},
+  ///     journal = {IEEE Comput. Graph. Appl.},
+  ///     issue_date = {January 1997},
+  ///     volume = {17},
+  ///     number = {1},
+  ///     month = jan,
+  ///     year = {1997},
+  ///     issn = {0272-1716},
+  ///     pages = {82--85},
+  ///     numpages = {4},
+  ///     url = {http://doi.acm.org/10.1145/265319.265320},
+  ///     doi = {10.1145/265319.265320},
+  ///     acmid = {265320},
+  ///     publisher = {IEEE Computer Society},
+  ///     address = {Washington, DC, USA},
+  ///     keywords = {normalization, quaternions},
+  ///   }
   T normalizeQuotientAlgo() {
 #define NQ(X, Y, Z, N)                                                                                                 \
   T f = 1.0 / Z;                                                                                                       \
@@ -245,6 +320,10 @@ public:
     return *this;
   }
 
+  /// @brief Normalize the vector and return the normalized vector.
+  ///
+  /// This function normalizes the vector using the tested algorithm
+  /// and returns the normalized vector.
   vec3 normalizedTested() {
     this->normalizeTested();
     return *this;

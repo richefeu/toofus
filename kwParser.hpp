@@ -35,6 +35,14 @@ public:
   //    myParser.kwMap["key"] = __DO__ { is >> values; };
   void addKw(std::string kw, std::function<void(std::istream &)> func) { kwMap[kw] = func; }
 
+  /**
+   * \brief Parse a file
+   *
+   * \param filename File to parse
+   *
+   * This function opens the file and calls parse(std::istream &).
+   * If the file cannot be opened, an error message is printed on cerr.
+   */
   void parse(const char *filename) {
     std::ifstream file(filename);
     if (file)
@@ -43,6 +51,15 @@ public:
       std::cerr << "@kwParser::parse, file " << filename << " cannot be opened" << std::endl;
   }
   
+  /**
+   * \brief Parse a string
+   *
+   * \param chain String to parse
+   *
+   * This function creates a stringstream from the given string and
+   * calls parse(std::istream &).
+   * If the stringstream cannot be created, an error message is printed on cerr.
+   */
   void parseString(const char *chain) {
     std::stringstream ss;
     ss.str(chain);
@@ -52,6 +69,19 @@ public:
       std::cerr << "@kwParser::parseString, stream cannot be created" << std::endl;
   }
 
+  /**
+   * \brief Parse a stream
+   *
+   * \param is Stream to parse
+   *
+   * This function reads the stream token by token. If the token is a keyword,
+   * the corresponding function is called with the stream as argument.
+   * If the token is a comment (starts with '/', '#', '!'), the rest of the
+   * line is ignored.
+   * If the token is the break string (see setBreakStr), the parsing is stopped.
+   * If the token is none of the above, a warning is printed on cerr if the
+   * warning flag is set.
+   */
   void parse(std::istream &is) {
     std::string token;
     is >> token;

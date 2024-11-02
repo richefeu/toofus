@@ -89,6 +89,11 @@ public:
     return *this;
   }
 
+  /**
+   * Applies the transformation to the given vector.
+   *
+   * @param v The vector to which the transformation is applied.
+   */
   void apply(vec3<T> &v) {
     T vx = xx * v.x + xy * v.y + xz * v.z + tx;
     T vy = yx * v.x + yy * v.y + yz * v.z + ty;
@@ -98,6 +103,10 @@ public:
     v.z = vz;
   }
 
+  /**
+   * Resets the transformation to its neutral element, i.e. the identity
+   * transformation.
+   */
   void reset() {
     xx = 1;
     xy = 0;
@@ -113,6 +122,11 @@ public:
     tz = 0;
   }
   
+  /**
+   * Resets the translation part of the transformation to its neutral element.
+   *
+   * This will not touch the rotation part of the transformation.
+   */
   void reset_translation() {
     //xx = 1;
     //xy = 0;
@@ -128,6 +142,11 @@ public:
     tz = 0;
   }
   
+  /**
+   * Resets the rotation part of the transformation to its neutral element.
+   *
+   * This will not touch the translation part of the transformation.
+   */
   void reset_rotation() {
     xx = 1;
     xy = 0;
@@ -143,6 +162,12 @@ public:
     //tz = 0;
   }
 
+  /**
+   * Prints the transformation matrix in the format that is also used by
+   * the blender python api.
+   *
+   * The output is a 4x4 matrix, with the last row being always (0 0 0 1).
+   */
   void print() {
     std::cout << xx << '\t' << xy << '\t' << xz << '\t' << tx << std::endl;
     std::cout << yx << '\t' << yy << '\t' << yz << '\t' << ty << std::endl;
@@ -150,6 +175,17 @@ public:
     std::cout << "0\t0\t0\t1" << std::endl;
   }
 
+  /**
+   * Multiplies two transformation matrices.
+   *
+   * This function performs matrix multiplication on two 4x4 transformation matrices,
+   * combining their effects. The resulting transformation matrix represents the 
+   * sequential application of the transformations represented by the input matrices.
+   *
+   * @param a The first transformation matrix.
+   * @param b The second transformation matrix.
+   * @return A new transformation matrix that is the product of the two input matrices.
+   */
   friend Transformation operator*(const Transformation &a, const Transformation &b) {
     Transformation tr;
     tr.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx;

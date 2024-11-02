@@ -20,6 +20,8 @@
 
 class linreg {
 public:
+  /// @brief Get the instance of the linreg class.
+  ///        This is a singleton.
   static linreg *get() {
     static linreg instance;
     return &instance;

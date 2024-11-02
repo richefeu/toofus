@@ -44,20 +44,42 @@ public:
 
   void reset() { x = y = 0; }
 
+  /// @brief Set the components of the vector.
+  ///
+  /// @param X The value to which the x component is set.
+  /// @param Y The value to which the y component is set.
   void set(T X, T Y) {
     x = X;
     y = Y;
   }
 
+  /// @brief Set both components of the vector to the given value.
+  ///
+  /// @param val The value to which both the x and y components are set.
   void set(T val) { x = y = val; }
 
+  /// @brief Check if the vector is null.
+  ///
+  /// A vector is considered null if both its components are smaller than
+  /// the given tolerance.
+  ///
+  /// @param tol The tolerance value. The default value is 1e-20.
   bool isnull(const T tol = 1e-20) const { return (fabs(x) < tol && fabs(y) < tol); }
 
+  /// @brief Direct access to the vector data.
+  ///
+  /// This method is very low level and is not recommended for direct use.
   T *c_vec() { return &x; }
 
+  /// @brief Direct access to the vector data.
+  ///
+  /// This method is very low level and is not recommended for direct use.
   T &operator[](int i) { return *(&x + i); }
   T &operator[](size_t i) { return *(&x + i); }
 
+  /// @brief Direct access to the vector data.
+  ///
+  /// This method is very low level and is not recommended for direct use.
   const T &operator[](int i) const { return *(&x + i); }
   const T &operator[](size_t i) const { return *(&x + i); }
 

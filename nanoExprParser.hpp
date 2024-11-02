@@ -20,10 +20,18 @@
 #include <string>
 #include <vector>
 
-// #include <iostream>
-
 template <typename T> class nanoExprParser {
 public:
+  /**
+   * Constructs a nanoExprParser object and initializes predefined constants.
+   *
+   * This constructor reserves space in the constants vector to prevent
+   * reallocation, which could invalidate pointers stored in the variables map.
+   * It also initializes the parser with three mathematical constants:
+   * - pi: 3.14159265358979323846
+   * - e: 2.71828182845904523536
+   * - phi: 1.61803398874989484820
+   */
   nanoExprParser() {
     constants.reserve(5); // so that the address T* in the map 'variables' will not change
     addConstant("pi", 3.14159265358979323846);
@@ -31,6 +39,13 @@ public:
     addConstant("phi", 1.61803398874989484820);
   }
 
+  /**
+   * Parses a mathematical expression and stores the result in a variable.
+   *
+   * The expression is given as a string. The result is stored in the variable
+   * passed by reference. The function returns true if the expression has been
+   * parsed successfully, and false otherwise.
+   */
   bool parse(const std::string &expr, T &result) {
     this->expr = expr;
     skip_whitespace();
@@ -39,10 +54,24 @@ public:
     return pos == (expr.size() - 1);
   }
 
-  void addVariable(const std::string &name, T *value) {
-    variables[name] = value;
-  }
+  /**
+   * Adds a variable to the parser.
+   *
+   * The variable is identified by its name, and its value is passed by pointer.
+   * The function stores the address of the variable in the variables map.
+   */
+  void addVariable(const std::string &name, T *value) { 
+    variables[name] = value; }
 
+  /**
+   * Adds a constant to the parser.
+   *
+   * The constant is identified by its name, and its value is passed by value.
+   * The function checks if the constant is already defined in the variables
+   * map. If it is, the function does nothing. Otherwise, the constant is added
+   * to the constants vector and the address of the last element of the vector
+   * is stored in the variables map.
+   */
   void addConstant(const std::string &name, T value) {
     if (variables.find(name) != variables.end()) {
       return;
@@ -57,6 +86,17 @@ private:
   std::map<std::string, T *> variables;
   std::vector<T> constants;
 
+  /**
+   * Parses a mathematical expression and returns the result.
+   *
+   * This function parses a mathematical expression given in the string
+   * 'expr'. The expression is expected to be a sequence of one or more
+   * terms separated by '+' or '-' operators. The function returns the
+   * result of the expression.
+   *
+   * The function sets the position 'pos' to the end of the expression if
+   * the expression is not valid.
+   */
   T parse_expression() {
     T result = parse_term();
     while (true) {
@@ -73,6 +113,16 @@ private:
     return result;
   }
 
+  /**
+   * Parses a term and returns the result.
+   *
+   * This function parses a term given in the string 'expr'. The term is
+   * expected to be a sequence of one or more factors separated by '*' or '/'
+   * operators. The function returns the result of the expression.
+   *
+   * The function sets the position 'pos' to the end of the expression if
+   * the expression is not valid.
+   */
   T parse_term() {
     T result = parse_factor();
     while (true) {
@@ -97,6 +147,17 @@ private:
     return result;
   }
 
+  /**
+   * Parses a factor and returns the result.
+   *
+   * This function parses a factor given in the string 'expr'. The factor is
+   * expected to be a number, a variable, or a function of the form func(number)
+   * where func is 'sqrt', 'sin', 'cos', 'tan', 'exp', 'log', 'log10', or 'pow'.
+   * The function returns the result of the expression.
+   *
+   * The function sets the position 'pos' to the end of the expression if
+   * the expression is not valid.
+   */
   T parse_factor() {
     char c = get_next_char();
     if (c == '(') {
@@ -148,7 +209,7 @@ private:
         unget_char();
         // return parse_number();
         if (variables.find(func) != variables.end()) {
-          //std::cout << "'" << func << "' = " << *variables[func] << std::endl;
+          // std::cout << "'" << func << "' = " << *variables[func] << std::endl;
           return *variables[func];
         } else {
           return parse_number();
@@ -164,6 +225,15 @@ private:
     return 0;
   }
 
+  /**
+   * Parses a number from the expression and returns it.
+   *
+   * This can be either an integer or a floating point number, and can be
+   * optionally followed by an exponent.
+   *
+   * @returns The parsed number. If the number is not valid, returns 0 and
+   *   sets pos to the end of the expression to indicate an error.
+   */
   T parse_number() {
     T result = 0;
     bool negative = false;
@@ -207,6 +277,12 @@ private:
     return negative ? -result : result;
   }
 
+  /**
+   * Retrieves the next character in the expression, skipping over any whitespace.
+   *
+   * @returns The next character in the expression, or '\0' if the end of the
+   *   expression has been reached.
+   */
   char get_next_char() {
     skip_whitespace();
     if (pos >= expr.size()) {
@@ -221,6 +297,10 @@ private:
     }
   }
 
+  /**
+   * Skips over any whitespace characters in the expression, incrementing the
+   * parse position as it goes.
+   */
   void skip_whitespace() {
     while (pos < expr.size() && std::isspace(expr[pos])) {
       pos++;

@@ -24,6 +24,12 @@
 // Process a binary PPM file
 class ppm {
 
+  /**
+   * Resets the PPM object to its default state.
+   *
+   * This method sets the width, height, and maximum color value of the PPM object
+   * to their default values of 0, 0, and 255 respectively.
+   */
   void init() {
     width = 0;
     height = 0;
@@ -39,23 +45,27 @@ public:
   std::vector<unsigned char> r;
   std::vector<unsigned char> g;
   std::vector<unsigned char> b;
-  //
-  unsigned int height;
-  unsigned int width;
-  unsigned int max_col_val;
-  // total number of elements (pixels)
-  unsigned int size;
+
+  unsigned int height;      ///< height of the PPM image
+  unsigned int width;       ///< width of the PPM image
+  unsigned int max_col_val; ///< maximum color value in the PPM image
+  unsigned int size;        ///< total number of elements (pixels)
 
   ppm() { init(); }
 
-  // create a PPM object and fill it with data stored in fname
+  /// constructs a PPM object and loads data from the specified file
   ppm(const std::string &fname) {
     init();
     read(fname);
   }
 
-  // create an "epmty" PPM image with a given width and height;the R,G,B arrays
-  // are filled with zeros
+  /**
+   * Creates an "empty" PPM image with the given width and height. The R, G, B
+   * arrays are filled with zeros.
+   *
+   * @param _width The desired width of the PPM image.
+   * @param _height The desired height of the PPM image.
+   */
   ppm(const unsigned int _width, const unsigned int _height) {
     init();
     width = _width;
@@ -126,7 +136,10 @@ public:
     inp.close();
   }
 
-  // write the PPM image in fname
+  /**
+   * Writes the PPM image to a file. The file name is given in fname.
+   * The image is written in binary mode.
+   */
   void write(const std::string &fname) {
     std::ofstream inp(fname.c_str(), std::ios::out | std::ios::binary);
     if (inp.is_open()) {

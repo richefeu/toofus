@@ -38,10 +38,23 @@ public:
   TermMenu(const std::string &prompt, std::initializer_list<std::string> choices)
       : prompt(prompt), choices(choices), selected(0), startRow(0), startCol(0) {}
 
+  /// Set the prompt displayed at the top of the menu
+  ///
+  /// The prompt is displayed with inverted colors, so it
+  /// should be short and not too verbose.
   void setPrompt(const std::string &p) { prompt = p; }
 
+  /// Add a choice to the menu
+  ///
+  /// The choice is added to the bottom of the menu, and the
+  /// selected item is not changed.
   void addChoice(const std::string &choice) { choices.push_back(choice); }
 
+  /// Display the menu
+  ///
+  /// This method displays the menu at the top-left of the screen
+  /// with the prompt highlighted in bold, and the selected item
+  /// highlighted in bold and underlined.
   void displayMenu() {
     std::cout << "\033[" << startRow << ";" << startCol << "H";
     std::cout << "\033[1m" << prompt << "\033[0m" << std::endl;
@@ -55,6 +68,18 @@ public:
     }
   }
 
+  /// Run the menu
+  ///
+  /// This method runs the menu until the user presses Enter,
+  /// and then returns the selected item as an integer.
+  ///
+  /// The menu is displayed with the prompt highlighted in bold,
+  /// and the selected item is highlighted in bold and underlined.
+  ///
+  /// The menu is displayed in the middle of the screen, or
+  /// as close to the middle as possible.
+  ///
+  /// The menu can be navigated using the arrow keys.
   int run() {
     char c;
     struct termios oldt, newt;

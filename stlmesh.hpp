@@ -24,8 +24,8 @@
 #include <set>
 #include <vector>
 
-#include <sstream>
 #include <cstdint>
+#include <sstream>
 #include <string>
 
 #define ZERO 1.0e-12
@@ -60,6 +60,12 @@ public:
     int i0, i1; // ID-numbers of points in the mesh
     edge() : i0(0), i1(0) {}
     edge(int I0, int I1) : i0(I0), i1(I1) {}
+    /**
+     * @brief Compares two edges by comparing their node indices.
+     *
+     * @param rhs Edge to compare to.
+     * @return true if the edge is smaller than rhs, false otherwise.
+     */
     bool operator<(const edge &rhs) const {
       if (i0 < rhs.i0)
         return true;
@@ -76,12 +82,30 @@ public:
   // Ctor
   STLmesh() {}
 
+  /**
+   * @brief Clears the mesh.
+   *
+   * This method clears all the data structure of the mesh, i.e.
+   * points, triangles and edges. It is mainly used to reset the
+   * mesh to its initial state.
+   */
   void clear() {
     points.clear();
     triangles.clear();
     edges.clear();
   }
 
+  /**
+   * @brief Removes duplicated edges in the mesh.
+   *
+   * This method cleans the edge list by removing duplicate edges.
+   * An edge is considered duplicated if it is represented more than
+   * once in the mesh with the same pair of node indices. The method
+   * ensures that each edge is unique by using a set to store edges
+   * as unique pairs of node indices. Duplicates are identified and
+   * removed, and the total number of duplicated edges removed is
+   * printed to the console.
+   */
   void cleanEdges() {
     std::set<std::pair<size_t, size_t>> edgeSet;
     for (size_t e = 0; e < edges.size(); e++) {
@@ -107,6 +131,15 @@ public:
     std::cout << nbePrev - nbeNew << " duplicated edges have been removed\n";
   }
 
+  /**
+   * @brief Resets the normals of each triangle in the mesh.
+   *
+   * This method resets the normal of each triangle in the mesh to
+   * the cross product of the two vectors defined by the first and
+   * second points of the triangle, and the first and third points
+   * of the triangle. The resulting normal is then normalized and
+   * stored in the triangle structure.
+   */
   void resetNormals() {
     for (size_t t = 0; t < triangles.size(); t++) {
       vec3r a(points[triangles[t].i1].x - points[triangles[t].i0].x,
@@ -123,6 +156,17 @@ public:
     }
   }
 
+  /**
+   * @brief Saves the mesh to a binary STL file.
+   *
+   * This method writes the mesh data, including normals and vertices of each
+   * triangle, to a specified file in binary STL format. The STL file
+   * begins with an 80-byte header followed by the number of triangles.
+   * Each triangle's normal and vertices are written as 32-bit floating-point
+   * numbers, followed by an attribute byte count set to zero.
+   *
+   * @param name The name of the file to save the mesh to.
+   */
   void save(const char *name) {
     std::ofstream file(name, std::ofstream::binary | std::ofstream::out);
     if (!file) {
@@ -163,17 +207,42 @@ public:
     file.close();
   }
 
-  // UINT8[80]  Header
-  // UINT32     Number of triangles
-  //
-  // foreach triangle
-  // REAL32[3]  Normal vector
-  // REAL32[3]  Vertex 1
-  // REAL32[3]  Vertex 2
-  // REAL32[3]  Vertex 3
-  // UINT16     Attribute byte count
-  // end
+  /**
+   * @brief Read a mesh file (stl BINARY format)
+   *
+   * @param name name of the file to read
+   *
+   * @return none
+   *
+   * This function reads a mesh file in stl BINARY format and initialize
+   * the STLmesh object with the read data.
+   *
+   * A STL file is a binary file that contains a header of 80 bytes,
+   * a 32 bit integer giving the number of triangles, and for each triangle:
+   * - a 32 bit floating point number for the normal (x, y, z)
+   * - three 32 bit floating point numbers for each vertex (x, y, z)
+   * - a 16 bit integer for the attribute byte count
+   *
+   * The STLmesh object is initialized with the read data and the edges
+   * are computed and stored in the object.
+   *
+   * @note The function does not check if the file is a valid STL file.
+   *       It is the responsability of the caller to ensure that the file
+   *       is valid before calling this function.
+   */
   void read(const char *name) {
+
+    // UINT8[80]  Header
+    // UINT32     Number of triangles
+    //
+    // foreach triangle
+    // REAL32[3]  Normal vector
+    // REAL32[3]  Vertex 1
+    // REAL32[3]  Vertex 2
+    // REAL32[3]  Vertex 3
+    // UINT16     Attribute byte count
+    // end
+
     std::ifstream file(name, std::ifstream::binary | std::ifstream::in);
     if (!file) {
       std::cerr << "Cannot read " << name << std::endl;
@@ -213,9 +282,9 @@ public:
       T.normal.y = (double)(vnormal.y);
       T.normal.z = (double)(vnormal.z);
 
-      //std::cout << vnormal.x << ' ' << vnormal.y << ' ' << vnormal.z << " | ";
-      // FIXME: it seems that normal are finally wrong
-      //        (don't know why)
+      // std::cout << vnormal.x << ' ' << vnormal.y << ' ' << vnormal.z << " | ";
+      //  FIXME: it seems that normal are finally wrong
+      //         (don't know why)
 
       itMap = map_points.find(vertex1);
       if (itMap != map_points.end()) {

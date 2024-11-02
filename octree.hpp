@@ -50,19 +50,56 @@ struct ot_Sphere : public ot_Shape {
   ot_Sphere() : x(0.0), y(0.0), z(0.0), r(0.0) {}
   ot_Sphere(double x_, double y_, double z_, double r_) : x(x_), y(y_), z(z_), r(r_) {}
 
+  /**
+   * Translates the sphere by the given offsets in the x, y, and z directions.
+   *
+   * @param Tx The translation offset along the x-axis.
+   * @param Ty The translation offset along the y-axis.
+   * @param Tz The translation offset along the z-axis.
+   */
   void translate(double Tx, double Ty, double Tz) {
     x += Tx;
     y += Ty;
     z += Tz;
   }
 
+  /**
+   * Returns the minimum x-coordinate of the sphere.
+   * @return The x-coordinate of the minimum point of the sphere.
+   */
   double Xmin() { return (x - r); }
+  /**
+   * Returns the maximum x-coordinate of the sphere.
+   * @return The x-coordinate of the maximum point of the sphere.
+   */
   double Xmax() { return (x + r); }
+  /**
+   * Returns the minimum y-coordinate of the sphere.
+   * @return The y-coordinate of the minimum point of the sphere.
+   */
   double Ymin() { return (y - r); }
+  /**
+   * Returns the maximum y-coordinate of the sphere.
+   * @return The y-coordinate of the maximum point of the sphere.
+   */
   double Ymax() { return (y + r); }
+  /**
+   * Returns the minimum z-coordinate of the sphere.
+   * @return The z-coordinate of the minimum point of the sphere.
+   */
   double Zmin() { return (z - r); }
+  /**
+   * Returns the maximum z-coordinate of the sphere.
+   * @return The z-coordinate of the maximum point of the sphere.
+   */
   double Zmax() { return (z + r); }
 
+  /**
+   * Tests if the given point is within the sphere.
+   *
+   * @param p The point to test.
+   * @return True if the point is within the sphere, false otherwise.
+   */
   bool contains(ot_Point &p) {
     double dx = p.x - x;
     double dy = p.y - y;
@@ -86,10 +123,26 @@ struct ot_Box : public ot_Shape {
   ot_Box(double xmin_, double ymin_, double zmin_, double xmax_, double ymax_, double zmax_)
       : xmin(xmin_), ymin(ymin_), zmin(zmin_), xmax(xmax_), ymax(ymax_), zmax(zmax_) {}
 
+  /**
+   * Translates the box by the given amount.
+   *
+   * @param Tx The x-coordinate translation.
+   * @param Ty The y-coordinate translation.
+   * @param Tz The z-coordinate translation.
+   *
+   * @return A new box translated by the given coordinates.
+   */
   ot_Box translated(double Tx, double Ty, double Tz) {
     return ot_Box(xmin + Tx, ymin + Ty, zmin + Tz, xmax + Tx, ymax + Ty, zmax + Tz);
   }
 
+  /**
+   * Translates the box by the specified amounts in the x, y, and z directions.
+   *
+   * @param Tx The translation amount along the x-axis.
+   * @param Ty The translation amount along the y-axis.
+   * @param Tz The translation amount along the z-axis.
+   */
   void translate(double Tx, double Ty, double Tz) {
     xmin += Tx;
     ymin += Ty;
@@ -99,17 +152,52 @@ struct ot_Box : public ot_Shape {
     zmax += Tz;
   }
 
+  /**
+   * Returns the minimum x-coordinate of the box.
+   * @return The x-coordinate of the minimum point of the box.
+   */
   double Xmin() { return xmin; }
+  /**
+   * Returns the maximum x-coordinate of the box.
+   * @return The x-coordinate of the maximum point of the box.
+   */
   double Xmax() { return xmax; }
+  /**
+   * Returns the minimum y-coordinate of the box.
+   * @return The y-coordinate of the minimum point of the box.
+   */
   double Ymin() { return ymin; }
+  /**
+   * Returns the maximum y-coordinate of the box.
+   * @return The y-coordinate of the maximum point of the box.
+   */
   double Ymax() { return ymax; }
+  /**
+   * Returns the minimum z-coordinate of the box.
+   * @return The z-coordinate of the minimum point of the box.
+   */
   double Zmin() { return zmin; }
+  /**
+   * Returns the maximum z-coordinate of the box.
+   * @return The z-coordinate of the maximum point of the box.
+   */
   double Zmax() { return zmax; }
 
+  /**
+   * Check if a point is contained within the box.
+   * @param p The point to test.
+   * @return true if the point is contained in the box, false otherwise.
+   */
   bool contains(ot_Point &p) {
     return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax || p.z < zmin || p.z > zmax);
   }
 
+  /**
+   * Checks if the box intersects with another box.
+   *
+   * @param range The box to test intersection with.
+   * @return true if the boxes intersect, false otherwise.
+   */
   bool intersects(ot_Box &range) {
     return !(xmin > range.xmax || xmax < range.xmin || ymin > range.ymax || ymax < range.ymin || zmin > range.zmax ||
              zmax < range.zmin);
@@ -117,6 +205,16 @@ struct ot_Box : public ot_Shape {
 
   bool intersects(ot_Sphere &c) {
     double dx = c.x - std::max(xmin, std::min(c.x, xmax));
+    /**
+     * Checks if the box intersects with a sphere.
+     *
+     * The algorithm works by calculating the distance between the center of the sphere
+     * and the closest point on the box. If the distance is less than the radius of the
+     * sphere, then the sphere intersects with the box.
+     *
+     * @param c The sphere to test intersection with.
+     * @return true if the sphere intersects with the box, false otherwise.
+     */
     double dy = c.y - std::max(ymin, std::min(c.y, ymax));
     double dz = c.z - std::max(zmin, std::min(c.z, zmax));
     return (dx * dx + dy * dy + dz * dz) < (c.r * c.r);
@@ -140,6 +238,16 @@ private:
   OcTree *xmax_ymax_zmax;
   OcTree *xmin_ymax_zmax;
 
+  /**
+   * Subdivides the current octree node into eight child nodes.
+   *
+   * This method splits the current node's bounding box into eight equal-sized
+   * smaller boxes by calculating the midpoints of its edges. Each smaller box
+   * becomes a child node of the current octree. This process allows the octree
+   * to represent space at finer granularity and handle more points efficiently.
+   * After subdivision, the 'divided' flag is set to true, indicating that the
+   * node has been subdivided.
+   */
   void subdivide() {
     double xmin = boundary.xmin;
     double ymin = boundary.ymin;
@@ -163,6 +271,14 @@ private:
   }
 
 public:
+  /**
+   * Default constructor for the OcTree class.
+   *
+   * Initializes an empty octree with a boundary box that has zero volume,
+   * with all coordinates set to 0.0. The capacity is set to 0, indicating
+   * that no points can be stored, and the 'divided' flag is set to false,
+   * indicating that the tree is not subdivided.
+   */
   OcTree() {
     boundary.xmin = 0.0;
     boundary.ymin = 0.0;
@@ -174,12 +290,39 @@ public:
     divided = false;
   }
 
+  /**
+   * Initializes an OcTree with a boundary box and a capacity.
+   *
+   * This constructor is used to create an OcTree with a specific boundary box
+   * and a specific capacity (i.e. the maximum number of points that can be
+   * stored in the tree).
+   *
+   * @param boundary_ The boundary box for the OcTree.
+   * @param capacity_ The capacity of the OcTree, i.e. the maximum number of
+   * points that can be stored.
+   */
   OcTree(ot_Box &boundary_, size_t capacity_) {
     boundary = boundary_;
     capacity = capacity_;
     divided = false;
   }
 
+  /**
+   * Initializes an OcTree with a boundary box and a capacity.
+   *
+   * This constructor is used to create an OcTree with a specific boundary box
+   * and a specific capacity (i.e. the maximum number of points that can be
+   * stored in the tree).
+   *
+   * @param xmin_ The minimum x-coordinate of the boundary box.
+   * @param ymin_ The minimum y-coordinate of the boundary box.
+   * @param zmin_ The minimum z-coordinate of the boundary box.
+   * @param xmax_ The maximum x-coordinate of the boundary box.
+   * @param ymax_ The maximum y-coordinate of the boundary box.
+   * @param zmax_ The maximum z-coordinate of the boundary box.
+   * @param capacity_ The capacity of the OcTree, i.e. the maximum number of
+   * points that can be stored.
+   */
   OcTree(double xmin_, double ymin_, double zmin_, double xmax_, double ymax_, double zmax_, size_t capacity_) {
     boundary.xmin = xmin_;
     boundary.ymin = ymin_;
@@ -191,6 +334,19 @@ public:
     divided = false;
   }
 
+  /**
+   * Inserts a point into the OcTree.
+   *
+   * This function inserts a point into the OcTree. If the point is not within
+   * the boundary box of the OcTree, it immediately returns false. If the point
+   * is within the OcTree, it checks if the OcTree has reached its capacity. If
+   * it has, it subdivides itself into eight octants, and attempts to insert the
+   * point into one of the octants. If it cannot insert the point into any of
+   * the octants, it returns false.
+   *
+   * @param point The point to be inserted into the OcTree.
+   * @return true if the point was inserted, false otherwise.
+   */
   bool insert(ot_Point &point) {
     if (!boundary.contains(point)) {
       return false;
@@ -225,7 +381,17 @@ public:
     return false;
   }
 
-  // Querying points within the boundaries (AABB) with ot_Box or ot_Sphere
+  /**
+   * Queries the OcTree for points within a given range.
+   *
+   * This function recursively traverses the OcTree, and for each point within
+   * the tree, it checks if the point is within the given range. If the point is
+   * within the range, it adds the point to the given vector.
+   *
+   * @param range A reference to the range to query.
+   * @param found A reference to the vector of points that are within the range.
+   * @param indexMin The minimum index of points to consider.
+   */
   template <typename T> void query(T &range, std::vector<ot_Point> &found, size_t indexMin = 0) {
     if (!boundary.intersects(range)) {
       return;
@@ -250,7 +416,14 @@ public:
     return;
   }
 
-  // Periodically querying points within a box
+  /**
+   * Queries the OcTree for points within a given range, taking into account
+   * the periodicity of the box.
+   *
+   * @param range A reference to the range to query.
+   * @param found A reference to the vector of points that are within the range.
+   * @param indexMin The minimum index of points to consider.
+   */
   template <typename T> void query_periodic(T &range, std::vector<ot_Point> &found, size_t indexMin = 0) {
     double cpyX = 0.0;
     double cpyY = 0.0;

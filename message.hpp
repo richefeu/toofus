@@ -146,6 +146,7 @@ public:
   // DEPRECATED
   static void yop() { std::cerr << "Yop" << std::endl; }
 
+  /// Converts a time in seconds into a human readable string, e.g. 1h 30m 45s.
   static std::string HumanReadableSeconds(double ts) {
     std::stringstream ss;
     double ts_hour = floor(ts / 3600.0);

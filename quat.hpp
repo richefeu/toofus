@@ -83,8 +83,8 @@ public:
                 q1.v.x * q2.v.y - q1.v.y * q2.v.x + q1.s * q2.v.z + q1.v.z * q2.s, q1.s * q2.s - q1.v * q2.v);
   }
 
-  // Rotation of a vector by a quat (Found in @see http://xrual.googlecode.com)
-  // It seems to be faster than rotate method (but rotate is not deprecated since it is sure)
+  /// Rotation of a vector by a quat (Found in @see http://xrual.googlecode.com)
+  /// It seems to be faster than rotate method (but rotate is not deprecated since it is sure)
   vec3r operator*(const vec3r &V) const {
     // nVidia SDK implementation,
     // this is cool!!
@@ -222,14 +222,22 @@ public:
     }
   }
 
+  /// @brief Decomposes the quaternion into twist and swing components.
   /// @see http://xrual.googlecode.com
+  /// @param[in] V1 The input vector to be rotated by the quaternion.
+  /// @param[out] twist The twist component of the decomposition.
+  /// @param[out] swing The swing component of the decomposition.
   void TwistSwingDecomp(const vec3r &V1, quat &twist, quat &swing) {
     vec3r V2 = (*this) * V1; // V2 is obtained by rotating V1 (by means of the 'this' quaternion)
     swing.set_from_to(V1, V2);
     twist = (*this) * swing.get_conjugated();
   }
 
+  /// @brief Decomposes the quaternion into swing and twist components.
   /// @see http://xrual.googlecode.com
+  /// @param[in] V1 The input vector to be rotated by the quaternion.
+  /// @param[out] swing The swing component of the decomposition.
+  /// @param[out] twist The twist component of the decomposition.
   void SwingTwistDecomp(const vec3r &V1, quat &swing, quat &twist) {
     vec3r V2 = (*this) * V1;
     swing.set_from_to(V1, V2);
@@ -248,7 +256,7 @@ public:
     return norm;
   }
 
-  /// @brief returns a random normalized quaternion
+  /// @brief Returns a random normalized quaternion
   void randomize(bool seedTime = false) {
     // @see http://hub.jmonkeyengine.org/t/random-quaternions/8431
     static std::default_random_engine engine;
@@ -265,7 +273,8 @@ public:
     v.z = sqrt(1.0 - sum) * (distrib(engine) < 0.0 ? -1.0 : 1.0);
   }
 
-  // DEPRECATED!! use randomize(true) instead
+  /// @brief (DEPRECATED!!) Seeds the random number engine used for randomizing quaternions.
+  /// @see randomize(true)
   void randomizeSeed() {
     static std::default_random_engine engine;
     engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
@@ -280,8 +289,9 @@ public:
     v.z = sqrt(1 - sum) * (distrib(engine) < 0.0 ? -1.0 : 1.0);
   }
 
-  /// Quaternion must be normalized to use this function!!
-  /// The builded matrix M is stored with in row-major order
+  /// @brief Converts the quaternion to a rotation matrix.
+  /// @warning The quaternion must be normalized before calling this function.
+  /// @param[out] M The rotation matrix in row-major order.
   void get_rot_matrix(double M[]) const { // OP: 12*, 6+, 6-
     double Tx = 2.0 * v.x;
     double Ty = 2.0 * v.y;
@@ -307,8 +317,12 @@ public:
     M[8] = 1.0 - (Txx + Tyy);
   }
 
-  /// Quaternion must be normalized to use this function!!
-  /// The builded mat9r M is stored with in row-major order
+  /**
+   * @brief Converts the quaternion to a rotation matrix.
+   *
+   * @warning The quaternion must be normalized before calling this function.
+   * The resulting mat9r M is stored in row-major order.
+   */
   void get_rot_matrix(mat9r &M) const { // OP: 12*, 6+, 6-
     double Tx = 2.0 * v.x;
     double Ty = 2.0 * v.y;
@@ -334,8 +348,25 @@ public:
     M.zz = 1.0 - (Txx + Tyy);
   }
 
-  // @see http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-  // remark: Q or -Q can be set
+  /**
+   * @brief Sets the quaternion from a rotation matrix.
+   *
+   * This function converts a given 3x3 rotation matrix (in row-major order) into a quaternion.
+   * The quaternion is updated with the new values.
+   *
+   * @param m An array of 9 doubles representing the elements of the 3x3 rotation matrix.
+   *
+   * @return An integer representing the dominant component of the quaternion:
+   *         - 1 if the scalar component is the largest
+   *         - 2 if the x component is the largest
+   *         - 3 if the y component is the largest
+   *         - 4 if the z component is the largest
+   *         - 0 if no component is dominant
+   *
+   * @note The input matrix must be a valid rotation matrix.
+   * @see http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+   * @remark: Q or -Q can be set
+   */
   int set_rot_matrix(double m[]) {
     double tr = m[0] + m[4] + m[8];
 
@@ -371,9 +402,14 @@ public:
     return 0;
   }
 
-  /// Compute \f[ P^TIP \f]
-  /// where I a diagonal matrix with vector u as diagonal terms,
-  /// and P the rotation matrix obtained from the quaternion (superscript T denotes for transposed)
+  /**
+   * Compute \f[ P^TIP \f]
+   * where I a diagonal matrix with vector u as diagonal terms,
+   * and P the rotation matrix obtained from the quaternion (superscript T denotes for transposed)
+   *
+   * @param u diagonal elements of the matrix I
+   * @return the matrix \f[ P^TIP \f]
+   */
   mat9<double> rotate_diag_mat(const vec3r &u) const {
     double P[9];
     get_rot_matrix(P);
@@ -390,8 +426,14 @@ public:
     return (Res);
   }
 
-  /// Rotate the vector u with the rotation hold by the (unit) quaternion.
-  /// Note that q*u*conj(q) require more operations (28*, 23±)
+  /**
+   * Rotate the vector u with the rotation hold by the (unit) quaternion.
+   *
+   * @remark Note that q*u*conj(q) require more operations (28*, 23±)
+   *
+   * @param u the vector to rotate
+   * @return the rotated vector
+   */
   vec3r rotate(const vec3r &u) const { // OP: 21*, 18±
     double M[9];
     get_rot_matrix(M); // OP: 12*, 12±
@@ -431,7 +473,6 @@ public:
 
 }; // End class quat
 
-
 namespace {
 
 // Adapted from NeHe production
@@ -439,6 +480,16 @@ namespace {
 // Note that openGL uses a column-major convention for the matrix storage
 //
 // usage: GLfloat Rot_Matrix[16];quat2GLMatrix<GLfloat>(Q, Rot_Matrix);
+
+/**
+ * Convert a quaternion to an OpenGL matrix.
+ *
+ * @param q the quaternion to convert
+ * @param pMatrix the pointer to the OpenGL matrix
+ *
+ * This function converts the quaternion \p q to an OpenGL matrix.
+ * The user is responsible for allocating enough memory for the matrix.
+ */
 template <typename floatType> void quat2GLMatrix(quat &q, floatType *pMatrix) {
   // Make sure the matrix has allocated memory to store the rotation data
   if (!pMatrix)
