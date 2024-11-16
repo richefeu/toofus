@@ -40,6 +40,10 @@ struct anovaResult {
 
 class anova {
 public:
+
+  /// Compute the mean of all the samples
+  /// @param samples 2D vector of samples
+  /// @return the mean of all the samples
   static double fullMean(std::vector<std::vector<double>> &samples) {
     double total = 0;
     size_t count = 0;
@@ -52,6 +56,11 @@ public:
     return (double)total / (double)count;
   }
 
+  /**
+   * @brief Compute the mean of a sample
+   * @param sample The sample
+   * @return The mean of the sample
+   */
   static double mean(std::vector<double> &sample) {
     double total = 0;
     for (size_t i = 0; i < sample.size(); i++) {
@@ -86,7 +95,15 @@ public:
     total = treatment + residual;
   }
 
-  //
+/**
+ * @brief Perform a one-way ANOVA test on the given samples.
+ * 
+ * This function calculates the sum of squares, degrees of freedom, mean squares,
+ * F-statistic, and p-value for the provided samples.
+ * 
+ * @param samples A 2D vector containing the samples for analysis.
+ * @param result An anovaResult struct to store the computed ANOVA results.
+ */  
   static void test(std::vector<std::vector<double>> &samples, anovaResult &result) {
     double ss_total;
     double ss_treatment;
@@ -109,6 +126,15 @@ public:
     result.p = FDist(result.F, result.df_treatment, result.df_residual);
   }
 
+/**
+ * @brief Prints the ANOVA results in a tabular format.
+ * 
+ * This function outputs the source of variance, degrees of freedom, 
+ * sum of squares, mean square, F-statistic, and p-value for both 
+ * between-group and within-group variances, as well as the total variance.
+ * 
+ * @param result An anovaResult struct containing the computed ANOVA results.
+ */
   static void print(anovaResult &result) {
     std::printf("Source   DF    Sum of Square  Mean Square  F-stat       p-value\n");
     std::printf("Between  %-5zu %0.4f         %0.4f       %0.4f     %0.8f\n", result.df_treatment, result.ss_treatment,
@@ -118,6 +144,16 @@ public:
                 result.ss_total / result.df_total);
   }
 
+  /**
+   * @brief Computes the cumulative distribution function of the F distribution.
+   * 
+   * @param F The F-statistic.
+   * @param m The degrees of freedom in the numerator.
+   * @param n The degrees of freedom in the denominator.
+   * 
+   * @return The cumulative distribution function of the F distribution with degrees
+   * of freedom m and n at F.
+   */
   static double FDist(double F, double m, double n) {
     double xx = 0.0, p = 0.0;
 
@@ -130,6 +166,15 @@ public:
     return (1 - p);
   }
 
+  /**
+   * @brief Computes the cumulative distribution function of the beta distribution.
+   * 
+   * @param x A value in the range [0, 1].
+   * @param a The first shape parameter of the beta distribution.
+   * @param b The second shape parameter of the beta distribution.
+   * 
+   * @return The cumulative distribution function of the beta distribution evaluated at x.
+   */
   static double betainc(double x, double a, double b) {
     double y, BT, AAA;
 
@@ -147,6 +192,17 @@ public:
     return y;
   }
 
+  /**
+   * @brief Computes the continued fraction representation of the incomplete beta
+   *        function.
+   * 
+   * @param a The first shape parameter of the beta distribution.
+   * @param b The second shape parameter of the beta distribution.
+   * @param x A value in the range [0, 1].
+   * 
+   * @return The continued fraction representation of the incomplete beta
+   *         function evaluated at x.
+   */
   static double beta_cf(double a, double b, double x) {
     int count, count_max = 100;
     double eps = 0.0000001;
@@ -183,6 +239,17 @@ public:
     return AZ;
   }
 
+/**
+ * Computes the logarithm of the gamma function for a given input.
+ *
+ * This function uses the Lanczos approximation to compute the natural logarithm
+ * of the gamma function for the input value `xx`. It is particularly useful for
+ * large values of `xx`, where the gamma function itself would result in overflow.
+ *
+ * @param xx The input value for which to compute the logarithm of the gamma function.
+ *           It should be a positive real number.
+ * @return The natural logarithm of the gamma function evaluated at `xx`.
+ */
   static double gamma(double xx) {
     double coef_const[7];
     double step = 2.50662827465;

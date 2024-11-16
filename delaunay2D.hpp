@@ -11,12 +11,14 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 //
-// A light version of delaunay triangulation from NR3 
+// A light version of delaunay triangulation adapted from NR3
 
 #ifndef DELAUNAY2D_HPP
 #define DELAUNAY2D_HPP
 
-#include "nr3_things.hpp"
+// #include "nr3_things.hpp"
+#include "Mth.hpp"
+#include <cmath>
 
 typedef unsigned long int ulint;
 // for windows which is a 32 bits OS
@@ -29,8 +31,14 @@ struct Point2D {
   Point2D(double X, double Y) : x(X), y(Y) {}
 };
 
+/**
+ * @brief Compute the distance between two points in 2D space.
+ * @param[in] p first point
+ * @param[in] q second point
+ * @return the Euclidian distance between p and q
+ */
 double dist(const Point2D &p, const Point2D &q) {
-  double dd = SQR(q.x - p.x) + SQR(q.y - p.y);
+  double dd = Mth::sqr(q.x - p.x) + Mth::sqr(q.y - p.y);
   return sqrt(dd);
 }
 
@@ -227,8 +235,7 @@ struct Triel {
     int i, j, ztest = 0;
     for (i = 0; i < 3; i++) {
       j = (i + 1) % 3;
-      d = (pts[p[j]].x - pts[p[i]].x) * (point.y - pts[p[i]].y) -
-          (pts[p[j]].y - pts[p[i]].y) * (point.x - pts[p[i]].x);
+      d = (pts[p[j]].x - pts[p[i]].x) * (point.y - pts[p[i]].y) - (pts[p[j]].y - pts[p[i]].y) * (point.x - pts[p[i]].x);
       if (d < 0.0)
         return -1;
       if (d == 0.0)
@@ -239,8 +246,8 @@ struct Triel {
 };
 double incircle(Point2D d, Point2D a, Point2D b, Point2D c) {
   Circle cc = circumcircle(a, b, c);
-  double radd = SQR(d.x - cc.center.x) + SQR(d.y - cc.center.y);
-  return (SQR(cc.radius) - radd);
+  double radd = Mth::sqr(d.x - cc.center.x) + Mth::sqr(d.y - cc.center.y);
+  return (Mth::sqr(cc.radius) - radd);
 }
 
 struct Nullhash {
@@ -272,8 +279,7 @@ const double Delaunay::bigscale = 1000.0;
 unsigned int Delaunay::jran = 14921620;
 
 Delaunay::Delaunay(std::vector<Point2D> &pvec, int options)
-    : npts(pvec.size()), ntri(0), ntree(0), ntreemax(10 * npts + 1000), opt(options), pts(npts + 3),
-      thelist(ntreemax) {
+    : npts(pvec.size()), ntri(0), ntree(0), ntreemax(10 * npts + 1000), opt(options), pts(npts + 3), thelist(ntreemax) {
   int j;
   double xl, xh, yl, yh;
   linehash = new Hash<ulint, int, Nullhash>(6 * npts + 12, 6 * npts + 12);
@@ -300,7 +306,7 @@ Delaunay::Delaunay(std::vector<Point2D> &pvec, int options)
   pts[npts + 2] = Point2D(xh + 0.5 * bigscale * delx, yl - 0.5 * bigscale * dely);
   storetriangle(npts, npts + 1, npts + 2);
   for (j = npts; j > 0; j--)
-    SWAP(perm[j - 1], perm[hashfn.int64(jran++) % j]);
+    std::swap(perm[j - 1], perm[hashfn.int64(jran++) % j]);
   for (j = 0; j < npts; j++)
     insertapoint(perm[j]);
   for (j = 0; j < ntree; j++) {

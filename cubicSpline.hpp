@@ -29,6 +29,24 @@ struct SplineSet {
   double x;
 };
 
+/**
+ * Computes the coefficients of a cubic spline interpolation for a given set of
+ * data points.
+ *
+ * @param x A vector of doubles representing the x-coordinates of the data points.
+ *          The vector must be sorted in ascending order.
+ * @param y A vector of doubles representing the y-coordinates of the data points.
+ *          Must be the same size as x.
+ * @return A vector of SplineSet objects, each containing the coefficients
+ *         'a', 'b', 'c', 'd', and 'x' for a segment of the spline.
+ *
+ * This function calculates the natural cubic spline for the input data points
+ * and returns the spline coefficients for each interval between the data points.
+ * The spline is defined by the piecewise cubic polynomial:
+ *   S(x) = a + b*(x - x_i) + c*(x - x_i)^2 + d*(x - x_i)^3
+ * where 'a', 'b', 'c', and 'd' are the coefficients for each segment, and 'x_i'
+ * is the x-coordinate of the starting point of the segment.
+ */
 std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   // todo: warn if x.size() is less than ???
   size_t n = x.size() - 1;

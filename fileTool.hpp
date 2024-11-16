@@ -37,7 +37,11 @@ public:
 #endif
   }
 
-  /// @brief Robust and portable function to test if a file exists
+  /// @brief Robust and portable function to test if a file exists.
+  ///
+  /// @param[in] fileName name of the file to check.
+  ///
+  /// @return true if the file exists, false otherwise.
   static bool fileExists(const char *fileName) {
     std::fstream fin;
     fin.open(fileName, std::ios::in);
@@ -51,6 +55,17 @@ public:
 
   static bool fileExists(const std::string &fileName) { return fileExists(fileName.c_str()); }
 
+  /**
+   * @brief Extracts the file extension from a given file name.
+   *
+   * This function searches for the last occurrence of the dot character ('.')
+   * in the provided file name string and returns the substring following it,
+   * which represents the file extension. If no dot is found, an empty string
+   * is returned.
+   *
+   * @param FileName The name of the file from which to extract the extension.
+   * @return The file extension as a string, or an empty string if no extension is found.
+   */
   static std::string GetFileExt(const std::string &FileName) {
     std::string::size_type s = FileName.find_last_of('.');
     if (s != std::string::npos)
@@ -58,7 +73,18 @@ public:
     return std::string("");
   }
 
-  // Remark: without the last '/' or '\'
+  /**
+   * @brief Extracts the file path from a given file name.
+   *
+   * This function searches for the last occurrence of the path separator
+   * character (either '/' or '\\') in the provided file name string and
+   * returns the substring preceding it, which represents the file path. If
+   * no separator is found, the current working directory ("." or ".\")
+   * is returned.
+   *
+   * @param FileName The name of the file from which to extract the path.
+   * @return The file path as a string, or the current working directory if no path is found.
+   */
   static std::string GetFilePath(const std::string &FileName) {
     std::string::size_type s = FileName.find_last_of(separator());
     if (s != std::string::npos)
@@ -66,6 +92,18 @@ public:
     return std::string(".");
   }
 
+  /**
+   * @brief Extracts the file name without extension from a given file name.
+   *
+   * This function searches for the last occurrence of the path separator
+   * character (either '/' or '\\') and the dot character ('.') in the
+   * provided file name string and returns the substring between them,
+   * which represents the file name without extension. If no separator is
+   * found, the full file name is returned.
+   *
+   * @param FileName The name of the file from which to extract the file name.
+   * @return The file name without extension as a string, or the full file name if no path is found.
+   */
   static std::string GetFileName(const std::string &FileName) {
     std::string::size_type s1 = FileName.find_last_of(separator());
     std::string::size_type s2 = FileName.find_last_of('.');
@@ -78,8 +116,27 @@ public:
     return FileName;
   }
 
+  /**
+   * @brief Creates a directory with the given name.
+   *
+   * This overloaded version of create_folder() takes a std::string argument
+   * and calls the const char * version with the c_str() method.
+   *
+   * @param folder The name of the directory to be created.
+   */
   static void create_folder(std::string &folder) { create_folder(folder.c_str()); }
 
+  /**
+   * @brief Creates a directory with the given name if it does not exist.
+   *
+   * This function checks if a directory with the specified name already exists.
+   * If it does not, it attempts to create the directory using platform-specific
+   * calls to `mkdir`. On Windows, it uses the default `mkdir` function. On UNIX-like
+   * systems, it uses `mkdir` with specific permissions allowing the owner to read,
+   * write, and execute, while group and others can read and execute.
+   *
+   * @param folder The name of the directory to be created as a C-style string.
+   */
   static void create_folder(const char *folder) {
     if (access(folder, F_OK)) {
       int stat;

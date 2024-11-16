@@ -54,6 +54,13 @@ public:
   void setOutputVal(double val) { m_outputVal = val; }
   double getOutputVal() const { return m_outputVal; }
 
+  /**
+   * \brief Feed forward the output of the previous layer to calculate the current
+   *        neuron's output.
+   *
+   * \param[in] prevLayer The layer of neurons that sends output to this neuron.
+   * \param[in] isLastLayer Whether this neuron is in the output layer.
+   */
   void feedForward(const Layer &prevLayer, bool isLastLayer = false) {
     double sum = 0.0;
 
@@ -68,16 +75,38 @@ public:
     }
   }
 
+  /**
+   * \brief Calculate the gradient of the cost function with respect to the output
+   *        of this neuron.
+   *
+   * \param[in] targetVal The target output of this neuron.
+   */
   void calcOutputGradients(double targetVal) {
     double delta = targetVal - m_outputVal;
     m_gradient = delta * Neuron::outputLayerActivationFunctionDerivative(m_outputVal);
   }
 
+  /**
+   * \brief Calculate the gradient of the cost function with respect to the output
+   *        of this neuron in a hidden layer.
+   *
+   * \param[in] nextLayer The layer of neurons that this neuron sends output to.
+   */
   void calcHiddenGradients(const Layer &nextLayer) {
     double dow = sumDOW(nextLayer);
     m_gradient = dow * Neuron::hiddenLayerActivationFunctionDerivative(m_outputVal);
   }
 
+/**
+ * \brief Update the input weights of the neuron based on the gradients.
+ *
+ * This function adjusts the weights of the connections from the previous
+ * layer to this neuron. It uses the gradient calculated during backpropagation
+ * to determine how much to change each weight.
+ *
+ * \param[in,out] prevLayer The layer of neurons that provides input to this neuron.
+ *                          The weights of these neurons will be updated.
+ */
   void updateInputWeights(Layer &prevLayer) {
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
       Neuron &neuron = prevLayer[n];

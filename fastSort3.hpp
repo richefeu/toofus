@@ -17,16 +17,11 @@
 #include <utility>
 
 /**
- @file
- Usage example:
- @code{.cpp}
- int a = 3, b = 1, c = 2;
- fastSort3<int>(a, b, c);
- @endcode
- The result is: a = 1, b = 2, c = 3
+ @brief Inplace-sort the 3 values so that a0 <= a1 <= a2
+ @param[in,out] a0 first value
+ @param[in,out] a1 second value
+ @param[in,out] a2 third value
 */
-
-// inplace-sort the 3 values so that a0 <= a1 <= a2
 template <typename T> void fastSort3(T &a0, T &a1, T &a2) {
   if (a0 < a1) {
     if (a1 < a2) {
@@ -55,6 +50,15 @@ template <typename T> void fastSort3(T &a0, T &a1, T &a2) {
   }
 }
 
+/**
+ @brief Return the indices of the sorted values a0, a1, a2
+ @param[in] a0 first value
+ @param[in] a1 second value
+ @param[in] a2 third value
+ @param[out] i0 index of the smallest value
+ @param[out] i1 index of the middle value
+ @param[out] i2 index of the largest value
+*/
 template <typename T> void getOrder3(const T a0, const T a1, const T a2, int &i0, int &i1, int &i2) {
   i0 = 0;
   i1 = 1;

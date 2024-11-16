@@ -29,6 +29,15 @@ private:
   char openChar;
   char closeChar;
 
+  /**
+   * Validates a character to ensure it's within the printable ASCII range.
+   * If the character `c` is a printable character (ASCII 33 to 127 inclusive),
+   * it is returned as is. Otherwise, the default character `cdef` is returned.
+   *
+   * @param c The character to validate.
+   * @param cdef The default character to return if `c` is not valid.
+   * @return The validated character, either `c` or `cdef`.
+   */
   char validChar(char c, char cdef) {
     int ci = (int)c;
     if (ci >= 33 && ci <= 127) {
@@ -38,6 +47,16 @@ private:
   }
 
 public:
+
+  /**
+   * Constructs a ConsoleProgressBar object with default or specified settings.
+   *
+   * Initializes the progress bar with a maximum value of `n`, a default width of 50,
+   * an empty title, and default characters for progress representation.
+   *
+   * @param n The maximum value of the progress bar (default is 100).
+   *          This determines the completion point of the progress bar.
+   */
   ConsoleProgressBar(size_t n = 100) {
     nmax = n;
     width = 50;
@@ -56,9 +75,22 @@ public:
   void setVoidChar(char c) { voidChar = (char)validChar(c, ' '); }
   void setOpenChar(char c) { openChar = (char)validChar(c, '['); }
   void setCloseChar(char c) { closeChar = (char)validChar(c, ']'); }
-
-  // Process has done i out of n rounds,
-  // and we want a bar of width w and resolution r.
+  
+  /**
+   * Updates the progress bar by displaying the current status.
+   *
+   * @param x The current value of the progress bar (should be between 0 and `nmax`).
+   * @param os The output stream to use for displaying the progress bar
+   *          (default is `std::cerr`).
+   *
+   * The `update` method displays the current status of the progress bar.
+   * It prints the title, the percentage completed, and the progress bar itself.
+   * The progress bar is displayed as a sequence of `progressChar` characters
+   * followed by `voidChar` characters.
+   *
+   * If the progress bar is complete, the `update` method will not print anything.
+   * Otherwise, it will print the progress bar to the specified output stream.
+   */
   void update(size_t x, std::ostream &os = std::cerr) {
     if ((x != nmax) && (x % (nmax / 100 + 1) != 0))
       return;
