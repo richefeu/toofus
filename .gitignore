@@ -1,3 +1,4 @@
 seeSpheres/seeSpheres
 catch_unit_tests/*.o
 catch_unit_tests/tests
+doctests/*.o
