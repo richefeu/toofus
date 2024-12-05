@@ -283,6 +283,8 @@ public:
   T normSup() const { return std::max({std::abs(xx), std::abs(xy), std::abs(yx), std::abs(yy)}); }
 
   T det() const { return (xx * yy - xy * yx); }
+  
+  T trace() const { return (xx + yy); }
 
   void svd(mat4 &U, mat4 &S, mat4 &V) const {
     // taken from http://www.lucidarme.me/?p=4802

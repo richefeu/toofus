@@ -110,8 +110,9 @@ template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::iset(const keyT &ke
     k = ng ? garbg[--ng] : nn++;
     next[kprev] = k;
   }
-  if (k >= nmax)
+  if (k >= nmax) {
     std::cerr << "storing too many values" << std::endl;
+  }
   thehash[k] = pp;
   next[k] = -1;
   return k;
@@ -121,15 +122,17 @@ template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::ierase(const keyT &
   int j, k, kprev;
   ulint pp = hash.fn(&key);
   j = (int)(pp % nhash);
-  if (htable[j] == -1)
+  if (htable[j] == -1) {
     return -1;
+  }
   kprev = -1;
   for (k = htable[j]; k != -1; k = next[k]) {
     if (thehash[k] == pp) {
-      if (kprev == -1)
+      if (kprev == -1) {
         htable[j] = next[k];
-      else
+      } else {
         next[kprev] = next[k];
+      }
       garbg[ng++] = k;
       return k;
     }
@@ -140,8 +143,9 @@ template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::ierase(const keyT &
 
 template <class keyT, class hfnT> int Hashtable<keyT, hfnT>::ireserve() {
   int k = ng ? garbg[--ng] : nn++;
-  if (k >= nmax)
+  if (k >= nmax) {
     std::cerr << "reserving too many values" << std::endl;
+  }
   next[k] = -2;
   return k;
 }
@@ -222,6 +226,7 @@ struct Triel {
   int p[3];
   int d[3];
   int stat;
+
   void setme(int a, int b, int c, Point2D *ptss) {
     pts = ptss;
     p[0] = a;
@@ -230,20 +235,23 @@ struct Triel {
     d[0] = d[1] = d[2] = -1;
     stat = 1;
   }
+
   int contains(Point2D point) {
-    double d;
+    double dst;
     int i, j, ztest = 0;
     for (i = 0; i < 3; i++) {
       j = (i + 1) % 3;
-      d = (pts[p[j]].x - pts[p[i]].x) * (point.y - pts[p[i]].y) - (pts[p[j]].y - pts[p[i]].y) * (point.x - pts[p[i]].x);
-      if (d < 0.0)
+      dst =
+          (pts[p[j]].x - pts[p[i]].x) * (point.y - pts[p[i]].y) - (pts[p[j]].y - pts[p[i]].y) * (point.x - pts[p[i]].x);
+      if (dst < 0.0)
         return -1;
-      if (d == 0.0)
+      if (dst == 0.0)
         ztest = 1;
     }
     return (ztest ? 0 : 1);
   }
 };
+
 double incircle(Point2D d, Point2D a, Point2D b, Point2D c) {
   Circle cc = circumcircle(a, b, c);
   double radd = Mth::sqr(d.x - cc.center.x) + Mth::sqr(d.y - cc.center.y);
@@ -323,14 +331,16 @@ Delaunay::Delaunay(std::vector<Point2D> &pvec, int options)
     delete linehash;
   }
 }
+
 void Delaunay::insertapoint(int r) {
   int i, j, k, l, s, tno, ntask, d0, d1, d2;
   ulint key;
   int tasks[50], taski[50], taskj[50];
   for (j = 0; j < 3; j++) {
     tno = whichcontainspt(pts[r], 1);
-    if (tno >= 0)
+    if (tno >= 0) {
       break;
+    }
     pts[r].x += fuzz * delx * (hashfn.doub(jran++) - 0.5);
     pts[r].y += fuzz * dely * (hashfn.doub(jran++) - 0.5);
   }
@@ -340,8 +350,9 @@ void Delaunay::insertapoint(int r) {
   i = thelist[tno].p[0];
   j = thelist[tno].p[1];
   k = thelist[tno].p[2];
-  if (opt & 2 && i < npts && j < npts && k < npts)
+  if (opt & 2 && i < npts && j < npts && k < npts) {
     return;
+  }
   d0 = storetriangle(r, i, j);
   tasks[++ntask] = r;
   taski[ntask] = i;
@@ -360,8 +371,9 @@ void Delaunay::insertapoint(int r) {
     i = taski[ntask];
     j = taskj[ntask--];
     key = hashfn.int64(j) - hashfn.int64(i);
-    if (!linehash->get(key, l))
+    if (!linehash->get(key, l)) {
       continue;
+    }
     if (incircle(pts[l], pts[j], pts[s], pts[i]) > 0.0) {
       d0 = storetriangle(s, l, j);
       d1 = storetriangle(s, i, l);
@@ -380,22 +392,27 @@ void Delaunay::insertapoint(int r) {
     }
   }
 }
+
 int Delaunay::whichcontainspt(const Point2D &p, int strict) {
   int i, j, k = 0;
   while (thelist[k].stat <= 0) {
     for (i = 0; i < 3; i++) {
-      if ((j = thelist[k].d[i]) < 0)
+      if ((j = thelist[k].d[i]) < 0) {
         continue;
+      }
       if (strict) {
-        if (thelist[j].contains(p) > 0)
+        if (thelist[j].contains(p) > 0) {
           break;
+        }
       } else {
-        if (thelist[j].contains(p) >= 0)
+        if (thelist[j].contains(p) >= 0) {
           break;
+        }
       }
     }
-    if (i == 3)
+    if (i == 3) {
       return -1;
+    }
     k = j;
   }
   return k;
@@ -405,8 +422,9 @@ void Delaunay::erasetriangle(int a, int b, int c, int d0, int d1, int d2) {
   ulint key;
   int j = 0;
   key = hashfn.int64(a) ^ hashfn.int64(b) ^ hashfn.int64(c);
-  if (trihash->get(key, j) == 0)
+  if (trihash->get(key, j) == 0) {
     std::cerr << "nonexistent triangle" << std::endl;
+  }
   trihash->erase(key);
   thelist[j].d[0] = d0;
   thelist[j].d[1] = d1;
@@ -426,8 +444,9 @@ int Delaunay::storetriangle(int a, int b, int c) {
   linehash->set(key, b);
   key = hashfn.int64(a) - hashfn.int64(b);
   linehash->set(key, c);
-  if (++ntree == ntreemax)
+  if (++ntree == ntreemax) {
     std::cerr << "thelist is sized too small" << std::endl;
+  }
   ntri++;
   return (ntree - 1);
 }
@@ -438,23 +457,29 @@ double Delaunay::interpolate(const Point2D &p, const std::vector<double> &fnvals
   int ipts[3];
   double sum, ans = 0.0;
   n = whichcontainspt(p);
-  if (n < 0)
+  if (n < 0) {
     return defaultval;
-  for (i = 0; i < 3; i++)
+  }
+  for (i = 0; i < 3; i++) {
     ipts[i] = thelist[n].p[i];
+  }
   for (i = 0, j = 1, k = 2; i < 3; i++, j++, k++) {
-    if (j == 3)
+    if (j == 3) {
       j = 0;
-    if (k == 3)
+    }
+    if (k == 3) {
       k = 0;
+    }
     wgts[k] = (pts[ipts[j]].x - pts[ipts[i]].x) * (p.y - pts[ipts[i]].y) -
               (pts[ipts[j]].y - pts[ipts[i]].y) * (p.x - pts[ipts[i]].x);
   }
   sum = wgts[0] + wgts[1] + wgts[2];
-  if (sum == 0)
+  if (sum == 0) {
     std::cerr << "degenerate triangle" << std::endl;
-  for (i = 0; i < 3; i++)
+  }
+  for (i = 0; i < 3; i++) {
     ans += wgts[i] * fnvals[ipts[i]] / sum;
+  }
   return ans;
 }
 
