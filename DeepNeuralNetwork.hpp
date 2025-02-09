@@ -142,7 +142,7 @@ public:
 
     Neuron::setHiddenLayerActivation(
       [](double x) -> double {return tanh(x);},
-      [](double x) -> double {return 1.0 - x*x;}
+      [](double x) -> double {return 1.0 - tanh(x)*tanh(x);}
     );
 
   */
@@ -178,21 +178,21 @@ public:
       Function = [](double x) -> double { return std::max(0.0, x); };
       FunctionDerivative = [](double x) -> double {
         if (x < 0.0)
-          return 0.0;
+          {return 0.0;}
         return 1.0;
       };
     } else if (activationName == "LReLU") {
       Function = [](double x) -> double { return std::max(0.1 * x, x); };
       FunctionDerivative = [](double x) -> double {
         if (x < 0.0)
-          return 0.1;
+          {return 0.1;}
         return 1.0;
       };
     } else if (activationName == "ELU") {
       assert(param != nullptr);
       Function = [param](double x) -> double {
         if (x < 0.0)
-          return *param * (exp(x) - 1.0);
+          {return *param * (exp(x) - 1.0);}
         return x;
       };
       FunctionDerivative = [param](double x) -> double {
@@ -218,7 +218,7 @@ public:
       };
     } else if (activationName == "tanh") {
       Function = [](double x) -> double { return tanh(x); };
-      FunctionDerivative = [](double x) -> double { return 1.0 - x * x; };
+      FunctionDerivative = [](double x) -> double { return 1.0 - tanh(x) * tanh(x); };
     } else if (activationName == "sigmoid") {
       Function = [](double x) -> double { return 1.0 / (1.0 + exp(-x)); };
       FunctionDerivative = [](double x) -> double {
@@ -390,6 +390,10 @@ public:
     for (unsigned n = 0; n < m_layers.back().size() - 1; ++n) {
       resultVals.push_back(m_layers.back()[n].getOutputVal());
     }
+  }
+  
+  Layer* getLastLayer() {
+    return &(m_layers.back());
   }
 
   double getRecentAverageError() const { return m_recentAverageError; }

@@ -180,6 +180,23 @@ public:
     return V;
   }
 
+  /// perform a 90-degree clockwise rotation inplace
+  void quarterRightTurn() {
+    std::swap(x, y);
+    y = -y;
+  }
+  /// perform a 90-degree anti-clockwise rotation inplace
+  void quarterLeftTurn() {
+    std::swap(x, y);
+    x = -x;
+  }
+
+  /// get a 90-degree clockwise rotated vector
+  vec2 quarterRightTurned() const { return vec2(y, -x); }
+  
+  /// get a 90-degree anti-clockwise rotated vector
+  vec2 quarterLeftTurned() const { return vec2(-y, x); }
+
   /// Determinant
   friend T determinant(const vec2<T> a, const vec2<T> b) { return (a.x * b.y - b.x * a.y); }
 
@@ -218,9 +235,16 @@ template <class T> struct less<vec2<T>> {
 
 int main(int argc, char const *argv[]) {
   vec2r v(1., 2.);
-  std::cout << v[0] << ' ' << v[1] << '\n';
+  std::cout << v << '\n';
 
-  vec2r v2(-2., 1.);
+  //vec2r v2(2., -1.);
+  
+  //vec2r v2 = v.quarterLeftTurned();
+  
+  vec2r v2=v;
+  v2.quarterRightTurn();
+  
+  std::cout << v2 << '\n';
   std::cout << angle(v, v2) * 180./M_PI << '\n';
 
   return 0;
