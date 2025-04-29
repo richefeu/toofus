@@ -41,6 +41,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -91,6 +92,20 @@ struct colorRGBA {
     g = (int)floor(gg * 255);
     b = (int)floor(bb * 255);
     a = (int)floor(aa * 255);
+  }
+  
+/**
+   * @brief Get the color as a hexadecimal string in the format "#RRGGBB".
+   *
+   * @return A string representing the color in hexadecimal format.
+   */
+  std::string toHexString() const {
+    std::ostringstream oss;
+    oss << "#"
+        << std::hex << std::setw(2) << std::setfill('0') << r
+        << std::hex << std::setw(2) << std::setfill('0') << g
+        << std::hex << std::setw(2) << std::setfill('0') << b;
+    return oss.str();
   }
 };
 

@@ -237,6 +237,42 @@ public:
        << fabs(rx * vz.scalex) << "\" ry=\"" << fabs(ry * vz.scaley) << "\" style=\"" << style << "\" />\n";
   }
 
+  // arc is not a good name !!!!!!!!!!!ç
+  void arc(viewZone &vz, double cx, double cy, double r0, double r1, double a0, double a1, const char *style) {
+    // Calculate the start and end points of the arc
+    double x0 = cx + r0 * cos(a0);
+    double y0 = cy + r0 * sin(a0);
+    double x1 = cx + r1 * cos(a0);
+    double y1 = cy + r1 * sin(a0);
+    double x2 = cx + r1 * cos(a1);
+    double y2 = cy + r1 * sin(a1);
+    double x3 = cx + r0 * cos(a1);
+    double y3 = cy + r0 * sin(a1);
+
+    // Calculate the large-arc-flag and sweep-flag
+    int largeArcFlag = (a1 - a0 <= M_PI) ? 0 : 1;
+    int sweepFlag = (a1 > a0) ? 0 : 1;
+
+    // Scale and translate the coordinates
+    double scaledX0 = x0 * vz.scalex + vz.x0;
+    double scaledY0 = y0 * vz.scaley + vz.y0;
+    double scaledX1 = x1 * vz.scalex + vz.x0;
+    double scaledY1 = y1 * vz.scaley + vz.y0;
+    double scaledX2 = x2 * vz.scalex + vz.x0;
+    double scaledY2 = y2 * vz.scaley + vz.y0;
+    double scaledX3 = x3 * vz.scalex + vz.x0;
+    double scaledY3 = y3 * vz.scaley + vz.y0;
+    double scaledR0 = fabs(r0 * vz.scalex);
+    double scaledR1 = fabs(r1 * vz.scaley);
+
+    // Create the SVG path string
+    os << "<path d=\"M " << scaledX1 << " " << scaledY1 << " A " << scaledR1 << " " << scaledR1 << " " << 0 << " "
+       << largeArcFlag << " " << sweepFlag << " " << scaledX2 << " " << scaledY2 << " L " << scaledX3 << " " << scaledY3
+       << " A " << scaledR0 << " " << scaledR0 << " " << 0 << " " << largeArcFlag << " " << 1 - sweepFlag << " "
+       << scaledX0 << " " << scaledY0 << " Z"
+       << "\" style=\"" << style << "\" />\n";
+  }
+
   /// @brief Write text to the SVG file.
   ///
   /// This function writes a text element at the specified (x, y) position
