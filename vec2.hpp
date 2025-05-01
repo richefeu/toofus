@@ -147,7 +147,7 @@ public:
 
   // https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
   /// Clockwise angle between 2 vectors (from a to b)
-  friend T angle(const vec2<T> &a, const vec2<T> &b) { return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y); }
+  friend T cw_angle(const vec2<T> &a, const vec2<T> &b) { return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y); }
 
   /// Cross product
   friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
