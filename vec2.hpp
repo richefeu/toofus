@@ -149,6 +149,13 @@ public:
   /// Clockwise angle between 2 vectors (from a to b)
   friend T cw_angle(const vec2<T> &a, const vec2<T> &b) { return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y); }
 
+  /// angle of vector V with respect to vector Vref (result in [-pi pi])
+  friend T angleBetweenVectors(const vec2<T> & V, const vec2<T> & Vref) {
+      T dotp = V * Vref;
+      T crossp = cross(V, Vref);
+      return atan2(crossp, dotp);
+  }
+
   /// Cross product
   friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
 
@@ -245,7 +252,7 @@ int main(int argc, char const *argv[]) {
   v2.quarterRightTurn();
   
   std::cout << v2 << '\n';
-  std::cout << angle(v, v2) * 180./M_PI << '\n';
+  std::cout << cw_angle(v, v2) * 180./M_PI << '\n';
 
   return 0;
 }
