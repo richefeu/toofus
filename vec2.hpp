@@ -145,16 +145,24 @@ public:
   /// Absolut value of the components
   friend vec2<T> component_abs(const vec2<T> &a) { return vec2<T>(fabs(a.x), fabs(a.y)); }
 
-  // https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
-  /// Clockwise angle between 2 vectors (from a to b)
-  friend T cw_angle(const vec2<T> &a, const vec2<T> &b) { return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y); }
+  /// Anti-clockwise angle between 2 vectors (from a to b; result in [-pi pi])
+  friend T angleBetweenVectors(const vec2<T> &a, const vec2<T> &b) {
+    return atan2(a.x * b.y - b.x * a.y, a.x * b.x + a.y * b.y);
+  }
+
+  /// Inclination with respect to x (result in [-pi pi])
+  friend T inclinationX(const vec2<T> &v) {
+    return atan2(v.y, v.x);
+  }
 
   /// angle of vector V with respect to vector Vref (result in [-pi pi])
+  /*
   friend T angleBetweenVectors(const vec2<T> & V, const vec2<T> & Vref) {
       T dotp = V * Vref;
       T crossp = cross(V, Vref);
       return atan2(crossp, dotp);
   }
+  */
 
   /// Cross product
   friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
@@ -200,7 +208,7 @@ public:
 
   /// get a 90-degree clockwise rotated vector
   vec2 quarterRightTurned() const { return vec2(y, -x); }
-  
+
   /// get a 90-degree anti-clockwise rotated vector
   vec2 quarterLeftTurned() const { return vec2(-y, x); }
 
