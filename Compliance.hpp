@@ -54,7 +54,7 @@ public:
     double factor = 1.0 / Young;
     Cinv1 = factor;
     Cinv2 = -factor * Poisson;
-    Cinv3 = factor * (1.0 + Poisson);
+    Cinv3 = factor * (1.0 + Poisson); // Il faudrait multiplier par 2 ????????????
   }
 
   /**

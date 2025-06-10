@@ -43,6 +43,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
