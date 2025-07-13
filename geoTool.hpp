@@ -26,8 +26,6 @@
 
 class geoTool {
 public:
-  
-  
   // https://www.gamedev.net/topic/338987-aabb---line-segment-intersection-test/
   // AABB - Line Segment intersection test
   static bool isIntersectedSegmentAABB(const vec3r &p1, const vec3r &p2, const vec3r &min, const vec3r &max) {
@@ -37,19 +35,25 @@ public:
     vec3r c = p1 + d - (min + max) * 0.5f;
     vec3r ad = component_abs(d); // Returns same vector with all components positive
 
-    if (fabs(c[0]) > e[0] + ad[0])
+    if (fabs(c[0]) > e[0] + ad[0]) {
       return false;
-    if (fabs(c[1]) > e[1] + ad[1])
+    }
+    if (fabs(c[1]) > e[1] + ad[1]) {
       return false;
-    if (fabs(c[2]) > e[2] + ad[2])
+    }
+    if (fabs(c[2]) > e[2] + ad[2]) {
       return false;
+    }
 
-    if (fabs(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + EPSILON)
+    if (fabs(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + EPSILON) {
       return false;
-    if (fabs(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + EPSILON)
+    }
+    if (fabs(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + EPSILON) {
       return false;
-    if (fabs(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + EPSILON)
+    }
+    if (fabs(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + EPSILON) {
       return false;
+    }
 
     return true;
 #undef EPSILON
@@ -72,14 +76,16 @@ public:
     a = -(n * w0);
     b = n * dir;
     if (fabs(b) < 1.0e-15) {
-      if (a == 0)
+      if (a == 0) {
         return 2;
-      else
+      } else {
         return 0;
+      }
     }
     r = a / b;
-    if (r < 0.0)
+    if (r < 0.0) {
       return 0;
+    }
     I = orig + r * dir; // This is the intersection point (not returned by the function)
     double uu, uv, vv, wu, wv, D;
     uu = u * u;
@@ -91,11 +97,13 @@ public:
     D = 1.0 / (uv * uv - uu * vv);
     double s, t;
     s = (uv * wv - vv * wu) * D;
-    if (s < 0.0 || s > 1.0)
+    if (s < 0.0 || s > 1.0) {
       return 0;
+    }
     t = (uv * wu - uu * wv) * D;
-    if (t < 0.0 || (s + t) > 1.0)
+    if (t < 0.0 || (s + t) > 1.0) {
       return 0;
+    }
     return 1;
   }
 

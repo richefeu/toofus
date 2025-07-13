@@ -41,6 +41,7 @@ int main(int argc, char const *argv[]) {
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 #include <iostream>
 
@@ -48,98 +49,86 @@ enum class LogLevel { trace, debug, info, warn, error, critical, off };
 
 class Logger {
 private:
-  inline static LogLevel level = LogLevel::info;
+    inline static LogLevel level = LogLevel::info;
+    inline static bool useColors = true; // Control whether to use colors
+    Logger() = delete;
+    Logger(const Logger&) = delete;
 
-  Logger() = delete;
+    template <typename... Args>
+    static void log(LogLevel msgLevel, const std::string& levelName, const std::string& colorCode, fmt::format_string<Args...> fmt, Args&&... args) {
+        if (level > msgLevel) return;
 
-  Logger(const Logger &) = delete;
+        if (useColors) {
+            fmt::print("{}[{}]{} ", colorCode, levelName, "\033[0m");
+        } else {
+            fmt::print("[{}] ", levelName);
+        }
+
+        fmt::print(fmt, std::forward<Args>(args)...);
+        fmt::print("\n");
+    }
 
 public:
-  /**
-   * @brief Sets the log level used by the logger.
-   *
-   * @param t_level The new log level.
-   */
-  static void setLevel(LogLevel t_level) { level = t_level; }
+    static void setLevel(LogLevel t_level) {
+        level = t_level;
+    }
 
-  /**
-   * @brief Logs a message with log level trace.
-   *
-   * @param fmt The format string for the message to log.
-   * @param args The arguments to the format string.
-   */
-  template <typename... Args> static void trace(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::trace)
-      return;
-    fmt::print("[Trace] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    static void setUseColors(bool useColorsFlag) {
+        useColors = useColorsFlag;
+    }
 
-  /**
-   * @brief Logs a message with log level debug.
-   *
-   * @param fmt The format string.
-   * @param args The arguments to the format string.
-   */
-  template <typename... Args> static void debug(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::debug)
-      return;
-    fmt::print("[\033[96mDebug\033[39m] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    template <typename... Args>
+    static void trace(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::trace, "Trace", "\033[37m", fmt, std::forward<Args>(args)...);
+    }
 
-  /**
-   * @brief Logs a message with log level info.
-   *
-   * @param fmt The format string.
-   * @param args The arguments to the format string.
-   */
-  template <typename... Args> static void info(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::info)
-      return;
-    fmt::print("[\033[92mInfo\033[39m] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    template <typename... Args>
+    static void debug(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::debug, "Debug", "\033[96m", fmt, std::forward<Args>(args)...);
+    }
 
-  template <typename... Args> static void warn(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::warn)
-      return;
-    fmt::print("[\033[91mWarn\033[39m] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    template <typename... Args>
+    static void info(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::info, "Info", "\033[92m", fmt, std::forward<Args>(args)...);
+    }
 
-  /**
-   * Logs a message with an error log level.
-   *
-   * \param fmt The message format, e.g. "Error: {}"
-   * \param args The arguments to be formatted into the message.
-   */
-  template <typename... Args> static void error(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::error)
-      return;
-    fmt::print("[\033[31mError\033[39m] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    template <typename... Args>
+    static void warn(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::warn, "Warn", "\033[93m", fmt, std::forward<Args>(args)...);
+    }
 
-  /**
-   * Logs a message with a critical log level.
-   * @param fmt  The format string for the message.
-   * @param args The arguments to be formatted into the message.
-   */
-  template <typename... Args> static void critical(fmt::format_string<Args...> fmt, Args &&...args) {
-    if (level > LogLevel::critical)
-      return;
-    fmt::print("[\033[41mCritical\033[49m] ");
-    fmt::print(fmt, std::forward<Args>(args)...);
-    fmt::print("\n");
-  }
+    template <typename... Args>
+    static void error(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::error, "Error", "\033[91m", fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    static void critical(fmt::format_string<Args...> fmt, Args&&... args) {
+        log(LogLevel::critical, "Critical", "\033[41m", fmt, std::forward<Args>(args)...);
+    }
 };
 
-// LogLevel Logger::level = LogLevel::info;
 
 #endif /* end of include guard: LOGGER_HPP */
+
+
+#if 0
+
+int main(int argc, char const *argv[]) {
+  Logger::setLevel(LogLevel::trace);
+
+  Logger::setUseColors(true);
+
+  int a = 43;
+
+  Logger::trace("coucou {}", a);
+  Logger::debug("coucou {}", a++);
+  Logger::info("coucou {}", a);
+  Logger::warn("coucou {} {}", a-3, "bilou");
+  Logger::error("coucou {}", a);
+  Logger::critical("coucou {}", a);
+
+  return 0;
+}
+
+#endif
