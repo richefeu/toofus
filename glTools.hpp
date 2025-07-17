@@ -67,7 +67,7 @@ public:
   static void draw(int ndiv, float radius) {
     glBegin(GL_TRIANGLES);
     for (int i = 0; i < 20; ++i)
-      drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius);
+      {drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius);}
     glEnd();
   }
 };
@@ -101,14 +101,14 @@ public:
     vec3r v = arrow;
     double len = v.normalize();
     if (arrowSize <= 0.0)
-      arrowSize = 0.04 * len;
+      {arrowSize = 0.04 * len;}
     vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
     if (norm2(vmz) > 0.1)
-      a.set(v.y, -v.x, 0.0);
+      {a.set(v.y, -v.x, 0.0);}
     else
-      a.set(-v.z, 0.0, v.x);
+      {a.set(-v.z, 0.0, v.x);}
     a.normalize();
     vec3r b = cross(v, a);
 
@@ -133,12 +133,14 @@ public:
     vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
-    if (norm2(vmz) > 0.1)
+    if (norm2(vmz) > 0.1) {
       a.set(v.y, -v.x, 0.0);
-    else
+    } else {
       a.set(-v.z, 0.0, v.x);
-    if (a.isnull())
+    }
+    if (a.isnull()) {
       a.set(1.0, 1.0, 0.0); // for the rare cases v = (0, 0, -1)
+    }
     a.normalize();
     vec3r b = cross(v, a);
 
@@ -171,10 +173,12 @@ public:
     glDisable(GL_LIGHTING);
 
     double arrowSize = lx;
-    if (ly > arrowSize)
+    if (ly > arrowSize) {
       arrowSize = ly;
-    if (lz > arrowSize)
+    }
+    if (lz > arrowSize) {
       arrowSize = lz;
+    }
     arrowSize *= 0.02;
 
     glColor4ub(255, 0, 0, 255);
@@ -301,6 +305,20 @@ public:
     va_end(args);
 
     glRasterPos2i(x, y);
+    glPushAttrib(GL_LIST_BIT);
+    glListBase(fontOffset);
+    glCallLists((GLsizei)strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
+    glPopAttrib();
+  }
+  
+  static void print(GLfloat x, GLfloat y, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    char buffer[128];
+    vsnprintf(buffer, 127, fmt, args);
+    va_end(args);
+
+    glRasterPos3f(x, y, 0.0f);
     glPushAttrib(GL_LIST_BIT);
     glListBase(fontOffset);
     glCallLists((GLsizei)strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
@@ -434,18 +452,18 @@ public:
   void increase_nbLine() {
     nbLine++;
     if (nbLine >= NB_LINE_MAX)
-      nbLine = NB_LINE_MAX - 1;
+      {nbLine = NB_LINE_MAX - 1;}
   }
 
   void decrease_nbLine() {
     nbLine--;
     if (nbLine < 1)
-      nbLine = 1;
+      {nbLine = 1;}
   }
 
   void reset() {
     for (size_t i = 0; i < NB_LINE_MAX; i++)
-      textzone[i][0] = '\0';
+      {textzone[i][0] = '\0';}
   }
 
   void draw() {
