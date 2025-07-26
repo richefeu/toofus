@@ -21,7 +21,6 @@
 #include <cmath>
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy
-// #include <cstdint>
 
 #include "ColorTable.hpp"
 #include "OBB.hpp"
@@ -66,8 +65,9 @@ public:
 
   static void draw(int ndiv, float radius) {
     glBegin(GL_TRIANGLES);
-    for (int i = 0; i < 20; ++i)
-      {drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius);}
+    for (int i = 0; i < 20; ++i) {
+      drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius);
+    }
     glEnd();
   }
 };
@@ -100,15 +100,17 @@ public:
 
     vec3r v = arrow;
     double len = v.normalize();
-    if (arrowSize <= 0.0)
-      {arrowSize = 0.04 * len;}
+    if (arrowSize <= 0.0) {
+      arrowSize = 0.04 * len;
+    }
     vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
-    if (norm2(vmz) > 0.1)
-      {a.set(v.y, -v.x, 0.0);}
-    else
-      {a.set(-v.z, 0.0, v.x);}
+    if (norm2(vmz) > 0.1) {
+      a.set(v.y, -v.x, 0.0);
+    } else {
+      a.set(-v.z, 0.0, v.x);
+    }
     a.normalize();
     vec3r b = cross(v, a);
 
@@ -264,6 +266,7 @@ public:
 
   static void back() {
     glPopAttrib();
+    glPopAttrib();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -294,7 +297,6 @@ public:
   static void init() {
     glShadeModel(GL_FLAT);
     makeRasterFont();
-    // initialised = true;
   }
 
   static void print(int x, int y, const char *fmt, ...) {
@@ -310,7 +312,7 @@ public:
     glCallLists((GLsizei)strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
     glPopAttrib();
   }
-  
+
   static void print(GLfloat x, GLfloat y, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -451,19 +453,22 @@ public:
 
   void increase_nbLine() {
     nbLine++;
-    if (nbLine >= NB_LINE_MAX)
-      {nbLine = NB_LINE_MAX - 1;}
+    if (nbLine >= NB_LINE_MAX) {
+      nbLine = NB_LINE_MAX - 1;
+    }
   }
 
   void decrease_nbLine() {
     nbLine--;
-    if (nbLine < 1)
-      {nbLine = 1;}
+    if (nbLine < 1) {
+      nbLine = 1;
+    }
   }
 
   void reset() {
-    for (size_t i = 0; i < NB_LINE_MAX; i++)
-      {textzone[i][0] = '\0';}
+    for (size_t i = 0; i < NB_LINE_MAX; i++) {
+      textzone[i][0] = '\0';
+    }
   }
 
   void draw() {
@@ -569,8 +574,9 @@ public:
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (!grad)
+    if (!grad) {
       return;
+    }
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
