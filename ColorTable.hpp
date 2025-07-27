@@ -35,15 +35,16 @@
 #define MATLAB_COOL 18
 #define MATLAB_COPPER 19
 #define RANDOM 20
+#define CYCLIC 21
 
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -95,18 +96,16 @@ struct colorRGBA {
     b = (int)floor(bb * 255);
     a = (int)floor(aa * 255);
   }
-  
-/**
+
+  /**
    * @brief Get the color as a hexadecimal string in the format "#RRGGBB".
    *
    * @return A string representing the color in hexadecimal format.
    */
   std::string toHexString() const {
     std::ostringstream oss;
-    oss << "#"
-        << std::hex << std::setw(2) << std::setfill('0') << r
-        << std::hex << std::setw(2) << std::setfill('0') << g
-        << std::hex << std::setw(2) << std::setfill('0') << b;
+    oss << "#" << std::hex << std::setw(2) << std::setfill('0') << r << std::hex << std::setw(2) << std::setfill('0')
+        << g << std::hex << std::setw(2) << std::setfill('0') << b;
     return oss.str();
   }
 };
@@ -145,10 +144,11 @@ private:
    * @return The packed color value
    */
   unsigned int PACK_COLOR(int R, int G, int B, int A) {
-    if (big_endian)
+    if (big_endian) {
       return ((unsigned int)((R) << 24 | (G) << 16 | (B) << 8 | (A)));
-    else
+    } else {
       return ((unsigned int)((A) << 24 | (B) << 16 | (G) << 8 | (R)));
+    }
   }
 
   /**
@@ -159,10 +159,11 @@ private:
    * @return Red component of the color (0 to 255)
    */
   int UNPACK_RED(unsigned int X) {
-    if (big_endian)
+    if (big_endian) {
       return (((X) >> 24) & 0xff);
-    else
+    } else {
       return ((X) & 0xff);
+    }
   }
 
   /**
@@ -173,10 +174,11 @@ private:
    * @return Green component of the color (0 to 255)
    */
   int UNPACK_GREEN(unsigned int X) {
-    if (big_endian)
+    if (big_endian) {
       return (((X) >> 16) & 0xff);
-    else
+    } else {
       return (((X) >> 8) & 0xff);
+    }
   }
 
   /**
@@ -187,10 +189,11 @@ private:
    * @return Blue component of the color (0 to 255)
    */
   int UNPACK_BLUE(unsigned int X) {
-    if (big_endian)
+    if (big_endian) {
       return (((X) >> 8) & 0xff);
-    else
+    } else {
       return (((X) >> 16) & 0xff);
+    }
   }
 
   /**
@@ -201,10 +204,11 @@ private:
    * @return Alpha component of the color (0 to 255)
    */
   int UNPACK_ALPHA(unsigned int X) {
-    if (big_endian)
+    if (big_endian) {
       return ((X) & 0xff);
-    else
+    } else {
       return (((X) >> 24) & 0xff);
+    }
   }
 
   /**
@@ -417,27 +421,37 @@ public:
    * based on inversion, alpha blending, and gamma correction using the beta parameter.
    */
   void Rebuild() {
+    static const std::vector<unsigned int> tb = {
+        PACK_COLOR(225, 205, 90, 255), PACK_COLOR(170, 114, 160, 255), PACK_COLOR(230, 116, 98, 255),
+        PACK_COLOR(94, 129, 148, 255), PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
+        PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
+    };
+
     double s, t, gamma;
     int r, g, b, a;
 
-    if (!table.empty())
+    if (!table.empty()) {
       table.clear();
+    }
     table.reserve(size);
 
     for (int i = 0; i < size; i++) {
 
       if (size > 1) {
-        if (i + rotation < 0)
+        if (i + rotation < 0) {
           s = (double)(i + rotation + size) / (double)(size - 1);
-        else if (i + rotation > size - 1)
+        } else if (i + rotation > size - 1) {
           s = (double)(i + rotation - size) / (double)(size - 1);
-        else
+        } else {
           s = (double)(i + rotation) / (double)(size - 1);
-      } else
+        }
+      } else {
         s = 0.0;
+      }
 
-      if (swap)
+      if (swap) {
         s = 1.0 - s;
+      }
 
       switch (tableID) {
       case 0: // all black
@@ -621,35 +635,47 @@ public:
         b = (int)(255.0 * (0.5 + (1.0 - gray(s - bias)) / 2.0));
         break;
       case 18: // matlab "cool"
+      {
         r = (int)(255.0 * gray(s - bias));
         g = (int)(255.0 * (1.0 - gray(s - bias)));
         b = (int)(255.0 * 1.0);
-        break;
+      } break;
       case 19: // matlab "copper"
+      {
         r = (int)(255.0 * MIN(1.0, gray(s - bias) * 1.25));
         g = (int)(255.0 * MIN(1.0, gray(s - bias) * 0.7812));
         b = (int)(255.0 * MIN(1.0, gray(s - bias) * 0.4975));
-        break;
+      } break;
       case 20: // Random colors
+      {
         r = (int)(rand() / (double)RAND_MAX * 255.0);
         g = (int)(rand() / (double)RAND_MAX * 255.0);
         b = (int)(rand() / (double)RAND_MAX * 255.0);
-        break;
-      default:
+      } break;
+      case 21: // Cyclic colors
+      {
+        int count = i % 8;
+        r = UNPACK_RED(tb[count]);
+        g = UNPACK_GREEN(tb[count]);
+        b = UNPACK_BLUE(tb[count]);
+      } break;
+      default: {
         r = g = b = 0;
-        break;
+      } break;
       }
 
       float aa = 1.0;
-      if (alphapow)
+      if (alphapow) {
         aa = static_cast<float>(pow((float)(s ? s : 1.0e-10), (float)alphapow));
+      }
       a = (int)(255.0 * aa * alpha);
 
       if (beta) {
-        if (beta > 0.0)
+        if (beta > 0.0) {
           gamma = 1.0 - beta;
-        else
-          gamma = 1.0 / (1.001 + beta); // beta is thresholded to [-1,1]
+        } else {
+          gamma = 1.0 / (1.001 + beta);
+        } // beta is thresholded to [-1,1]
         r = (int)(255.0 * pow((float)r / 255.0, gamma));
         g = (int)(255.0 * pow((float)g / 255.0, gamma));
         b = (int)(255.0 * pow((float)b / 255.0, gamma));
@@ -917,10 +943,11 @@ public:
     float pos = (value - min) / (max - min);                // in ]0.0 1.0[
     i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
-    if (value <= min)
+    if (value <= min) {
       i = 0;
-    else if (value >= max)
+    } else if (value >= max) {
       i = size - 1;
+    }
 
     col->r = static_cast<uint8_t>(UNPACK_RED(table[i]));
     col->g = static_cast<uint8_t>(UNPACK_GREEN(table[i]));
@@ -952,10 +979,11 @@ public:
     float pos = (value - min) / (max - min);                // in ]0.0 1.0[
     i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
-    if (value <= min)
+    if (value <= min) {
       i = 0;
-    else if (value >= max)
+    } else if (value >= max) {
       i = size - 1;
+    }
 
     col->r = static_cast<float>(inv255 * (float)UNPACK_RED(table[i]));
     col->g = static_cast<float>(inv255 * (float)UNPACK_GREEN(table[i]));
@@ -1013,8 +1041,9 @@ public:
     col->b = UNPACK_BLUE(tb[count]);
     col->a = UNPACK_ALPHA(tb[count]);
     count++;
-    if (count >= 8)
+    if (count >= 8) {
       count = 0;
+    }
   }
 
   /**
