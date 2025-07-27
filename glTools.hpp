@@ -506,9 +506,18 @@ protected:
   int wbox;
   int hbox;
   char title[128];
+  std::vector<int> label_index_pos;
+  std::vector<std::string> labels; 
 
 public:
   glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) { snprintf(title, 128, "notitle"); }
+
+  void addLabel(int i, std::string & lab, ColorTable &ct) {
+    if (i >= 0 && i < ct.size) {
+      label_index_pos.push_back(i);
+      labels.push_back(lab);
+    }
+  }
 
   void setPos(int x, int y) {
     xpos = x;
@@ -531,6 +540,7 @@ public:
     float dH = (float)hbox / (float)(ct.getSize());
     float bottom = (float)(H - (ypos + hbox));
 
+    // draw the color bar
     for (int i = 0; i < ct.getSize(); ++i) {
       value = ct.getMin() + (float)i * dval;
       ct.getRGB(value, &col);
@@ -543,6 +553,7 @@ public:
       glEnd();
     }
 
+    // surrounding box
     glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2i(xpos, H - ypos);
@@ -551,15 +562,22 @@ public:
     glVertex2i(xpos, H - (ypos + hbox));
     glEnd();
 
-    char strValMin[64];
-    char strValMax[64];
-    snprintf(strValMin, 64, "%.1E", ct.getMin());
-    snprintf(strValMax, 64, "%.1E", ct.getMax());
-    glText::print(xpos + wbox + 4, (int)floor(bottom), strValMin);
-    glText::print(xpos + wbox + 4, (int)floor(bottom) + hbox - 13, strValMax);
+    if (labels.empty()) {
+      char strValMin[64];
+      char strValMax[64];
+      snprintf(strValMin, 64, "%.1E", ct.getMin());
+      snprintf(strValMax, 64, "%.1E", ct.getMax());
+      glText::print(xpos + wbox + 4, (int)floor(bottom), strValMin);
+      glText::print(xpos + wbox + 4, (int)floor(bottom) + hbox - 13, strValMax);
 
-    glText::print(xpos, H - ypos + 6, title);
-
+    } else {
+      for (size_t i = 0 ; i < labels.size(); i++) {
+        glText::print(xpos + wbox + 4, (int)floor(bottom + (float)label_index_pos[i] * dH), labels[i].c_str());
+      }
+    }
+    
+    glText::print(xpos, H - ypos + 6, title);     
+    
     switch2D::back();
   }
 };
