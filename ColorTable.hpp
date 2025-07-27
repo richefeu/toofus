@@ -422,9 +422,14 @@ public:
    */
   void Rebuild() {
     static const std::vector<unsigned int> tb = {
-        PACK_COLOR(225, 205, 90, 255), PACK_COLOR(170, 114, 160, 255), PACK_COLOR(230, 116, 98, 255),
-        PACK_COLOR(94, 129, 148, 255), PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
-        PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
+        PACK_COLOR(230, 25, 75, 255),  // red
+        PACK_COLOR(67, 99, 216, 255),  // blue
+        PACK_COLOR(60, 180, 75, 255),  // green
+        PACK_COLOR(255, 165, 0, 255),  // orange
+        PACK_COLOR(145, 30, 180, 255), // purple
+        PACK_COLOR(255, 255, 25, 255), // yellow
+        PACK_COLOR(66, 212, 244, 255), // light-blue
+        PACK_COLOR(240, 50, 250, 255), // pink
     };
 
     double s, t, gamma;
@@ -435,6 +440,7 @@ public:
     }
     table.reserve(size);
 
+    srand(42); // so that random color order are actually not random
     for (int i = 0; i < size; i++) {
 
       if (size > 1) {
@@ -455,20 +461,24 @@ public:
 
       switch (tableID) {
       case 0: // all black
+      {
         r = g = b = 0;
-        break;
+      } break;
       case 1: // vis5d
+      {
         t = (curvature + 1.4) * (s - (1.0 + bias) / 2.0);
         r = (int)(128.0 + 127.0 * atan(7.0 * t) / 1.57);
         g = (int)(128.0 + 127.0 * (2 * exp(-7 * t * t) - 1));
         b = (int)(128.0 + 127.0 * atan(-7.0 * t) / 1.57);
-        break;
+      } break;
       case 2: { // matlab "jet"
         double ii = (double)(s - bias) * 128.0;
-        if (ii < 0)
+        if (ii < 0) {
           ii = 0;
-        if (ii > 128)
+        }
+        if (ii > 128) {
           ii = 128;
+        }
         double rr = ii <= 46 ? 0.0 : ii >= 111 ? -0.03125 * (ii - 111) + 1.0 : ii >= 78 ? 1. : 0.03125 * (ii - 46);
         double gg = ii <= 14 || ii >= 111 ? 0.
                     : ii >= 79            ? -0.03125 * (ii - 111)
@@ -480,6 +490,7 @@ public:
         b = (int)(bb * 255.0);
       } break;
       case 3: // lucie, samcef (?)
+      {
         if (s - bias <= 0.0) {
           r = 0;
           g = 0;
@@ -501,8 +512,9 @@ public:
           g = 0;
           b = 0;
         }
-        break;
+      } break;
       case 4: // rainbow
+      {
         if (s - bias <= 0.0) {
           r = 0;
           g = 0;
@@ -532,8 +544,9 @@ public:
           g = 0;
           b = 0;
         }
-        break;
+      } break;
       case 5: // emc2000 (rainbow with black and white)
+      {
         if (s - bias <= 0.) {
           r = 0;
           g = 0;
@@ -567,23 +580,27 @@ public:
           g = 255;
           b = 255;
         }
-        break;
+      } break;
       case 6: // darkblue->red->yellow->white
+      {
         r = (int)(255.0 * cubic(-0.0506169, 2.81633, -1.87033, 0.0524573, s - bias));
         g = (int)(255.0 * cubic(0.0485868, -1.26109, 6.3074, -4.12498, s - bias));
         b = (int)(255.0 * cubic(0.364662, 1.50814, -7.36756, 6.51847, s - bias));
-        break;
+      } break;
       case 7: // matlab "hot"
+      {
         r = (int)(255.0 * hot_r(s - bias));
         g = (int)(255.0 * hot_g(s - bias));
         b = (int)(255.0 * hot_b(s - bias));
-        break;
+      } break;
       case 8: // matlab "pink"
+      {
         r = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_r(s - bias)) / 3.0));
         g = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_g(s - bias)) / 3.0));
         b = (int)(255.0 * sqrt((2.0 * gray(s - bias) + hot_b(s - bias)) / 3.0));
-        break;
+      } break;
       case 9: // grayscale
+      {
         if (s - bias <= 0.0) {
           r = g = b = 0;
         } else if (s - bias <= 1.) {
@@ -591,10 +608,11 @@ public:
         } else {
           r = g = b = (int)(255 * (1.0 - curvature));
         }
-        break;
+      } break;
       case 10: // all white
+      {
         r = g = b = 255;
-        break;
+      } break;
       case 11: { // matlab "hsv"
         double H = 6.0 * s + 1.0e-10, R = 0.0, G = 0.0, B = 0.0;
         HSV_to_RGB(H, 1.0, 1.0, &R, &G, &B);
@@ -610,30 +628,35 @@ public:
         b = (int)(255 * B);
       } break;
       case 13: // matlab "bone"
+      {
         r = (int)(255.0 * (7.0 * gray(s - bias) + hot_b(s - bias)) / 8.0);
         g = (int)(255.0 * (7.0 * gray(s - bias) + hot_g(s - bias)) / 8.0);
         b = (int)(255.0 * (7.0 * gray(s - bias) + hot_r(s - bias)) / 8.0);
-        break;
+      } break;
       case 14: // matlab "spring"
+      {
         r = (int)(255.0 * 1.0);
         g = (int)(255.0 * gray(s - bias));
         b = (int)(255.0 * (1.0 - gray(s - bias)));
-        break;
+      } break;
       case 15: // matlab "summer"
+      {
         r = (int)(255.0 * gray(s - bias));
         g = (int)(255.0 * (0.5 + gray(s - bias) / 2.0));
         b = (int)(255.0 * 0.4);
-        break;
+      } break;
       case 16: // matlab "autumn"
+      {
         r = (int)(255.0 * 1.0);
         g = (int)(255.0 * gray(s - bias));
         b = (int)(255.0 * 0.0);
-        break;
+      } break;
       case 17: // matlab "winter"
+      {
         r = (int)(255.0 * 0.0);
         g = (int)(255.0 * gray(s - bias));
         b = (int)(255.0 * (0.5 + (1.0 - gray(s - bias)) / 2.0));
-        break;
+      } break;
       case 18: // matlab "cool"
       {
         r = (int)(255.0 * gray(s - bias));
@@ -719,8 +742,9 @@ public:
    * without modifying the table.
    */
   void rebuild_interp_rgba(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
-    if (!table.empty())
+    if (!table.empty()) {
       table.clear();
+    }
     table.reserve(size);
 
     if (cpos.size() != cols.size()) {
@@ -774,8 +798,9 @@ public:
    * modifying the color table.
    */
   void rebuild_interp_hsv(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
-    if (!table.empty())
+    if (!table.empty()) {
       table.clear();
+    }
     table.reserve(size);
 
     if (cpos.size() != cols.size()) {
@@ -909,10 +934,11 @@ public:
     float pos = (value - min) / (max - min);                // in ]0.0 1.0[
     i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
-    if (value <= min)
+    if (value <= min) {
       i = 0;
-    else if (value >= max)
+    } else if (value >= max) {
       i = size - 1;
+    }
 
     col->r = UNPACK_RED(table[i]);
     col->g = UNPACK_GREEN(table[i]);
@@ -1008,8 +1034,9 @@ public:
         PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
     };
     unsigned int i = (unsigned int)floor(rand() / (double)RAND_MAX * 8);
-    if (i >= 8)
+    if (i >= 8) {
       i = 7;
+    }
     col->r = UNPACK_RED(tb[i]);
     col->g = UNPACK_GREEN(tb[i]);
     col->b = UNPACK_BLUE(tb[i]);
