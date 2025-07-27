@@ -513,7 +513,7 @@ public:
   glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) { snprintf(title, 128, "notitle"); }
 
   void addLabel(int i, std::string & lab, ColorTable &ct) {
-    if (i >= 0 && i < ct.size) {
+    if (i >= 0 && i < ct.getSize()) {
       label_index_pos.push_back(i);
       labels.push_back(lab);
     }
