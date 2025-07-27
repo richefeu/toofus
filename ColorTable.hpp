@@ -421,10 +421,15 @@ public:
    * based on inversion, alpha blending, and gamma correction using the beta parameter.
    */
   void Rebuild() {
-    static const std::vector<unsigned int> tb = {
-        PACK_COLOR(225, 205, 90, 255), PACK_COLOR(170, 114, 160, 255), PACK_COLOR(230, 116, 98, 255),
-        PACK_COLOR(94, 129, 148, 255), PACK_COLOR(226, 221, 147, 255), PACK_COLOR(221, 175, 185, 255),
-        PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
+    static const std::vector<unsigned int> colorCycle8 = {
+        PACK_COLOR(222, 54, 50, 255),  // red
+        PACK_COLOR(44, 76, 204, 255),  // bleu
+        PACK_COLOR(60, 168, 91, 255),  // green
+        PACK_COLOR(242, 160, 62, 255), // orange
+        PACK_COLOR(109, 55, 179, 255), // purple
+        PACK_COLOR(246, 230, 87, 255), // yellow
+        PACK_COLOR(87, 181, 230, 255), // light bleu
+        PACK_COLOR(206, 62, 194, 255), // pink
     };
 
     double s, t, gamma;
@@ -655,9 +660,9 @@ public:
       case 21: // Cyclic colors
       {
         int count = i % 8;
-        r = UNPACK_RED(tb[count]);
-        g = UNPACK_GREEN(tb[count]);
-        b = UNPACK_BLUE(tb[count]);
+        r = UNPACK_RED(colorCycle8[count]);
+        g = UNPACK_GREEN(colorCycle8[count]);
+        b = UNPACK_BLUE(colorCycle8[count]);
       } break;
       default: {
         r = g = b = 0;
