@@ -507,12 +507,12 @@ protected:
   int hbox;
   char title[128];
   std::vector<int> label_index_pos;
-  std::vector<std::string> labels; 
+  std::vector<std::string> labels;
 
 public:
   glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) { snprintf(title, 128, "notitle"); }
 
-  void addLabel(int i, std::string & lab, ColorTable &ct) {
+  void addLabel(int i, std::string &lab, ColorTable &ct) {
     if (i >= 0 && i < ct.getSize()) {
       label_index_pos.push_back(i);
       labels.push_back(lab);
@@ -533,16 +533,19 @@ public:
 
   void show(int W, int H, ColorTable &ct) {
     switch2D::go(W, H);
+    glLineWidth(1.0f);
 
     colorRGBA col;
     float value;
-    float dval = (ct.getMax() - ct.getMin()) / (float)ct.getSize();
+    float dval = (ct.getMax() - ct.getMin()) / (float)(ct.getSize()-1);
+    //std::cout << "dval = " << dval << std::endl;
     float dH = (float)hbox / (float)(ct.getSize());
     float bottom = (float)(H - (ypos + hbox));
 
     // draw the color bar
     for (int i = 0; i < ct.getSize(); ++i) {
       value = ct.getMin() + (float)i * dval;
+      //std::cout << "value = " << value << std::endl;
       ct.getRGB(value, &col);
       glColor3ub((GLubyte)col.r, (GLubyte)col.g, (GLubyte)col.b);
       glBegin(GL_QUADS);
@@ -571,13 +574,14 @@ public:
       glText::print(xpos + wbox + 4, (int)floor(bottom) + hbox - 13, strValMax);
 
     } else {
-      for (size_t i = 0 ; i < labels.size(); i++) {
-        glText::print(xpos + wbox + 4, (int)floor(bottom + (float)label_index_pos[i] * dH), labels[i].c_str());
+      for (size_t i = 0; i < labels.size(); i++) {
+        glText::print(xpos + wbox + 4, (int)floor(bottom + (float)(label_index_pos[i] + 0.5) * dH - 7),
+                      labels[i].c_str());
       }
     }
-    
-    glText::print(xpos, H - ypos + 6, title);     
-    
+
+    glText::print(xpos, H - ypos + 6, title);
+
     switch2D::back();
   }
 };

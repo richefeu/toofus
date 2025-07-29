@@ -420,7 +420,7 @@ public:
    * and several MATLAB named schemes, among others. It also applies adjustments
    * based on inversion, alpha blending, and gamma correction using the beta parameter.
    */
-  void Rebuild() {
+  void Rebuild(int seed = 1234) {
 
     static const std::vector<unsigned int> colorCycle8 = {
         PACK_COLOR(222, 54, 50, 255),  // red
@@ -441,7 +441,7 @@ public:
     }
     table.reserve(size);
 
-    srand(42); // so that random color order are actually not random
+    srand(seed); // so that random color order are actually not random
     for (int i = 0; i < size; i++) {
 
       if (size > 1) {
@@ -672,9 +672,23 @@ public:
       } break;
       case 20: // Random colors
       {
+        int prev_r = r;
+        int prev_g = g;
+        int prev_b = b;
         r = (int)(rand() / (double)RAND_MAX * 255.0);
         g = (int)(rand() / (double)RAND_MAX * 255.0);
         b = (int)(rand() / (double)RAND_MAX * 255.0);
+        float dr = r - prev_r;
+        float dg = r - prev_g;
+        float db = r - prev_b;
+        while (sqrt(dr * dr + dg * dg + db * db) < 100.0) {
+          r = (int)(rand() / (double)RAND_MAX * 255.0);
+          g = (int)(rand() / (double)RAND_MAX * 255.0);
+          b = (int)(rand() / (double)RAND_MAX * 255.0);
+          dr = r - prev_r;
+          dg = r - prev_g;
+          db = r - prev_b;
+        }
       } break;
       case 21: // Cyclic colors
       {
