@@ -420,7 +420,7 @@ public:
    * and several MATLAB named schemes, among others. It also applies adjustments
    * based on inversion, alpha blending, and gamma correction using the beta parameter.
    */
-  void Rebuild(int seed = 1234) {
+  void Rebuild(int seed = 1234, float distmax = 100.0) {
 
     static const std::vector<unsigned int> colorCycle8 = {
         PACK_COLOR(222, 54, 50, 255),  // red
@@ -433,8 +433,8 @@ public:
         PACK_COLOR(206, 62, 194, 255), // pink
     };
 
-    double s, t, gamma;
-    int r, g, b, a;
+    double s{0.0}, t{0.0}, gamma{0.0};
+    int r{0}, g{0}, b{0}, a{0};
 
     if (!table.empty()) {
       table.clear();
@@ -678,16 +678,16 @@ public:
         r = (int)(rand() / (double)RAND_MAX * 255.0);
         g = (int)(rand() / (double)RAND_MAX * 255.0);
         b = (int)(rand() / (double)RAND_MAX * 255.0);
-        float dr = r - prev_r;
-        float dg = r - prev_g;
-        float db = r - prev_b;
-        while (sqrt(dr * dr + dg * dg + db * db) < 100.0) {
+        float dr = static_cast<float>(r - prev_r);
+        float dg = static_cast<float>(r - prev_g);
+        float db = static_cast<float>(r - prev_b);
+        while (sqrt(dr * dr + dg * dg + db * db) < distmax) {
           r = (int)(rand() / (double)RAND_MAX * 255.0);
           g = (int)(rand() / (double)RAND_MAX * 255.0);
           b = (int)(rand() / (double)RAND_MAX * 255.0);
-          dr = r - prev_r;
-          dg = r - prev_g;
-          db = r - prev_b;
+          dr = static_cast<float>(r - prev_r);
+          dg = static_cast<float>(r - prev_g);
+          db = static_cast<float>(r - prev_b);
         }
       } break;
       case 21: // Cyclic colors

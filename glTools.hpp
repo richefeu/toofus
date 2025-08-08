@@ -22,6 +22,9 @@
 #include <cstdarg> // for va_start and va_end
 #include <cstring> // for strcpy
 
+#include <cstdlib>
+#include <functional>
+
 #include "ColorTable.hpp"
 #include "OBB.hpp"
 
@@ -276,7 +279,6 @@ public:
 
 class glText {
 public:
-  // static initialised = false;
 
   static void makeRasterFont() {
     GLuint i;
@@ -313,14 +315,14 @@ public:
     glPopAttrib();
   }
 
-  static void print(GLfloat x, GLfloat y, const char *fmt, ...) {
+  static void print(GLfloat x, GLfloat y, GLfloat z, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     char buffer[128];
     vsnprintf(buffer, 127, fmt, args);
     va_end(args);
 
-    glRasterPos3f(x, y, 0.0f);
+    glRasterPos3f(x, y, z);
     glPushAttrib(GL_LIST_BIT);
     glListBase(fontOffset);
     glCallLists((GLsizei)strlen(buffer), GL_UNSIGNED_BYTE, (GLubyte *)buffer);
@@ -451,6 +453,18 @@ public:
   glTextZone(int *W, int *H) : nbLine(NB_LINE_MAX), width(W), height(H) {}
   glTextZone(int n, int *W, int *H) : nbLine(n), width(W), height(H) {}
 
+  void set_nbLine(int nb) {
+    if (nb > 0 && nb < NB_LINE_MAX) {
+      nbLine = nb;
+    }
+  }
+
+  void set_min_nbLine(int min) {
+    if (nbLine < min && min > 0 && min < NB_LINE_MAX) {
+      nbLine = min;
+    }
+  }
+
   void increase_nbLine() {
     nbLine++;
     if (nbLine >= NB_LINE_MAX) {
@@ -537,15 +551,15 @@ public:
 
     colorRGBA col;
     float value;
-    float dval = (ct.getMax() - ct.getMin()) / (float)(ct.getSize()-1);
-    //std::cout << "dval = " << dval << std::endl;
+    float dval = (ct.getMax() - ct.getMin()) / (float)(ct.getSize() - 1);
+    // std::cout << "dval = " << dval << std::endl;
     float dH = (float)hbox / (float)(ct.getSize());
     float bottom = (float)(H - (ypos + hbox));
 
     // draw the color bar
     for (int i = 0; i < ct.getSize(); ++i) {
       value = ct.getMin() + (float)i * dval;
-      //std::cout << "value = " << value << std::endl;
+      // std::cout << "value = " << value << std::endl;
       ct.getRGB(value, &col);
       glColor3ub((GLubyte)col.r, (GLubyte)col.g, (GLubyte)col.b);
       glBegin(GL_QUADS);
@@ -626,76 +640,86 @@ public:
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
   }
+};
 
-  /*
-  static void show_colorTable (ColorTable & ct)
-  {
-          glMatrixMode(GL_PROJECTION);
-          glPushMatrix();
-          glLoadIdentity();
-          glOrtho(0, width, 0, height, -1.0f, 1.0f);
-          glMatrixMode(GL_MODELVIEW);
-          glPushMatrix();
-          glLoadIdentity();
+class glInputBox {
+public:
+  bool inputMode;
+  size_t cursorPos;
+  int *width;
+  int *height;
 
+  std::string inputText;
+  std::string promptText;
+  std::function<void()> onEnterCallback;
 
-          //glPushAttrib(GL_DEPTH_TEST);
-          glDisable(GL_DEPTH_TEST);
-          //glPushAttrib(GL_LIGHTING);
-          glDisable(GL_LIGHTING);
+  glInputBox(int *W, int *H) : inputMode(false), cursorPos(0), width(W), height(H) {}
 
-          int bottom = (int)(2.0 * height / 3.0);
-          int top = height - 20;
-          float H = top - bottom;
-          float dH = H / (ct.getSize());
-
-          glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-
-          colorRGBA col;
-          float value;
-          float dval = (ct.getMax() - ct.getMin()) / ct.getSize();
-
-          for (int i = 0 ; i < ct.getSize() ; ++i) {
-                  value = ct.getMin() + (real)i * dval;
-                  ct.getRGB(value, &col);
-                  glColor3f ((real)col.r * to01, (real)col.g * to01, (real)col.b * to01);
-                  glBegin(GL_QUADS);
-                  glVertex2f(4., bottom + i * dH);
-                  glVertex2f(20., bottom + i * dH);
-                  glVertex2f(20., bottom + (i + 1)*dH);
-                  glVertex2f(4., bottom + (i + 1)*dH);
-                  glEnd();
-          }
-
-          glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-          glLineWidth(1.0f);
-          glColor3f(0.0, 0.0, 0.0);
-          glBegin(GL_QUADS);
-          glVertex2f(4., bottom);
-          glVertex2f(20., bottom);
-          glVertex2f(20., top);
-          glVertex2f(4., top);
-          glEnd();
-
-          glColor3f(0.0, 0.0, 0.0);
-          char str[30];
-          sprintf ((char *) str, "%+3.3e", (float) (ct.getMin()));
-          glRasterPos2i (22, bottom);
-          for (uint j = 0; str[j]; ++j)
-                  glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
-          sprintf ((char *) str, "%+3.3e", (float) (ct.getMax()));
-          glRasterPos2i (22, top - 8);
-          for (uint j = 0; str[j]; ++j)
-                  glutBitmapCharacter (GLUT_BITMAP_9_BY_15, str[j]);
-
-
-          glPopAttrib();
-          glMatrixMode(GL_PROJECTION);
-          glPopMatrix();
-          glMatrixMode(GL_MODELVIEW);
-          glPopMatrix();
+  void start(const std::string &prompt, std::function<void()> callback) {
+    inputMode = true;
+    promptText = prompt;
+    inputText.clear();
+    cursorPos = 0;
+    onEnterCallback = callback;
   }
-  */
+
+  void keyboard(unsigned char key) {
+    switch (key) {
+    case 13: // Enter key
+      inputMode = false;
+      onEnterCallback();
+      break;
+    case 8: // Backspace key
+      if (cursorPos > 0) {
+        inputText.erase(cursorPos - 1, 1);
+        --cursorPos;
+      }
+      break;
+    default: {
+      inputText.insert(cursorPos, 1, key);
+      ++cursorPos;
+    } break;
+    }
+    glutPostRedisplay(); // Redraw the scene to update the display
+  }
+
+  void specialKeyboard(int key) {
+    switch (key) {
+    case GLUT_KEY_LEFT:
+      if (cursorPos > 0) {
+        --cursorPos;
+      }
+      break;
+    case GLUT_KEY_RIGHT:
+      if (cursorPos < inputText.size()) {
+        ++cursorPos;
+      }
+      break;
+    }
+    glutPostRedisplay();
+  }
+
+  void render() {
+    switch2D::go(*width, *height);
+
+    glColor4f(0.91f, 0.52f, 0.6f, 1.0f);
+    glBegin(GL_QUADS);
+    glVertex2i(0, *height);
+    glVertex2i(*width, *height);
+    glVertex2i(*width, *height - 22);
+    glVertex2i(0, *height - 22);
+    glEnd();
+
+    glColor3i(0, 0, 0);
+    char txt[256];
+    snprintf(txt, 256, "%s: %s", promptText.c_str(), inputText.c_str());
+    glText::print(4, *height - 16, txt);
+    int shiftPrompt = static_cast<int>(promptText.length()) + 2;
+    int shift = 4 + (shiftPrompt + static_cast<int>(cursorPos)) * 10;
+    glText::print(shift, *height - 16, "_");
+    
+    switch2D::back();
+  }
 };
 
 #endif /* end of include guard: GLTOOLS_HPP */
