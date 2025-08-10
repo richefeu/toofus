@@ -11,6 +11,125 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
+/*
+ * vec3 Template Class Documentation
+ *
+ * Overview:
+ * The vec3 class is a template class for vectors with 3 components, typically used for representing 3D vectors.
+ * It supports various arithmetic operations, comparisons, and transformations.
+ *
+ * Key Features:
+ * - Template-based: Can be used with different data types (e.g., int, double).
+ * - Arithmetic Operations: Supports basic arithmetic operations such as addition, subtraction, multiplication, and
+ * division.
+ * - Vector Operations: Includes vector-specific operations like dot product, cross product, and normalization.
+ * - Transformations: Provides methods for randomizing vector directions and accessing components.
+ *
+ * Method Descriptions:
+ *
+ * Constructors:
+ * - vec3(): Constructs a vector with all components set to 0.
+ * - vec3(T X, T Y, T Z): Constructs a vector with components X, Y, and Z.
+ * - vec3(const vec3 &v): Copy constructor.
+ *
+ * Static Methods:
+ * - zero(): Returns a vector with all components set to 0.
+ * - unit_x(): Returns a unit vector in the x-direction.
+ * - unit_y(): Returns a unit vector in the y-direction.
+ * - unit_z(): Returns a unit vector in the z-direction.
+ * - one(): Returns a vector with all components set to 1.
+ *
+ * Basic Operations:
+ * - reset(): Resets all components of the vector to 0.
+ * - set(T X, T Y, T Z): Sets the components of the vector to X, Y, and Z.
+ * - set(T val): Sets all components of the vector to val.
+ * - randomize_direction(double val): Randomizes the direction of the vector and scales it by val.
+ * - randomize_direction_xz(double val): Randomizes the direction of the vector in the x-z plane and scales it by val.
+ * - isnull(const T tol): Checks if the vector is null based on a tolerance value.
+ *
+ * Accessors:
+ * - c_vec(): Provides direct access to the vector data as a C array.
+ * - operator[](int i): Provides access to the vector components using an index.
+ * - n(): Returns the x-component of the vector.
+ * - t(): Returns the y-component of the vector.
+ * - s(): Returns the z-component of the vector.
+ *
+ * Arithmetic Operations:
+ * - operator+=, -=, *=, /=: In-place arithmetic operations.
+ * - operator+, -, *, /: Arithmetic operations returning a new vector.
+ * - operator*: Dot product of two vectors.
+ *
+ * Vector Operations:
+ * - component_product: Multiplies each component of two vectors.
+ * - component_min: Returns a vector with the smallest components of two vectors.
+ * - component_max: Returns a vector with the largest components of two vectors.
+ * - component_abs: Returns a vector with the absolute values of the components.
+ * - operator^: Cross product of two vectors.
+ * - cross: Computes the cross product of two vectors.
+ * - lerp: Performs linear interpolation between two vectors.
+ * - norm2: Computes the squared length of the vector.
+ * - norm: Computes the length of the vector.
+ * - length: Returns the length of the vector.
+ * - normSup: Returns the maximum absolute component of the vector.
+ * - normalize: Normalizes the vector and returns its original length.
+ * - normalizeTested: Normalizes the vector and sets non-dominant components to zero if one component becomes exactly 1.
+ * - normalizeQuotientAlgo: Normalizes the vector using the quotient algorithm to avoid floating-point cancellation.
+ * - normalized: Returns a normalized copy of the vector.
+ * - normalizedTested: Returns a normalized copy of the vector using the tested algorithm.
+ *
+ * Comparisons:
+ * - operator==, !=: Compares two vectors for equality and inequality.
+ *
+ * Input/Output:
+ * - operator<<: Outputs the vector components to an output stream.
+ * - operator>>: Reads the vector components from an input stream.
+ *
+ * Usage Examples:
+ *
+ * Example 1: Creating and Using a Vector
+ *
+ * ```cpp
+ * #include "vec3.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec3<double> v(1.0, 2.0, 3.0);
+ *     std::cout << "Vector: " << v << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 2: Vector Arithmetic
+ *
+ * ```cpp
+ * #include "vec3.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec3<double> v1(1.0, 2.0, 3.0);
+ *     vec3<double> v2(3.0, 4.0, 5.0);
+ *     vec3<double> v3 = v1 + v2;
+ *     std::cout << "Vector Addition: " << v3 << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 3: Vector Normalization
+ *
+ * ```cpp
+ * #include "vec3.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec3<double> v(3.0, 4.0, 0.0);
+ *     v.normalize();
+ *     std::cout << "Normalized Vector: " << v << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ */
+
 #ifndef VEC3_HPP
 #define VEC3_HPP
 

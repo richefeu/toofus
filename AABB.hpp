@@ -11,6 +11,114 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
+/*
+ * AABB (Axis-Aligned Bounding Box) Class Documentation
+ *
+ * Overview:
+ * The AABB class represents an axis-aligned bounding box, which is a box aligned with the coordinate axes.
+ * It is defined by two points: a minimum point (min) and a maximum point (max), representing the opposite corners of
+ * the box. This class is useful for spatial queries and collision detection in 3D space.
+ *
+ * Key Features:
+ * - Simple Construction: Create AABBs from points, vectors, or other AABBs.
+ * - Spatial Operations: Perform operations such as merging, translating, and enlarging the bounding box.
+ * - Intersection Tests: Check for intersections with other AABBs or points.
+ *
+ * Usage Examples:
+ *
+ * Example 1: Creating an AABB
+ *
+ * ```cpp
+ * #include "AABB.hpp"
+ * #include "vec3.hpp"
+ *
+ * int main() {
+ *     vec3r point1(0.0, 0.0, 0.0);
+ *     vec3r point2(1.0, 1.0, 1.0);
+ *
+ *     // Create an AABB from two points
+ *     AABB box(point1, point2);
+ *
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 2: Expanding an AABB
+ *
+ * ```cpp
+ * #include "AABB.hpp"
+ * #include "vec3.hpp"
+ *
+ * int main() {
+ *     vec3r point(0.0, 0.0, 0.0);
+ *     AABB box(point);
+ *
+ *     // Expand the AABB to include another point
+ *     vec3r newPoint(2.0, 2.0, 2.0);
+ *     box.add(newPoint);
+ *
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 3: Checking Intersection with Another AABB
+ *
+ * ```cpp
+ * #include "AABB.hpp"
+ * #include "vec3.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     AABB box1(vec3r(0.0, 0.0, 0.0), vec3r(1.0, 1.0, 1.0));
+ *     AABB box2(vec3r(0.5, 0.5, 0.5), vec3r(1.5, 1.5, 1.5));
+ *
+ *     // Check if box1 intersects with box2
+ *     if (box1.intersect(box2)) {
+ *         std::cout << "Box1 intersects with Box2." << std::endl;
+ *     } else {
+ *         std::cout << "Box1 does not intersect with Box2." << std::endl;
+ *     }
+ *
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 4: Translating an AABB
+ *
+ * ```cpp
+ * #include "AABB.hpp"
+ * #include "vec3.hpp"
+ *
+ * int main() {
+ *     AABB box(vec3r(0.0, 0.0, 0.0), vec3r(1.0, 1.0, 1.0));
+ *
+ *     // Translate the AABB by a vector
+ *     vec3r translationVector(1.0, 1.0, 1.0);
+ *     box.translate(translationVector);
+ *
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 5: Merging Two AABBs
+ *
+ * ```cpp
+ * #include "AABB.hpp"
+ * #include "vec3.hpp"
+ *
+ * int main() {
+ *     AABB box1(vec3r(0.0, 0.0, 0.0), vec3r(1.0, 1.0, 1.0));
+ *     AABB box2(vec3r(1.0, 1.0, 1.0), vec3r(2.0, 2.0, 2.0));
+ *
+ *     // Merge box2 into box1
+ *     box1.merge(box2);
+ *
+ *     return 0;
+ * }
+ * ```
+ *
+ */
+
 #ifndef AABB_HPP
 #define AABB_HPP
 

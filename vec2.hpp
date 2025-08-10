@@ -11,6 +11,123 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
+/*
+ * vec2 Template Class Documentation
+ *
+ * Overview:
+ * The vec2 class is a template class for vectors with 2 components, typically used for representing 2D vectors.
+ * It supports various arithmetic operations, comparisons, and transformations.
+ *
+ * Key Features:
+ * - Template-based: Can be used with different data types (e.g., int, double).
+ * - Arithmetic Operations: Supports basic arithmetic operations such as addition, subtraction, multiplication, and
+ * division.
+ * - Vector Operations: Includes vector-specific operations like dot product, cross product, and normalization.
+ * - Transformations: Provides methods for rotating vectors and accessing components.
+ *
+ * Method Descriptions:
+ *
+ * Constructors:
+ * - vec2(): Constructs a vector with both components set to 0.
+ * - vec2(T X, T Y): Constructs a vector with components X and Y.
+ * - vec2(const vec2 &v): Copy constructor.
+ *
+ * Static Methods:
+ * - unit_x(): Returns a unit vector in the x-direction.
+ * - unit_y(): Returns a unit vector in the y-direction.
+ * - one(): Returns a vector with both components set to 1.
+ * - zero(): Returns a vector with both components set to 0.
+ *
+ * Basic Operations:
+ * - reset(): Resets both components of the vector to 0.
+ * - set(T X, T Y): Sets the components of the vector to X and Y.
+ * - set(T val): Sets both components of the vector to val.
+ * - isnull(const T tol): Checks if the vector is null based on a tolerance value.
+ *
+ * Accessors:
+ * - c_vec(): Provides direct access to the vector data (not recommended for direct use).
+ * - operator[](int i): Provides access to the vector components using an index.
+ * - n(): Returns the x-component of the vector.
+ * - t(): Returns the y-component of the vector.
+ *
+ * Arithmetic Operations:
+ * - operator+=, -=, *=, /=: In-place arithmetic operations.
+ * - operator+, -, *, /: Arithmetic operations returning a new vector.
+ * - operator*: Dot product of two vectors.
+ *
+ * Vector Operations:
+ * - component_product: Multiplies each component of two vectors.
+ * - component_min: Returns a vector with the smallest components of two vectors.
+ * - component_max: Returns a vector with the largest components of two vectors.
+ * - component_abs: Returns a vector with the absolute values of the components.
+ * - angleBetweenVectors: Computes the angle between two vectors.
+ * - inclinationX: Computes the inclination of the vector with respect to the x-axis.
+ * - cross: Computes the cross product of two vectors.
+ * - lerp: Performs linear interpolation between two vectors.
+ * - norm2: Computes the squared length of the vector.
+ * - norm: Computes the length of the vector.
+ * - normalize: Normalizes the vector and returns its original length.
+ * - normalized: Returns a normalized copy of the vector.
+ *
+ * Transformations:
+ * - quarterRightTurn: Rotates the vector 90 degrees clockwise in-place.
+ * - quarterLeftTurn: Rotates the vector 90 degrees counter-clockwise in-place.
+ * - quarterRightTurned: Returns a 90-degree clockwise rotated copy of the vector.
+ * - quarterLeftTurned: Returns a 90-degree counter-clockwise rotated copy of the vector.
+ *
+ * Comparisons:
+ * - operator==, !=: Compares two vectors for equality and inequality.
+ *
+ * Input/Output:
+ * - operator<<: Outputs the vector components to an output stream.
+ * - operator>>: Reads the vector components from an input stream.
+ *
+ * Usage Examples:
+ *
+ * Example 1: Creating and Using a Vector
+ *
+ * ```cpp
+ * #include "vec2.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec2<double> v(1.0, 2.0);
+ *     std::cout << "Vector: " << v << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 2: Vector Arithmetic
+ *
+ * ```cpp
+ * #include "vec2.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec2<double> v1(1.0, 2.0);
+ *     vec2<double> v2(3.0, 4.0);
+ *     vec2<double> v3 = v1 + v2;
+ *     std::cout << "Vector Addition: " << v3 << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ * Example 3: Vector Rotation
+ *
+ * ```cpp
+ * #include "vec2.hpp"
+ * #include <iostream>
+ *
+ * int main() {
+ *     vec2<double> v(1.0, 0.0);
+ *     v.quarterRightTurn();
+ *     std::cout << "Rotated Vector: " << v << std::endl;
+ *     return 0;
+ * }
+ * ```
+ *
+ */
+
 #ifndef VEC2_HPP
 #define VEC2_HPP
 
@@ -151,9 +268,7 @@ public:
   }
 
   /// Inclination with respect to x (result in [-pi pi])
-  friend T inclinationX(const vec2<T> &v) {
-    return atan2(v.y, v.x);
-  }
+  friend T inclinationX(const vec2<T> &v) { return atan2(v.y, v.x); }
 
   /// angle of vector V with respect to vector Vref (result in [-pi pi])
   /*
