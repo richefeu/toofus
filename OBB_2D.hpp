@@ -85,6 +85,7 @@ struct OBB_2D {
   bool contains(const OBB_2D &other) const { return contains(other.position); }
 
 private:
+  
   std::array<vec2r, 4> calculateVertices() const {
     // Calculate the half extents
     double halfWidth = width / 2.0;
