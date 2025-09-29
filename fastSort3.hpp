@@ -40,9 +40,9 @@ template <typename T> void fastSort3(T &a0, T &a1, T &a2) {
     } else {
       if (a1 < a2) {
         T temp = a0;
-        a0 = a1;
-        a1 = a2;
-        a2 = temp;
+        a0     = a1;
+        a1     = a2;
+        a2     = temp;
       } else {
         std::swap(a0, a2);
       }
@@ -80,9 +80,9 @@ template <typename T> void getOrder3(const T a0, const T a1, const T a2, int &i0
     } else {
       if (a1 < a2) {
         int temp = i0;
-        i0 = i1;
-        i1 = i2;
-        i2 = temp;
+        i0       = i1;
+        i1       = i2;
+        i2       = temp;
       } else {
         std::swap(i0, i2);
       }

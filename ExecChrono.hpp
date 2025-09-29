@@ -35,7 +35,9 @@ public:
   /// // do something
   /// ec.stop();
   /// \endcode
-  ExecChrono() : m_label("Measured time") { start(); }
+  ExecChrono() : m_label("Measured time") {
+    start();
+  }
 
   /// Constructor with custom label.
   ///
@@ -45,10 +47,14 @@ public:
   /// // do something
   /// ec.stop();
   /// \endcode
-  ExecChrono(const char *label) : m_label(label) { start(); }
+  ExecChrono(const char *label) : m_label(label) {
+    start();
+  }
 
   /// Starts the execution timer by recording the current clock time.
-  void start() { m_start = clock(); }
+  void start() {
+    m_start = clock();
+  }
 
   /// Stops the timer and prints the time elapsed since
   /// \ref start() was called to the standard output, labeled

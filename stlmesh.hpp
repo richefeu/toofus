@@ -67,10 +67,8 @@ public:
      * @return true if the edge is smaller than rhs, false otherwise.
      */
     bool operator<(const edge &rhs) const {
-      if (i0 < rhs.i0)
-        return true;
-      if ((i0 == rhs.i0) && (i1 < rhs.i1))
-        return true;
+      if (i0 < rhs.i0) return true;
+      if ((i0 == rhs.i0) && (i1 < rhs.i1)) return true;
       return false;
     }
   };
@@ -111,22 +109,20 @@ public:
     for (size_t e = 0; e < edges.size(); e++) {
       std::pair<size_t, size_t> P;
       if (edges[e].i0 < edges[e].i1) {
-        P.first = edges[e].i0;
+        P.first  = edges[e].i0;
         P.second = edges[e].i1;
       } else {
-        P.first = edges[e].i1;
+        P.first  = edges[e].i1;
         P.second = edges[e].i0;
       }
       edgeSet.insert(P); // That way, duplication is not allowed
     }
 
     size_t nbePrev = edges.size();
-    size_t nbeNew = edgeSet.size();
+    size_t nbeNew  = edgeSet.size();
 
     edges.clear();
-    for (auto it : edgeSet) {
-      edges.push_back(edge(it.first, it.second));
-    }
+    for (auto it : edgeSet) { edges.push_back(edge(it.first, it.second)); }
 
     std::cout << nbePrev - nbeNew << " duplicated edges have been removed\n";
   }
@@ -291,7 +287,7 @@ public:
         T.i0 = itMap->second;
       } else {
         map_points[vertex1] = ivertex;
-        T.i0 = ivertex;
+        T.i0                = ivertex;
         ivertex++;
       }
 
@@ -300,7 +296,7 @@ public:
         T.i1 = itMap->second;
       } else {
         map_points[vertex2] = ivertex;
-        T.i1 = ivertex;
+        T.i1                = ivertex;
         ivertex++;
       }
 
@@ -309,22 +305,22 @@ public:
         T.i2 = itMap->second;
       } else {
         map_points[vertex3] = ivertex;
-        T.i2 = ivertex;
+        T.i2                = ivertex;
         ivertex++;
       }
 
       if (T.i0 > T.i1) {
-        swp = T.i0;
+        swp  = T.i0;
         T.i0 = T.i1;
         T.i1 = swp;
       }
       if (T.i1 > T.i2) {
-        swp = T.i1;
+        swp  = T.i1;
         T.i1 = T.i2;
         T.i2 = swp;
       }
       if (T.i0 > T.i1) {
-        swp = T.i0;
+        swp  = T.i0;
         T.i0 = T.i1;
         T.i1 = swp;
       }
@@ -333,9 +329,7 @@ public:
     }
 
     std::map<size_t, vec3<real32>> map_id;
-    for (itMap = map_points.begin(); itMap != map_points.end(); ++itMap) {
-      map_id[itMap->second] = itMap->first;
-    }
+    for (itMap = map_points.begin(); itMap != map_points.end(); ++itMap) { map_id[itMap->second] = itMap->first; }
     map_points.clear();
 
     point Pt;
@@ -362,9 +356,7 @@ public:
       tmp_edges.insert(E);
     }
 
-    for (std::set<edge>::iterator it = tmp_edges.begin(); it != tmp_edges.end(); ++it) {
-      edges.push_back(*it);
-    }
+    for (std::set<edge>::iterator it = tmp_edges.begin(); it != tmp_edges.end(); ++it) { edges.push_back(*it); }
 
     // std::cout << "done." << std::endl;
     std::cout << "  Number of vertices  " << points.size() << std::endl;

@@ -32,11 +32,9 @@ public:
 
   // Add a value to the matrix at the specified (row, col)
   void add_value(int row, int col, double value) {
-    if (value == 0.0) {
-      return;
-    }
+    if (value == 0.0) { return; }
 
-    int hash = row * n + col;  // Create a unique hash for each position (row, col)
+    int hash = row * n + col; // Create a unique hash for each position (row, col)
 
     // Check if this hash already exists in the set
     if (hashes.contains(hash)) {
@@ -45,64 +43,50 @@ public:
         if (col_indices[i] == col) {
           // Found the existing position, add the new value to the current value
           values[i] += value;
-          return;  // No need to add a new entry
+          return; // No need to add a new entry
         }
       }
     } else {
       hashes.insert(hash);
       values.push_back(value);
       col_indices.push_back(col);
-      row_ptrs[row + 1]++;  // Increment the number of elements in this row
+      row_ptrs[row + 1]++; // Increment the number of elements in this row
     }
   }
 
   // Finalize the row pointers to point to the correct ends of each row
   void finalize() {
     // Now accumulate the row_ptrs array
-    for (int i = 1; i <= n; i++) {
-      row_ptrs[i] += row_ptrs[i - 1];
-    }
+    for (int i = 1; i <= n; i++) { row_ptrs[i] += row_ptrs[i - 1]; }
   }
 
   // Matrix-vector multiplication: result = A * x
-  void multiply(const std::vector<double>& x, std::vector<double>& result) const {
+  void multiply(const std::vector<double> &x, std::vector<double> &result) const {
     std::fill(result.begin(), result.end(), 0.0);
     for (int row = 0; row < n; row++) {
-      for (int j = row_ptrs[row]; j < row_ptrs[row + 1]; j++) {
-        result[row] += values[j] * x[col_indices[j]];
-      }
+      for (int j = row_ptrs[row]; j < row_ptrs[row + 1]; j++) { result[row] += values[j] * x[col_indices[j]]; }
     }
   }
 
   // Conjugate Gradient Solver (CG) for solving Ax = b
-  bool solve_CG(const std::vector<double>& b, std::vector<double>& x, double tol = 1e-6, int max_iter = 1000) const {
+  bool solve_CG(const std::vector<double> &b, std::vector<double> &x, double tol = 1e-6, int max_iter = 1000) const {
     std::vector<double> r(n), p(n), Ap(n);
     multiply(x, Ap);
-    for (int i = 0; i < n; i++) {
-      r[i] = b[i] - Ap[i];
-    }
-    p = r;
+    for (int i = 0; i < n; i++) { r[i] = b[i] - Ap[i]; }
+    p             = r;
     double rs_old = std::inner_product(r.begin(), r.end(), r.begin(), 0.0);
 
     for (int iter = 0; iter < max_iter; iter++) {
       multiply(p, Ap);
       double alpha = rs_old / std::inner_product(p.begin(), p.end(), Ap.begin(), 0.0);
-      for (int i = 0; i < n; i++) {
-        x[i] += alpha * p[i];
-      }
-      for (int i = 0; i < n; i++) {
-        r[i] -= alpha * Ap[i];
-      }
+      for (int i = 0; i < n; i++) { x[i] += alpha * p[i]; }
+      for (int i = 0; i < n; i++) { r[i] -= alpha * Ap[i]; }
 
       double rs_new = std::inner_product(r.begin(), r.end(), r.begin(), 0.0);
-      if (std::sqrt(rs_new) < tol) {
-        return true;
-      }
+      if (std::sqrt(rs_new) < tol) { return true; }
 
       double beta = rs_new / rs_old;
-      for (int i = 0; i < n; i++) {
-        p[i] = r[i] + beta * p[i];
-      }
+      for (int i = 0; i < n; i++) { p[i] = r[i] + beta * p[i]; }
 
       rs_old = rs_new;
     }
@@ -136,8 +120,7 @@ int main() {
 
   if (solver.solve_CG(b, x)) {
     std::cout << "Solution trouvée : ";
-    for (double xi : x)
-      std::cout << xi << " ";
+    for (double xi : x) std::cout << xi << " ";
     std::cout << std::endl;
   } else {
     std::cout << "Échec de convergence.\n";

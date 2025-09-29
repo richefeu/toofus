@@ -29,9 +29,9 @@ public:
 
 private:
   unsigned int seed = 143502;
-  double LX = 20e-3;
-  double LY = 20e-3;
-  double LZ = 20e-3;
+  double LX         = 20e-3;
+  double LY         = 20e-3;
+  double LZ         = 20e-3;
 
   double xOBB = 0.8e-3;
   double yOBB = 0.8e-3;
@@ -40,11 +40,11 @@ private:
   double homothety_min = 1.0;
   double homothety_max = 1.0;
 
-  size_t nb_obbs = 4000;
-  size_t nb_trials_max = nb_obbs * 30;
+  size_t nb_obbs             = 4000;
+  size_t nb_trials_max       = nb_obbs * 30;
   double SolidFractionTarget = 0.29;
 
-  ContainerType containerType = CUBOID;
+  ContainerType containerType       = CUBOID;
   PackingDirection packingDirection = Z;
 
   std::default_random_engine generator;
@@ -69,9 +69,13 @@ public:
     nb_trials_max = nb_obbs * 30;
   }
 
-  void setNbTrialsMax(size_t nb_trials_max) { this->nb_trials_max = nb_trials_max; }
+  void setNbTrialsMax(size_t nb_trials_max) {
+    this->nb_trials_max = nb_trials_max;
+  }
 
-  void setSolidFractionTarget(double solid_fraction_target) { SolidFractionTarget = solid_fraction_target; }
+  void setSolidFractionTarget(double solid_fraction_target) {
+    SolidFractionTarget = solid_fraction_target;
+  }
 
   void setContainerLength(double t_LX, double t_LY, double t_LZ) {
     LX = t_LX;
@@ -79,8 +83,12 @@ public:
     LZ = t_LZ;
   }
 
-  void setContainerType(ContainerType container_type) { containerType = container_type; }
-  void setPackingDirection(PackingDirection D) { packingDirection = D; }
+  void setContainerType(ContainerType container_type) {
+    containerType = container_type;
+  }
+  void setPackingDirection(PackingDirection D) {
+    packingDirection = D;
+  }
 
   void save_pack(const char *fname, const std::vector<OBB> &obbs) {
     std::ofstream fog(fname, std::ios::out);
@@ -102,15 +110,15 @@ public:
       switch (packingDirection) {
       case X: {
         double Sellipse = M_PI * LY * LZ / 4.0;
-        Vbox = Sellipse * LX;
+        Vbox            = Sellipse * LX;
       } break;
       case Y: {
         double Sellipse = M_PI * LX * LZ / 4.0;
-        Vbox = Sellipse * LY;
+        Vbox            = Sellipse * LY;
       } break;
       case Z: {
         double Sellipse = M_PI * LX * LY / 4.0;
-        Vbox = Sellipse * LZ;
+        Vbox            = Sellipse * LZ;
       } break;
       }
     }
@@ -120,14 +128,12 @@ public:
     for (size_t i = 0; i < nb_obbs; i++) {
       vec3r full_extent;
       double homothety = homothety_min + (homothety_max - homothety_min) * random01(generator);
-      full_extent.x = xOBB * homothety;
-      full_extent.y = yOBB * homothety;
-      full_extent.z = zOBB * homothety;
+      full_extent.x    = xOBB * homothety;
+      full_extent.y    = yOBB * homothety;
+      full_extent.z    = zOBB * homothety;
       Ltab.push_back(full_extent);
       Vs += full_extent.x * full_extent.y * full_extent.z;
-      if (Vs / Vbox >= SolidFractionTarget) {
-        break;
-      }
+      if (Vs / Vbox >= SolidFractionTarget) { break; }
     }
     std::sort(Ltab.begin(), Ltab.end(),
               [](const vec3r &a, const vec3r &b) { return (a.x * a.y * a.z) > (b.x * b.y * b.z); });
@@ -144,7 +150,7 @@ public:
     obb1.center.z = 0.5 * LZ;
     obbs.push_back(obb1);
     double sumV = Ltab[0].x * Ltab[0].y * Ltab[0].z;
-    //size_t cumul_trials = 1;
+    // size_t cumul_trials = 1;
 
     std::cerr << "OBBPacker is Running...\n" << std::flush;
     for (size_t i = 1; i < Ltab.size(); i++) {
@@ -169,25 +175,25 @@ public:
         double angle = 2 * M_PI * random01(generator);
         switch (packingDirection) {
         case X: {
-          double a = LY / 2.0;
-          double b = LZ / 2.0;
-          double r = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
+          double a      = LY / 2.0;
+          double b      = LZ / 2.0;
+          double r      = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
           obbi.center.x = distBound + (LX - 2 * distBound) * random01(generator);
           obbi.center.y = 0.5 * LY + (r - distBound) * cos(angle) * random01(generator);
           obbi.center.z = 0.5 * LZ + (r - distBound) * sin(angle) * random01(generator);
         } break;
         case Y: {
-          double a = LX / 2.0;
-          double b = LZ / 2.0;
-          double r = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
+          double a      = LX / 2.0;
+          double b      = LZ / 2.0;
+          double r      = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
           obbi.center.x = 0.5 * LX + (r - distBound) * cos(angle) * random01(generator);
           obbi.center.y = distBound + (LY - 2 * distBound) * random01(generator);
           obbi.center.z = 0.5 * LZ + (r - distBound) * sin(angle) * random01(generator);
         } break;
         case Z: {
-          double a = LX / 2.0;
-          double b = LY / 2.0;
-          double r = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
+          double a      = LX / 2.0;
+          double b      = LY / 2.0;
+          double r      = a * b / sqrt(b * b * cos(angle) * cos(angle) + a * a * sin(angle) * sin(angle));
           obbi.center.x = 0.5 * LX + (r - distBound) * cos(angle) * random01(generator);
           obbi.center.y = 0.5 * LY + (r - distBound) * sin(angle) * random01(generator);
           obbi.center.z = distBound + (LZ - 2 * distBound) * random01(generator);
@@ -210,7 +216,7 @@ public:
       }
 
       obbs.push_back(obbi);
-      //cumul_trials += nb_trials;
+      // cumul_trials += nb_trials;
       sumV += Vi;
     }
 

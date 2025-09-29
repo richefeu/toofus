@@ -76,7 +76,7 @@ struct SVGPlot {
     }
 
     double rangeWidth = xmax - xmin;
-    double interval = rangeWidth / desiredNumIntervals;
+    double interval   = rangeWidth / desiredNumIntervals;
 
     // Calculate the new xmin and xmax values based on the desired number of intervals
     xmin = std::floor(xmin / interval) * interval;
@@ -84,12 +84,12 @@ struct SVGPlot {
 
     // Update the range width and interval values
     rangeWidth = xmax - xmin;
-    interval = rangeWidth / desiredNumIntervals;
+    interval   = rangeWidth / desiredNumIntervals;
 
     // Adjust the interval to a nice round value
-    double power = std::floor(std::log10(interval));
+    double power       = std::floor(std::log10(interval));
     double rangeFactor = std::pow(10, power);
-    interval = std::ceil(interval / rangeFactor) * rangeFactor;
+    interval           = std::ceil(interval / rangeFactor) * rangeFactor;
 
     // Update xmin and xmax with the adjusted interval
     xmin = std::floor(xmin / interval) * interval;
@@ -127,10 +127,10 @@ struct SVGPlot {
     adjustRangeAndInterval(minX, maxX, nx);
     adjustRangeAndInterval(minY, maxY, ny);
 
-    xRangeMin = minX;
-    xRangeMax = maxX;
-    yRangeMin = minY;
-    yRangeMax = maxY;
+    xRangeMin     = minX;
+    xRangeMax     = maxX;
+    yRangeMin     = minY;
+    yRangeMax     = maxY;
     xTickInterval = (maxX - minX) / (double)nx;
     yTickInterval = (maxY - minY) / (double)ny;
   }
@@ -230,9 +230,7 @@ struct SVGPlot {
 
     // Draw the plot line
     file << "<polyline fill=\"none\" stroke=\"blue\" stroke-width=\"2";
-    if (dashedLine) {
-      file << "\" stroke-dasharray=\"5,5";
-    }
+    if (dashedLine) { file << "\" stroke-dasharray=\"5,5"; }
     file << "\" points=\"";
     for (size_t i = 0; i < xvec.size(); ++i) {
       double x = padding + (xvec[i] - xRangeMin) * xScale;

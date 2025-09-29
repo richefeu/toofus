@@ -70,35 +70,25 @@ public:
     static unsigned int in;
     static std::vector<unsigned int> ix(MAXDIM);
     static std::vector<unsigned int *> iu(MAXBIT);
-    static unsigned int ip[MAXDIM] = {0, 1, 1, 2, 1, 4};
+    static unsigned int ip[MAXDIM]          = {0, 1, 1, 2, 1, 4};
     static unsigned int iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3,  1,  3, 3,  1,  1,
                                                5, 7, 7, 3, 3, 5, 15, 11, 5, 15, 13, 9};
     static double fac;
 
     if (n < 0) {
-      for (k = 0; k < MAXDIM; k++) {
-        ix[k] = 0;
-      }
+      for (k = 0; k < MAXDIM; k++) { ix[k] = 0; }
       in = 0;
-      if (iv[0] != 1) {
-        return;
-      }
+      if (iv[0] != 1) { return; }
       fac = 1.0 / (1 << MAXBIT);
-      for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM) {
-        iu[j] = &iv[k];
-      }
+      for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM) { iu[j] = &iv[k]; }
       for (k = 0; k < MAXDIM; k++) {
-        for (j = 0; j < mdeg[k]; j++) {
-          iu[j][k] <<= (MAXBIT - 1 - j);
-        }
+        for (j = 0; j < mdeg[k]; j++) { iu[j][k] <<= (MAXBIT - 1 - j); }
         for (j = mdeg[k]; j < MAXBIT; j++) {
           ipp = ip[k];
-          i = iu[j - mdeg[k]][k];
+          i   = iu[j - mdeg[k]][k];
           i ^= (i >> mdeg[k]);
           for (l = mdeg[k] - 1; l >= 1; l--) {
-            if (ipp & 1) {
-              i ^= iu[j - l][k];
-            }
+            if (ipp & 1) { i ^= iu[j - l][k]; }
             ipp >>= 1;
           }
           iu[j][k] = i;
@@ -107,15 +97,11 @@ public:
     } else {
       im = in++;
       for (j = 0; j < MAXBIT; j++) {
-        if (!(im & 1)) {
-          break;
-        }
+        if (!(im & 1)) { break; }
         im >>= 1;
       }
-      if (j >= MAXBIT) {
-        std::cerr << "MAXBIT too small in sobseq" << std::endl;
-      }
-      im = j * MAXDIM;
+      if (j >= MAXBIT) { std::cerr << "MAXBIT too small in sobseq" << std::endl; }
+      im       = j * MAXDIM;
       int kmax = (n < MAXDIM) ? n : MAXDIM;
       for (k = 0; k < kmax; k++) {
         ix[k] ^= iv[im + k];
@@ -163,11 +149,11 @@ public:
       geoTool::intersect_edge(A, B, pl.pos, pl.normal, alpha);
 
       if (alpha > 0.0 && alpha < 1.0) {
-        node_pair.first = node0;
+        node_pair.first  = node0;
         node_pair.second = node1;
         if (node_pair.second < node_pair.first) { // Take care that first number is lower than the second one
-          tmp = node_pair.first;
-          node_pair.first = node_pair.second;
+          tmp              = node_pair.first;
+          node_pair.first  = node_pair.second;
           node_pair.second = tmp;
         }
         intersected_edges[node_pair] = new_node_number;
@@ -176,8 +162,8 @@ public:
         sub_block.nodes.push_back(new_node);
 
         sub_block.edges[e].node1 = new_node_number;
-        new_edge.node0 = new_node_number;
-        new_edge.node1 = node1;
+        new_edge.node0           = new_node_number;
+        new_edge.node1           = node1;
         sub_block.edges.push_back(new_edge);
 
         new_node_number++;
@@ -185,9 +171,7 @@ public:
       }
     }
 
-    if (nb_cut < 3) {
-      return 0;
-    } // Because, we need 3 points (at least) to create the face that close the shape
+    if (nb_cut < 3) { return 0; } // Because, we need 3 points (at least) to create the face that close the shape
 
     // Insert the new nodes in the faces
     std::list<int>::iterator it0, it1;
@@ -197,16 +181,15 @@ public:
       for (it0 = sub_block.faces[f].nodes.begin(); it0 != sub_block.faces[f].nodes.end(); ++it0) {
         it1 = it0;
         ++it1;
-        if (it1 == sub_block.faces[f].nodes.end())
-          it1 = sub_block.faces[f].nodes.begin();
+        if (it1 == sub_block.faces[f].nodes.end()) it1 = sub_block.faces[f].nodes.begin();
         node0 = *it0;
         node1 = *it1;
         if (node1 < node0) {
-          tmp = node0;
+          tmp   = node0;
           node0 = node1;
           node1 = tmp;
         }
-        node_pair.first = node0;
+        node_pair.first  = node0;
         node_pair.second = node1;
 
         mp = intersected_edges.find(node_pair);
@@ -220,9 +203,7 @@ public:
     std::set<int> nodes_to_remove;
     std::set<int>::iterator inode;
     for (size_t n = 0; n < initial_node_number; n++) {
-      if ((sub_block.nodes[n].pos - pl.pos) * pl.normal < 0.0) {
-        nodes_to_remove.insert(n);
-      }
+      if ((sub_block.nodes[n].pos - pl.pos) * pl.normal < 0.0) { nodes_to_remove.insert(n); }
     }
 
     // Remove node "to be removed" in each face
@@ -250,11 +231,11 @@ public:
     for (size_t f = 0; f < sub_block.faces.size(); f++) {
       num_search = 0;
       E.node0 = E.node1 = -1;
-      size_t count = 0;
+      size_t count      = 0;
       for (std::list<int>::iterator it = sub_block.faces[f].nodes.begin(); it != sub_block.faces[f].nodes.end(); ++it) {
         if (*it >= (int)initial_node_number) { // It means that this is a node that has been added
           if (num_search == 0) {
-            E.node0 = *it;
+            E.node0    = *it;
             num_search = 1;
           } else {
             E.node1 = *it;
@@ -264,12 +245,8 @@ public:
           ++count;
         }
       }
-      if (count == 1) {
-        std::cout << "1 seul nouveau noeud dans une face\n";
-      }
-      if (count > 2) {
-        std::cout << "plus de 2 nouveaux noeuds dans une face\n";
-      }
+      if (count == 1) { std::cout << "1 seul nouveau noeud dans une face\n"; }
+      if (count > 2) { std::cout << "plus de 2 nouveaux noeuds dans une face\n"; }
     }
 
     if (edge_loop0.size() != (size_t)nb_cut) {
@@ -291,14 +268,12 @@ public:
 
     int swap;
     while (!edge_loop0.empty()) {
-      if (ite == edge_loop0.end()) {
-        break;
-      }
+      if (ite == edge_loop0.end()) { break; }
       for (ite = edge_loop0.begin(); ite != edge_loop0.end(); ++ite) {
         if (current_edge.node1 == ite->node1) {
-          swap = ite->node0;
-          ite->node0 = ite->node1;
-          ite->node1 = swap;
+          swap         = ite->node0;
+          ite->node0   = ite->node1;
+          ite->node1   = swap;
           current_edge = *ite;
           edge_loop1.push_back(current_edge);
           edge_loop0.erase(ite);
@@ -323,17 +298,13 @@ public:
 
     pface F;
     F.nodes.clear();
-    for (size_t e = 0; e < edge_loop1.size(); e++) {
-      F.nodes.push_back(edge_loop1[e].node0);
-    }
+    for (size_t e = 0; e < edge_loop1.size(); e++) { F.nodes.push_back(edge_loop1[e].node0); }
     sub_block.faces.push_back(F);
 
     // Remove faces with less than 3 nodes
     std::vector<pface> faces_copy;
     for (size_t f = 0; f < sub_block.faces.size(); f++) {
-      if (sub_block.faces[f].nodes.size() >= 3) {
-        faces_copy.push_back(sub_block.faces[f]);
-      }
+      if (sub_block.faces[f].nodes.size() >= 3) { faces_copy.push_back(sub_block.faces[f]); }
     }
     sub_block.faces.clear();
     sub_block.faces = faces_copy;
@@ -384,12 +355,8 @@ public:
 namespace std {
 template <> struct less<polyhTool::pedge> {
   bool operator()(const polyhTool::pedge &lhs, const polyhTool::pedge &rhs) const {
-    if (lhs.node0 < rhs.node0) {
-      return true;
-    }
-    if ((lhs.node0 == rhs.node0) && (lhs.node1 < rhs.node1)) {
-      return true;
-    }
+    if (lhs.node0 < rhs.node0) { return true; }
+    if ((lhs.node0 == rhs.node0) && (lhs.node1 < rhs.node1)) { return true; }
     return false;
   }
 };

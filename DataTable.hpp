@@ -41,19 +41,20 @@ dt.write(std::cout);
 /// The class is designed for a rapid access to the data with the method get
 class DataTable {
 public:
-  size_t ngroup; ///< number of groups
+  size_t ngroup;                                        ///< number of groups
   std::vector<std::vector<std::vector<double>>> tables; ///< tables for storing data
-  std::map<std::string, size_t> data_id; ///< map for quick access to the data (name to id)
+  std::map<std::string, size_t> data_id;                ///< map for quick access to the data (name to id)
   std::set<std::tuple<size_t, size_t, size_t>> defined; ///< set of defined parameters
 
 public:
-  DataTable() { set_ngroup(1); } ///< constructor
+  DataTable() {
+    set_ngroup(1);
+  } ///< constructor
 
   /// clear all data
   void clear() {
     for (size_t t = 0; t < tables.size(); ++t) {
-      for (size_t i = 0; i < tables[t].size(); ++i)
-        tables[t][i].clear();
+      for (size_t i = 0; i < tables[t].size(); ++i) tables[t][i].clear();
       tables[t].clear();
     }
     tables.clear();
@@ -66,35 +67,31 @@ public:
     ngroup = n;
     for (size_t t = 0; t < tables.size(); ++t) {
       tables[t].resize(ngroup);
-      for (size_t i = 0; i < tables[t].size(); ++i)
-        tables[t][i].resize(ngroup, 0.0);
+      for (size_t i = 0; i < tables[t].size(); ++i) tables[t][i].resize(ngroup, 0.0);
     }
   }
 
   /// get the number of groups
-  size_t get_ngroup() const { return ngroup; }
+  size_t get_ngroup() const {
+    return ngroup;
+  }
 
   /// check if a parameter exists
   bool exists(const std::string &name) const {
     std::map<std::string, size_t>::const_iterator ip = data_id.find(name);
-    if (ip == data_id.end()) {
-      return false;
-    }
+    if (ip == data_id.end()) { return false; }
     return true;
   }
 
   /// add a parameter and return its id
   size_t add(const std::string &name) {
     std::map<std::string, size_t>::const_iterator ip = data_id.find(name);
-    if (ip != data_id.end()) {
-      return (size_t)ip->second;
-    }
+    if (ip != data_id.end()) { return (size_t)ip->second; }
 
     data_id[name] = tables.size();
     std::vector<std::vector<double>> table;
     table.resize(ngroup);
-    for (size_t i = 0; i < table.size(); i++)
-      table[i].resize(ngroup, 0.0);
+    for (size_t i = 0; i < table.size(); i++) table[i].resize(ngroup, 0.0);
     tables.push_back(table);
     return (tables.size() - 1);
   }
@@ -110,7 +107,9 @@ public:
   }
 
   /// get the value of a parameter
-  double get(size_t id, size_t g1, size_t g2) const { return tables[id][g1][g2]; }
+  double get(size_t id, size_t g1, size_t g2) const {
+    return tables[id][g1][g2];
+  }
 
   /// check if a parameter is defined
   bool isDefined(size_t id, size_t g1, size_t g2) const {
@@ -119,10 +118,8 @@ public:
 
   /// set the value of a parameter
   void set(size_t id, size_t g1, size_t g2, double val) {
-    if (g1 >= ngroup)
-      set_ngroup(g1 + 1);
-    if (g2 >= ngroup)
-      set_ngroup(g2 + 1);
+    if (g1 >= ngroup) set_ngroup(g1 + 1);
+    if (g2 >= ngroup) set_ngroup(g2 + 1);
     if (id < tables.size()) {
       tables[id][g1][g2] = val;
       tables[id][g2][g1] = val;
@@ -139,4 +136,3 @@ public:
 };
 
 #endif /* end of include guard: DATATABLE_HPP */
-

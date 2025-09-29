@@ -121,7 +121,7 @@ struct beam {
 
     if (xpos.size() >= 2) {
       size_t ilast = xpos.size() - 1;
-      size_t ip = ilast;
+      size_t ip    = ilast;
       for (size_t p = 0; p < xpos.size(); ++p) {
         if (x <= xpos[p]) {
           ip = p;
@@ -131,10 +131,10 @@ struct beam {
 
       if (ip != ilast) {
         for (size_t p = xpos.size() - 1; p > ip; --p) {
-          xpos[p] = xpos[p - 1];
+          xpos[p]  = xpos[p - 1];
           force[p] = force[p - 1];
         }
-        xpos[ip] = x;
+        xpos[ip]  = x;
         force[ip] = f;
       }
     }
@@ -209,10 +209,10 @@ struct beam {
       Nxo[e] = Nxe[e] = -sumForceLeft.x;
       Vyo[e] = Vye[e] = -sumForceLeft.y;
       Vzo[e] = Vze[e] = -sumForceLeft.z;
-      Mzo[e] = -sumMomentLefto.y;
-      Mze[e] = -sumMomentLefte.y;
-      Myo[e] = -sumMomentLefto.z;
-      Mye[e] = -sumMomentLefte.z;
+      Mzo[e]          = -sumMomentLefto.y;
+      Mze[e]          = -sumMomentLefte.y;
+      Myo[e]          = -sumMomentLefto.z;
+      Mye[e]          = -sumMomentLefte.z;
     }
   }
 
@@ -236,22 +236,22 @@ struct beam {
   void computeNodeStress() {
     size_t nbNodes = xpos.size();
     size_t nbElems = nbNodes - 1;
-    double S = M_PI * radius * radius;
-    double d = 2.0 * radius;
-    double I = M_PI * d * d * d * d / 64.0;
+    double S       = M_PI * radius * radius;
+    double d       = 2.0 * radius;
+    double I       = M_PI * d * d * d * d / 64.0;
     for (size_t e = 0; e < nbElems; e++) {
 
-      double Mo = sqrt(Myo[e] * Myo[e] + Mzo[e] * Mzo[e]);
+      double Mo    = sqrt(Myo[e] * Myo[e] + Mzo[e] * Mzo[e]);
       sigmaInfo[e] = Nxo[e] / S - (Mo / I) * (-radius);
       sigmaSupo[e] = Nxo[e] / S - (Mo / I) * (radius);
-      double Vo = sqrt(Vyo[e] * Vyo[e] + Vzo[e] * Vzo[e]);
-      tauMido[e] = (4.0 * Vo) / (3.0 * S);
+      double Vo    = sqrt(Vyo[e] * Vyo[e] + Vzo[e] * Vzo[e]);
+      tauMido[e]   = (4.0 * Vo) / (3.0 * S);
 
-      double Me = sqrt(Mye[e] * Mye[e] + Mze[e] * Mze[e]);
+      double Me    = sqrt(Mye[e] * Mye[e] + Mze[e] * Mze[e]);
       sigmaInfe[e] = Nxe[e] / S - (Me / I) * (-radius);
       sigmaSupe[e] = Nxe[e] / S - (Me / I) * (radius);
-      double Ve = sqrt(Vye[e] * Vye[e] + Vze[e] * Vze[e]);
-      tauMide[e] = (4.0 * Ve) / (3.0 * S);
+      double Ve    = sqrt(Vye[e] * Vye[e] + Vze[e] * Vze[e]);
+      tauMide[e]   = (4.0 * Ve) / (3.0 * S);
     }
   }
 
@@ -278,18 +278,13 @@ struct beam {
     size_t nbElems = nbNodes - 1;
 
     std::vector<bool> broken(nbNodes);
-    for (size_t i = 0; i < nbNodes; i++)
-      broken[i] = false;
+    for (size_t i = 0; i < nbNodes; i++) broken[i] = false;
 
     for (size_t e = 0; e < nbElems; e++) {
-      if (sigmaInfo[e] > sigmaMax || sigmaSupo[e] > sigmaMax)
-        broken[e] = true;
-      if (sigmaInfe[e] > sigmaMax || sigmaSupe[e] > sigmaMax)
-        broken[e + 1] = true;
-      if (fabs(tauMido[e]) > tauMax)
-        broken[e] = true;
-      if (fabs(tauMide[e]) > tauMax)
-        broken[e + 1] = true;
+      if (sigmaInfo[e] > sigmaMax || sigmaSupo[e] > sigmaMax) broken[e] = true;
+      if (sigmaInfe[e] > sigmaMax || sigmaSupe[e] > sigmaMax) broken[e + 1] = true;
+      if (fabs(tauMido[e]) > tauMax) broken[e] = true;
+      if (fabs(tauMide[e]) > tauMax) broken[e + 1] = true;
     }
 
     return broken;
@@ -328,9 +323,7 @@ struct beam {
 
   void print_sumF() {
     vec3r sumf;
-    for (size_t i = 0; i < force.size(); i++) {
-      sumf += force[i];
-    }
+    for (size_t i = 0; i < force.size(); i++) { sumf += force[i]; }
     std::cout << "sum f = " << sumf << "\n";
   }
 
@@ -344,9 +337,7 @@ struct beam {
    */
   void print_node_force() {
 
-    for (size_t i = 0; i < xpos.size(); i++) {
-      std::cout << "x =  " << xpos[i] << ", force = " << force[i] << "\n";
-    }
+    for (size_t i = 0; i < xpos.size(); i++) { std::cout << "x =  " << xpos[i] << ", force = " << force[i] << "\n"; }
   }
 
   /**

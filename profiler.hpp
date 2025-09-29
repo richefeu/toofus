@@ -26,8 +26,8 @@
 #endif
 
 // variables
-const size_t nColumns = 4;
-const size_t cWidth = 20;
+const size_t nColumns             = 4;
+const size_t cWidth               = 20;
 const std::string cName[nColumns] = {"number Of Calls", "min(s)", "mean(s)", "max(s)"};
 
 class Profiler {
@@ -44,17 +44,17 @@ public:
    * @return none
    */
   Profiler() : m_daughter() { // only used for root
-    m_name = "root";
+    m_name      = "root";
     m_iteration = 1;
-    m_level = 0;
-    m_mother = nullptr;
+    m_level     = 0;
+    m_mother    = nullptr;
   }
 
   Profiler(std::string name, Profiler *mother) : m_daughter(), m_duration(0) {
-    m_name = name;
+    m_name      = name;
     m_iteration = 1;
-    m_level = mother->m_level + 1;
-    m_mother = mother;
+    m_level     = mother->m_level + 1;
+    m_mother    = mother;
   }
 
   /**
@@ -94,8 +94,7 @@ public:
    * @param motif The string motif to be printed repeatedly.
    */
   void printReplicate(size_t begin, size_t end, std::string motif) {
-    for (size_t i = begin; i < end; i++)
-      std::cout << motif;
+    for (size_t i = begin; i < end; i++) std::cout << motif;
   }
 
   /**
@@ -192,8 +191,7 @@ public:
       size_t currentShift = 3;
       for (int i = 0; i < int(m_level) - 1; i++) {
         int spaceSize = 3;
-        for (int j = 0; j < spaceSize; j++)
-          std::cout << " ";
+        for (int j = 0; j < spaceSize; j++) std::cout << " ";
         currentShift += spaceSize;
       }
       if (m_level > 0) {
@@ -208,9 +206,9 @@ public:
       cValue[0] = std::to_string(m_iteration);
 #ifdef __MPI
     }
-    double local_min = std::to_string(m_duration.count());
+    double local_min  = std::to_string(m_duration.count());
     double local_mean = std::to_string(m_duration.count());
-    double local_max = std::to_string(m_duration.count());
+    double local_max  = std::to_string(m_duration.count());
     double global_min, global_max, global_mean;
 
     MPI_Reduce(&global_min, &local_min, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
@@ -273,7 +271,7 @@ public:
    */
   chronoTime(std::chrono::duration<double> *acc) {
     m_duration = acc;
-    m_start = std::chrono::steady_clock::now();
+    m_start    = std::chrono::steady_clock::now();
   }
 
   /**
@@ -297,7 +295,7 @@ public:
   ~chronoTime() {
     end();
     auto &current_timer = PROFILER::getTimer<CURRENT>();
-    current_timer = current_timer->m_mother;
+    current_timer       = current_timer->m_mother;
   }
   std::chrono::time_point<std::chrono::steady_clock> m_start;
   std::chrono::time_point<std::chrono::steady_clock> m_stop;
@@ -314,9 +312,13 @@ private:
   std::string base_name;
 
 public:
-  outputManager() { base_name = "unnamed"; }
+  outputManager() {
+    base_name = "unnamed";
+  }
 
-  outputManager(const char *name) { base_name = name; }
+  outputManager(const char *name) {
+    base_name = name;
+  }
 
   /**
    * @brief Builds a file name for the profiler's output.
@@ -332,9 +334,7 @@ public:
 
 #ifdef _OPENMP
 #pragma omp parallel
-    {
-      nthreads = omp_get_num_threads();
-    }
+    { nthreads = omp_get_num_threads(); }
 #endif
 
     std::string file_name = "perflog_" + base_name + "_" + std::to_string(nthreads) + ".txt";
@@ -350,8 +350,7 @@ public:
    */
   template <typename Func, typename... Args> void recursiveCall(Func &func, Profiler *ptr, Args &...arg) {
     func(ptr, arg...);
-    for (auto &it : ptr->m_daughter)
-      recursiveCall(func, it, arg...);
+    for (auto &it : ptr->m_daughter) recursiveCall(func, it, arg...);
   }
 
   /**
@@ -371,8 +370,7 @@ public:
   void recursiveSortedCall(Func &func, Sort mySort, Profiler *ptr, Args &...arg) {
     func(ptr, arg...);
     std::sort(ptr->m_daughter.begin(), ptr->m_daughter.end(), mySort);
-    for (auto &it : ptr->m_daughter)
-      recursiveSortedCall(func, mySort, it, arg...);
+    for (auto &it : ptr->m_daughter) recursiveSortedCall(func, mySort, it, arg...);
   }
 
   /**
@@ -391,7 +389,7 @@ public:
 
     auto maxLength = [](Profiler *a_ptr, size_t &a_count, size_t &a_nbElem) {
       size_t length = a_ptr->m_level * 3 + a_ptr->m_name.size();
-      a_count = std::max(a_count, length);
+      a_count       = std::max(a_count, length);
       a_nbElem++;
     };
     Profiler *root_timer = PROFILER::getTimer<ROOT>();
@@ -416,12 +414,11 @@ public:
     std::string name = buildName();
     std::ofstream myFile(name, std::ofstream::out);
     Profiler *root_timer = PROFILER::getTimer<ROOT>();
-    auto myWrite = [](Profiler *a_ptr, std::ofstream &a_file) {
+    auto myWrite         = [](Profiler *a_ptr, std::ofstream &a_file) {
       std::string space;
       std::string motif = "   ";
 
-      for (std::size_t i = 0; i < a_ptr->m_level; i++)
-        space += motif;
+      for (std::size_t i = 0; i < a_ptr->m_level; i++) space += motif;
 
       a_file << space << a_ptr->m_name << " " << a_ptr->m_iteration << " " << a_ptr->m_duration.count() << std::endl;
     };
@@ -433,14 +430,14 @@ public:
 #ifdef ENABLE_PROFILING
 #define INIT_TIMERS()                                                                                                  \
   Profiler *&root_timer_ptr = PROFILER::getTimer<ROOT>();                                                              \
-  root_timer_ptr = new Profiler();                                                                                     \
-  Profiler *&current = PROFILER::getTimer<CURRENT>();                                                                  \
-  current = root_timer_ptr;                                                                                            \
+  root_timer_ptr            = new Profiler();                                                                          \
+  Profiler *&current        = PROFILER::getTimer<CURRENT>();                                                           \
+  current                   = root_timer_ptr;                                                                          \
   chronoTime roottimer(&(current->m_duration));
 
 #define START_TIMER(name)                                                                                              \
   Profiler *&current = PROFILER::getTimer<CURRENT>();                                                                  \
-  current = PROFILER::getTimer<CURRENT>()->find(name);                                                                 \
+  current            = PROFILER::getTimer<CURRENT>()->find(name);                                                      \
   chronoTime tttt(&(current->m_duration));
 
 #define WRITE_TIMERS(...)                                                                                              \

@@ -61,15 +61,18 @@ public:
   std::vector<bar> data;
 
   // Ctors
-  histo(size_t nbins) { data.resize(nbins); }
+  histo(size_t nbins) {
+    data.resize(nbins);
+  }
   histo() {}
-  void clear() { data.clear(); }
+  void clear() {
+    data.clear();
+  }
 
   double entropyShannon() {
     double S = 0.0;
     for (size_t i = 0; i < data.size(); i++) {
-      if (data[i].ProbDensity > 0.0)
-        S += data[i].ProbDensity * log10(data[i].ProbDensity);
+      if (data[i].ProbDensity > 0.0) S += data[i].ProbDensity * log10(data[i].ProbDensity);
     }
     return -S;
   }
@@ -103,22 +106,22 @@ public:
     } else {
       fact = 1.0;
     }
-    H.min = value[0];
-    H.max = value[nb - 1];
+    H.min           = value[0];
+    H.max           = value[nb - 1];
     double binWidth = (H.max - H.min) / (double)nbins;
     double binAbscise;
     double threshold;
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
-      binAbscise = H.min + ((double)b + 0.5) * binWidth;
+      binAbscise    = H.min + ((double)b + 0.5) * binWidth;
       size_t amount = 0;
-      threshold = binAbscise + 0.5 * binWidth;
+      threshold     = binAbscise + 0.5 * binWidth;
       while (count < nb && value[count] <= threshold) {
         ++amount;
         ++count;
       }
-      H.data[b].Width = binWidth;
-      H.data[b].X = binAbscise;
+      H.data[b].Width       = binWidth;
+      H.data[b].X           = binAbscise;
       H.data[b].ProbDensity = (double)amount * fact;
     }
     return H;
@@ -129,8 +132,8 @@ public:
   static histo pdfNumBins(std::vector<double> &value, size_t nbins) {
     histo H(nbins);
     std::sort(value.begin(), value.end());
-    H.min = value[0];
-    H.max = value[value.size() - 1];
+    H.min           = value[0];
+    H.max           = value[value.size() - 1];
     double binWidth = (H.max - H.min) / (double)nbins;
     double binAbscise;
     size_t amount;
@@ -138,28 +141,25 @@ public:
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
       binAbscise = H.min + ((double)b + 0.5) * binWidth;
-      amount = 0;
-      threshold = binAbscise + 0.5 * binWidth;
+      amount     = 0;
+      threshold  = binAbscise + 0.5 * binWidth;
       while (count < value.size() && value[count] <= threshold) {
         ++amount;
         ++count;
       }
-      H.data[b].Width = binWidth;
-      H.data[b].X = binAbscise;
+      H.data[b].Width       = binWidth;
+      H.data[b].X           = binAbscise;
       H.data[b].ProbDensity = (double)amount / binWidth; // a density (not yet normalized)
     }
 
     // normalization: \int P dx = 1
     double sum = 0.0;
     for (size_t b = 0; b < nbins; b++) {
-      if (H.data[b].Width > 0.0)
-        sum += H.data[b].ProbDensity * H.data[b].Width;
+      if (H.data[b].Width > 0.0) sum += H.data[b].ProbDensity * H.data[b].Width;
     }
     double invSum = 1.0;
-    if (sum > 0.0)
-      invSum = 1.0 / sum;
-    for (size_t b = 0; b < nbins; b++)
-      H.data[b].ProbDensity *= invSum;
+    if (sum > 0.0) invSum = 1.0 / sum;
+    for (size_t b = 0; b < nbins; b++) H.data[b].ProbDensity *= invSum;
 
     return H;
   }
@@ -175,8 +175,8 @@ public:
     // double deltax = (value[value.size() - 1] - value[0]) / (double)nbSlices;
     double deltax = (value.back() - value.front()) / (double)nbSlices;
     double deltap = 1.0 / (double)nbSlices;
-    double pval0 = 0.0;
-    double xval0 = value[0];
+    double pval0  = 0.0;
+    double xval0  = value[0];
     for (size_t i = 0; i < value.size(); i++) {
       double pval = (double)i / (double)value.size();
       double xval = value[i];
@@ -217,8 +217,8 @@ public:
   static histo pdfNumBinsRange(std::vector<double> &value, size_t nbins, double min, double max) {
     histo H(nbins);
     std::sort(value.begin(), value.end());
-    H.min = min;
-    H.max = max;
+    H.min           = min;
+    H.max           = max;
     double binWidth = (H.max - H.min) / (double)nbins;
     double binAbscise;
     size_t amount;
@@ -226,30 +226,26 @@ public:
     size_t count = 0;
     for (size_t b = 0; b < nbins; b++) {
       binAbscise = H.min + ((double)b + 0.5) * binWidth;
-      amount = 0;
-      threshold = binAbscise + 0.5 * binWidth;
+      amount     = 0;
+      threshold  = binAbscise + 0.5 * binWidth;
       while (count < value.size() && value[count] <= threshold) {
         ++amount;
         ++count;
       }
-      H.data[b].Width = binWidth;
-      H.data[b].X = binAbscise;
+      H.data[b].Width       = binWidth;
+      H.data[b].X           = binAbscise;
       H.data[b].ProbDensity = (double)amount / binWidth; // a density (not yet normalized)
     }
 
     // normalization: \int P dx = 1
     double sum = 0.0;
     for (size_t b = 0; b < nbins; b++) {
-      if (H.data[b].Width > 0.0)
-        sum += H.data[b].ProbDensity * H.data[b].Width;
+      if (H.data[b].Width > 0.0) sum += H.data[b].ProbDensity * H.data[b].Width;
     }
 
     double invSum = 1.0;
-    if (sum > 0.0) {
-      invSum = 1.0 / sum;
-    }
-    for (size_t b = 0; b < nbins; b++)
-      H.data[b].ProbDensity *= invSum;
+    if (sum > 0.0) { invSum = 1.0 / sum; }
+    for (size_t b = 0; b < nbins; b++) H.data[b].ProbDensity *= invSum;
 
     return H;
   }
@@ -257,44 +253,36 @@ public:
   static histo pdfMaxPerBin(std::vector<double> &value, size_t maxEltPerBin) {
     histo H;
     std::sort(value.begin(), value.end());
-    H.min = value[0];
-    H.max = value[value.size() - 1];
-    double x0 = H.min;
-    double x1 = H.min;
-    size_t ivalue = 0;
+    H.min              = value[0];
+    H.max              = value[value.size() - 1];
+    double x0          = H.min;
+    double x1          = H.min;
+    size_t ivalue      = 0;
     size_t prev_ivalue = 0, amount = 0;
     bar B;
     while (ivalue < value.size()) {
       ivalue = prev_ivalue + maxEltPerBin;
-      if (ivalue >= value.size()) {
-        ivalue = value.size() - 1;
-      }
-      x1 = value[ivalue];
+      if (ivalue >= value.size()) { ivalue = value.size() - 1; }
+      x1     = value[ivalue];
       amount = ivalue - prev_ivalue;
-      if (amount == 0)
-        break;
+      if (amount == 0) break;
       B.Width = x1 - x0;
-      B.X = 0.5 * (x0 + x1);
-      if (B.Width > 0.0)
-        B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
-      else
-        B.ProbDensity = NAN;
+      B.X     = 0.5 * (x0 + x1);
+      if (B.Width > 0.0) B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
+      else B.ProbDensity = NAN;
       H.data.push_back(B);
-      x0 = x1;
+      x0          = x1;
       prev_ivalue = ivalue;
     }
 
     // normalization: \int P dx = 1
     double sum = 0.0;
     for (size_t b = 0; b < H.data.size(); b++) {
-      if (H.data[b].Width > 0.0)
-        sum += H.data[b].ProbDensity * H.data[b].Width;
+      if (H.data[b].Width > 0.0) sum += H.data[b].ProbDensity * H.data[b].Width;
     }
     double invSum = 1.0;
-    if (sum > 0.0)
-      invSum = 1.0 / sum;
-    for (size_t b = 0; b < H.data.size(); b++)
-      H.data[b].ProbDensity *= invSum;
+    if (sum > 0.0) invSum = 1.0 / sum;
+    for (size_t b = 0; b < H.data.size(); b++) H.data[b].ProbDensity *= invSum;
 
     return H;
   }
@@ -302,53 +290,46 @@ public:
   static histo pdfMaxPerBin_minWidth(std::vector<double> &value, size_t maxEltPerBin, double minWidth) {
     histo H;
     std::sort(value.begin(), value.end());
-    H.min = value[0];
-    H.max = value[value.size() - 1];
-    double x0 = H.min;
-    double x1 = H.min;
-    size_t ivalue = 0;
+    H.min              = value[0];
+    H.max              = value[value.size() - 1];
+    double x0          = H.min;
+    double x1          = H.min;
+    size_t ivalue      = 0;
     size_t prev_ivalue = 0, amount = 0;
     bar B;
 
     while (ivalue < value.size()) {
-      double width = 0.0;
+      double width     = 0.0;
       bool shouldBreak = false;
       while ((amount < maxEltPerBin || width < minWidth)) {
         ++ivalue;
         if (ivalue >= value.size()) {
-          ivalue = value.size() - 1;
+          ivalue      = value.size() - 1;
           shouldBreak = true;
         }
-        x1 = value[ivalue];
+        x1     = value[ivalue];
         amount = ivalue - prev_ivalue;
-        width = x1 - x0;
-        if (shouldBreak == true)
-          break;
+        width  = x1 - x0;
+        if (shouldBreak == true) break;
       }
-      if (amount == 0)
-        break;
+      if (amount == 0) break;
       B.Width = x1 - x0;
-      B.X = 0.5 * (x0 + x1);
-      if (B.Width > 0.0)
-        B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
-      else
-        B.ProbDensity = 0.0;
+      B.X     = 0.5 * (x0 + x1);
+      if (B.Width > 0.0) B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
+      else B.ProbDensity = 0.0;
       H.data.push_back(B);
-      x0 = x1;
+      x0          = x1;
       prev_ivalue = ivalue;
     }
 
     // normalization: \int P dx = 1
     double sum = 0.0;
     for (size_t b = 0; b < H.data.size(); b++) {
-      if (H.data[b].Width > 0.0)
-        sum += H.data[b].ProbDensity * H.data[b].Width;
+      if (H.data[b].Width > 0.0) sum += H.data[b].ProbDensity * H.data[b].Width;
     }
     double invSum = 1.0;
-    if (sum > 0.0)
-      invSum = 1.0 / sum;
-    for (size_t b = 0; b < H.data.size(); b++)
-      H.data[b].ProbDensity *= invSum;
+    if (sum > 0.0) invSum = 1.0 / sum;
+    for (size_t b = 0; b < H.data.size(); b++) H.data[b].ProbDensity *= invSum;
 
     return H;
   }
@@ -360,57 +341,48 @@ public:
     H.max = value[value.size() - 1];
 
     size_t maxEltPerBin = value.size() / quality;
-    if (maxEltPerBin < 5)
-      maxEltPerBin = 5;
+    if (maxEltPerBin < 5) maxEltPerBin = 5;
     double minWidth = (H.max - H.min) / (double)quality;
-    if (minWidth <= 0.0)
-      minWidth = 0.1;
+    if (minWidth <= 0.0) minWidth = 0.1;
 
-    double x0 = H.min;
-    double x1 = H.min;
-    size_t ivalue = 0;
+    double x0          = H.min;
+    double x1          = H.min;
+    size_t ivalue      = 0;
     size_t prev_ivalue = 0, amount = 0;
     bar B;
 
     while (ivalue < value.size()) {
-      double width = 0.0;
+      double width     = 0.0;
       bool shouldBreak = false;
       while (amount < maxEltPerBin || width < minWidth) {
         ++ivalue;
         if (ivalue >= value.size()) {
-          ivalue = value.size() - 1;
+          ivalue      = value.size() - 1;
           shouldBreak = true;
         }
-        x1 = value[ivalue];
+        x1     = value[ivalue];
         amount = ivalue - prev_ivalue;
-        width = x1 - x0;
-        if (shouldBreak == true)
-          break;
+        width  = x1 - x0;
+        if (shouldBreak == true) break;
       }
-      if (amount == 0)
-        break;
+      if (amount == 0) break;
       B.Width = x1 - x0;
-      B.X = 0.5 * (x0 + x1);
-      if (B.Width > 0.0)
-        B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
-      else
-        B.ProbDensity = 0.0;
+      B.X     = 0.5 * (x0 + x1);
+      if (B.Width > 0.0) B.ProbDensity = (double)amount / B.Width; // a density (not yet normalized)
+      else B.ProbDensity = 0.0;
       H.data.push_back(B);
-      x0 = x1;
+      x0          = x1;
       prev_ivalue = ivalue;
     }
 
     // normalization: \int P dx = 1
     double sum = 0.0;
     for (size_t b = 0; b < H.data.size(); b++) {
-      if (H.data[b].Width > 0.0)
-        sum += H.data[b].ProbDensity * H.data[b].Width;
+      if (H.data[b].Width > 0.0) sum += H.data[b].ProbDensity * H.data[b].Width;
     }
     double invSum = 1.0;
-    if (sum > 0.0)
-      invSum = 1.0 / sum;
-    for (size_t b = 0; b < H.data.size(); b++)
-      H.data[b].ProbDensity *= invSum;
+    if (sum > 0.0) invSum = 1.0 / sum;
+    for (size_t b = 0; b < H.data.size(); b++) H.data[b].ProbDensity *= invSum;
 
     return H;
   }

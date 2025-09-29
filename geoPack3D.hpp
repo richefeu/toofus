@@ -28,10 +28,10 @@ public:
     double r;
     size_t nbNeighbors;
     Sphere(double x_, double y_, double z_, double r_) {
-      x = x_;
-      y = y_;
-      z = z_;
-      r = r_;
+      x           = x_;
+      y           = y_;
+      z           = z_;
+      r           = r_;
       nbNeighbors = 0;
     }
   };
@@ -66,12 +66,12 @@ public:
   GeoPack3D() {
     rmin = rmax = 0.0;
     gapTol = distNeighbor = distMin = 0.0;
-    max = 0;
-    k = 0;
+    max                             = 0;
+    k                               = 0;
     xmin = xmax = ymin = ymax = zmin = zmax = 0.0;
-    limitLocalNumberNeighbors = 0;
-    limitLocalSolidFraction = 0;
-    verbose = true;
+    limitLocalNumberNeighbors               = 0;
+    limitLocalSolidFraction                 = 0;
+    verbose                                 = true;
   }
 
   GeoPack3D(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_, double zmin_,
@@ -82,12 +82,12 @@ public:
 
   void parameters(double rmin_, double rmax_, size_t k_, double xmin_, double xmax_, double ymin_, double ymax_,
                   double zmin_, double zmax_, double gapTol_ = 0.0, size_t max_ = 0) {
-    rmin = rmin_;
-    rmax = rmax_;
-    gapTol = gapTol_;
-    distNeighbor = 2.0 * rmax + gapTol;
-    distMin = 0.0;
-    k = k_;
+    rmin                    = rmin_;
+    rmax                    = rmax_;
+    gapTol                  = gapTol_;
+    distNeighbor            = 2.0 * rmax + gapTol;
+    distMin                 = 0.0;
+    k                       = k_;
     localNumberNeighborsMax = 12;
 
     // Domain
@@ -103,33 +103,27 @@ public:
       size_t nx = static_cast<size_t>(floor((xmax - xmin) / rmin));
       size_t ny = static_cast<size_t>(floor((ymax - ymin) / rmin));
       size_t nz = static_cast<size_t>(floor((zmax - zmin) / rmin));
-      max = nx * ny * nz;
+      max       = nx * ny * nz;
     }
   }
 
   // Overall solid fraction by assuming there is no overlap
   double getSolidFraction() {
     double Vtot = (xmax - xmin) * (ymax - ymin) * (zmax - zmin);
-    if (Vtot <= 0.0)
-      return 0.0;
+    if (Vtot <= 0.0) return 0.0;
     double Vs = 0.0;
 
-    for (size_t i = 0; i < sample.size(); i++) {
-      Vs += 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0;
-    }
+    for (size_t i = 0; i < sample.size(); i++) { Vs += 4.0 * M_PI * sample[i].r * sample[i].r * sample[i].r / 3.0; }
     return Vs / Vtot;
   }
 
   double sphereLensVolume(double R1, double R2, double dist) {
-    if (dist > R1 + R2)
-      return 0.0;
+    if (dist > R1 + R2) return 0.0;
 
     double Rmin = std::min(R1, R2);
     double Rmax = std::max(R1, R2);
 
-    if (dist + Rmin < Rmax) {
-      return 4.0 * M_PI * Rmin * Rmin * Rmin / 3.0;
-    }
+    if (dist + Rmin < Rmax) { return 4.0 * M_PI * Rmin * Rmin * Rmin / 3.0; }
     double a = R1 + R2 - dist;
     return (M_PI * (a * a) *
             (dist * dist + 2.0 * dist * R2 - 3.0 * R2 * R2 + 2.0 * dist * R1 + 6.0 * R2 * R1 - 3.0 * R1 * R1) /
@@ -142,11 +136,11 @@ public:
 
     double Rprob = sample[i].r + width;
     double Vprob = 4.0 * M_PI * (Rprob * Rprob * Rprob - sample[i].r * sample[i].r * sample[i].r) / 3.0;
-    double Vs = 0.0;
+    double Vs    = 0.0;
     double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
 
     for (size_t n = 0; n < prox[i].size(); n++) {
-      size_t j = prox[i][n];
+      size_t j  = prox[i][n];
       double dx = sample[j].x - sample[i].x;
       double dy = sample[j].y - sample[i].y;
       double dz = sample[j].z - sample[i].z;
@@ -164,31 +158,28 @@ public:
 
   void limit_localNumberNeighbors(double dst, size_t value) {
     limitLocalNumberNeighbors = 1;
-    distProbingConnectivity = dst;
-    localNumberNeighborsMax = value;
+    distProbingConnectivity   = dst;
+    localNumberNeighborsMax   = value;
     std::cout << "localNumberNeighborsMax = " << localNumberNeighborsMax << '\n';
   }
 
   void limit_localSolidFraction(double dst, double value) {
-    limitLocalSolidFraction = 1;
+    limitLocalSolidFraction  = 1;
     distProbingSolidFraction = dst;
-    localSolidFractionMax = value;
+    localSolidFractionMax    = value;
   }
 
-  void seedTime() { srand(static_cast<unsigned int>(time(NULL))); }
+  void seedTime() {
+    srand(static_cast<unsigned int>(time(NULL)));
+  }
 
   void reActivate(size_t from = 0, size_t to = 0) {
-    if (to == 0)
-      to = sample.size();
-    for (size_t i = from; i < to; i++) {
-      active.push_back(i);
-    }
+    if (to == 0) to = sample.size();
+    for (size_t i = from; i < to; i++) { active.push_back(i); }
   }
 
   void deActivate(size_t index) {
-    for (size_t i = index; i < active.size() - 1; i++) {
-      active[i] = active[i + 1];
-    }
+    for (size_t i = index; i < active.size() - 1; i++) { active[i] = active[i + 1]; }
     active.pop_back();
   }
 
@@ -205,7 +196,7 @@ public:
     }
 
     // step 2
-    size_t count = 0;
+    size_t count    = 0;
     size_t countMax = (size_t)floor(2.0 * (xmax - xmin) / (rmin + rmax));
     while (active.size() > 0 && sample.size() < (size_t)max) {
       size_t randIndex = static_cast<size_t>(rand()) % active.size();
@@ -223,10 +214,10 @@ public:
       bool found = false;
 
       for (size_t n = 0; n < k; n++) {
-        double testr = ran(rmin, rmax);
+        double testr  = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
         double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
-        double m = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
+        double m  = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
         double ux = cos(angle1);
         double uy = sin(angle1);
         double uz = sin(angle2);
@@ -253,7 +244,7 @@ public:
             double dx = sample[neighborSphere].x - testx;
             double dy = sample[neighborSphere].y - testy;
             double dz = sample[neighborSphere].z - testz;
-            double d = sqrt(dx * dx + dy * dy + dz * dz);
+            double d  = sqrt(dx * dx + dy * dy + dz * dz);
             if (d < testr + sample[neighborSphere].r + distMin) {
               ok = false;
               break;
@@ -270,12 +261,11 @@ public:
           size_t particleIndex = sample.size() - 1;
 
           for (size_t i = 0; i < sample.size(); i++) {
-            if (i == particleIndex)
-              continue;
+            if (i == particleIndex) continue;
             double dx = fabs(sample[i].x - testx);
             double dy = fabs(sample[i].y - testy);
             double dz = fabs(sample[i].z - testz);
-            double d = sqrt(dx * dx + dy * dy + dz * dz);
+            double d  = sqrt(dx * dx + dy * dy + dz * dz);
             if (d <= sample[i].r + testr + distNeighbor + distMin) {
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
@@ -291,9 +281,7 @@ public:
         }
       } // n-loop
 
-      if (!found) {
-        deActivate(randIndex);
-      }
+      if (!found) { deActivate(randIndex); }
 
       count++;
       if (count >= countMax) {
@@ -305,7 +293,7 @@ public:
         }
       }
     } // end-while
-  }   // end-method-run
+  } // end-method-run
 
   // Periodic version of the Poisson Sampling algorithm
   void execPeriodic(bool skipFirstStep = false) {
@@ -321,7 +309,7 @@ public:
     }
 
     // step 2
-    size_t count = 0;
+    size_t count    = 0;
     size_t countMax = static_cast<size_t>(floor((xmax - xmin) / (0.5 * (rmin + rmax))));
     while (active.size() > 0 && sample.size() < (size_t)max) {
 
@@ -347,10 +335,10 @@ public:
       for (size_t n = 0; n < k; n++) {
 
         // an attempt of positionning
-        double testr = ran(rmin, rmax);
+        double testr  = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
         double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
-        double m = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
+        double m  = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
         double ux = cos(angle1);
         double uy = sin(angle1);
         double uz = sin(angle2);
@@ -359,24 +347,12 @@ public:
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
 
-        if (testx < xmin) {
-          testx += Lx;
-        }
-        if (testx > xmax) {
-          testx -= Lx;
-        }
-        if (testy < ymin) {
-          testy += Ly;
-        }
-        if (testy > ymax) {
-          testy -= Ly;
-        }
-        if (testz < zmin) {
-          testz += Lz;
-        }
-        if (testz > zmax) {
-          testz -= Lz;
-        }
+        if (testx < xmin) { testx += Lx; }
+        if (testx > xmax) { testx -= Lx; }
+        if (testy < ymin) { testy += Ly; }
+        if (testy > ymax) { testy -= Ly; }
+        if (testz < zmin) { testz += Lz; }
+        if (testz > zmax) { testz -= Lz; }
 
         bool ok = true;
 
@@ -471,9 +447,7 @@ public:
       } // n-loop (k times)
 
       // if not found, remove the sphere from the active ones
-      if (!found) {
-        deActivate(randIndex);
-      }
+      if (!found) { deActivate(randIndex); }
 
       count++;
       if (count >= countMax) {
@@ -484,7 +458,7 @@ public:
         }
       }
     } // end-while
-  }   // end-execPeriodic
+  } // end-execPeriodic
 
   // Pour visualiser :
   // compiler 'seeSpheres' puis > seeSpheres points.txt
@@ -511,18 +485,18 @@ public:
       fog << "ASCII\n";
       fog << "DATASET UNSTRUCTURED_GRID\n";
       fog << "POINTS " << sample.size() << " float\n";
-      for (size_t i = 0; i < sample.size(); i++)
-        fog << sample[i].x << " " << sample[i].y << " " << sample[i].z << '\n';
+      for (size_t i = 0; i < sample.size(); i++) fog << sample[i].x << " " << sample[i].y << " " << sample[i].z << '\n';
       fog << "POINT_DATA " << sample.size() << '\n';
       fog << "SCALARS Diameter float\n";
       fog << "LOOKUP_TABLE default\n";
-      for (size_t i = 0; i < sample.size(); i++)
-        fog << 2 * sample[i].r << '\n';
+      for (size_t i = 0; i < sample.size(); i++) fog << 2 * sample[i].r << '\n';
     }
   }
 
 protected:
-  double ran(double min_, double max_) { return min_ + (rand() / (double)RAND_MAX) * (max_ - min_); }
+  double ran(double min_, double max_) {
+    return min_ + (rand() / (double)RAND_MAX) * (max_ - min_);
+  }
 };
 
 #endif /* end of include guard: GEOPACK2D_HPP */

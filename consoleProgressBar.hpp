@@ -14,10 +14,10 @@
 #ifndef CONSOLE_PROGRESS_BAR
 #define CONSOLE_PROGRESS_BAR
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <cmath>
 
 class ConsoleProgressBar {
 private:
@@ -40,14 +40,11 @@ private:
    */
   char validChar(char c, char cdef) {
     int ci = (int)c;
-    if (ci >= 33 && ci <= 127) {
-      return (char)c;
-    }
+    if (ci >= 33 && ci <= 127) { return (char)c; }
     return (char)cdef;
   }
 
 public:
-
   /**
    * Constructs a ConsoleProgressBar object with default or specified settings.
    *
@@ -58,24 +55,38 @@ public:
    *          This determines the completion point of the progress bar.
    */
   ConsoleProgressBar(size_t n = 100) {
-    nmax = n;
-    width = 50;
-    title = "";
+    nmax         = n;
+    width        = 50;
+    title        = "";
     progressChar = '|';
-    voidChar = ' ';
-    openChar = '[';
-    closeChar = ']';
+    voidChar     = ' ';
+    openChar     = '[';
+    closeChar    = ']';
   }
 
-  void setMax(size_t n) { nmax = n; }
-  void setTitle(const char *t) { title = t; }
-  void setWidth(size_t w) { width = w; }
+  void setMax(size_t n) {
+    nmax = n;
+  }
+  void setTitle(const char *t) {
+    title = t;
+  }
+  void setWidth(size_t w) {
+    width = w;
+  }
 
-  void setProgressChar(char c) { progressChar = (char)validChar(c, '|'); }
-  void setVoidChar(char c) { voidChar = (char)validChar(c, ' '); }
-  void setOpenChar(char c) { openChar = (char)validChar(c, '['); }
-  void setCloseChar(char c) { closeChar = (char)validChar(c, ']'); }
-  
+  void setProgressChar(char c) {
+    progressChar = (char)validChar(c, '|');
+  }
+  void setVoidChar(char c) {
+    voidChar = (char)validChar(c, ' ');
+  }
+  void setOpenChar(char c) {
+    openChar = (char)validChar(c, '[');
+  }
+  void setCloseChar(char c) {
+    closeChar = (char)validChar(c, ']');
+  }
+
   /**
    * Updates the progress bar by displaying the current status.
    *
@@ -92,19 +103,14 @@ public:
    * Otherwise, it will print the progress bar to the specified output stream.
    */
   void update(size_t x, std::ostream &os = std::cerr) {
-    if ((x != nmax) && (x % (nmax / 100 + 1) != 0))
-      return;
+    if ((x != nmax) && (x % (nmax / 100 + 1) != 0)) return;
 
     float ratio = (float)x / (float)nmax;
-    size_t c = (size_t)std::floor(ratio) * width;
+    size_t c    = (size_t)std::floor(ratio) * width;
 
     os << title << std::setw(3) << (size_t)(ratio * 100) << "% " << openChar;
-    for (size_t i = 0; i < c; i++) {
-      os << progressChar;
-    }
-    for (size_t i = c; i < width; i++) {
-      os << voidChar;
-    }
+    for (size_t i = 0; i < c; i++) { os << progressChar; }
+    for (size_t i = c; i < width; i++) { os << voidChar; }
     os << closeChar << '\r' << std::flush;
   }
 };

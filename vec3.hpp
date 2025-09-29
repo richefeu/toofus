@@ -158,13 +158,25 @@ public:
   }
 
   // Contants
-  static vec3 zero() { return vec3(); }
-  static vec3 unit_x() { return vec3(1, 0, 0); }
-  static vec3 unit_y() { return vec3(0, 1, 0); }
-  static vec3 unit_z() { return vec3(0, 0, 1); }
-  static vec3 one() { return vec3(1, 1, 1); }
+  static vec3 zero() {
+    return vec3();
+  }
+  static vec3 unit_x() {
+    return vec3(1, 0, 0);
+  }
+  static vec3 unit_y() {
+    return vec3(0, 1, 0);
+  }
+  static vec3 unit_z() {
+    return vec3(0, 0, 1);
+  }
+  static vec3 one() {
+    return vec3(1, 1, 1);
+  }
 
-  void reset() { x = y = z = 0; }
+  void reset() {
+    x = y = z = 0;
+  }
 
   /// @brief Set the components of the vector.
   ///
@@ -180,7 +192,9 @@ public:
   /// @brief Set all components of the vector to the same value.
   ///
   /// @param val The value to set each component of the vector (x, y, z).
-  void set(T val) { x = y = z = val; }
+  void set(T val) {
+    x = y = z = val;
+  }
 
   /// @brief Randomize the direction of the vector.
   ///
@@ -223,12 +237,16 @@ public:
   ///
   /// A vector is said to be null if all its components are less than
   /// @a tol in absolute value. The default value of @a tol is 1e-20.
-  bool isnull(const T tol = 1e-20) const { return (fabs(x) < tol && fabs(y) < tol && fabs(z) < tol); }
+  bool isnull(const T tol = 1e-20) const {
+    return (fabs(x) < tol && fabs(y) < tol && fabs(z) < tol);
+  }
 
   /// @brief Get a pointer to the components of the vector as a C array.
   ///
   /// The components of the vector are stored in the order (x, y, z).
-  T *c_vec() { return &x; }
+  T *c_vec() {
+    return &x;
+  }
 
   /// @brief Get a reference to the i-th component of the vector.
   ///
@@ -236,8 +254,12 @@ public:
   ///
   /// @param i The index of the component to get.
   /// @return A reference to the i-th component of the vector.
-  T &operator[](int i) { return *(&x + i); }
-  T &operator[](size_t i) { return *(&x + i); }
+  T &operator[](int i) {
+    return *(&x + i);
+  }
+  T &operator[](size_t i) {
+    return *(&x + i);
+  }
 
   /// @brief Get a constant reference to the i-th component of the vector.
   ///
@@ -245,13 +267,23 @@ public:
   ///
   /// @param i The index of the component to get.
   /// @return A constant reference to the i-th component of the vector.
-  const T &operator[](int i) const { return *(&x + i); }
-  const T &operator[](size_t i) const { return *(&x + i); }
+  const T &operator[](int i) const {
+    return *(&x + i);
+  }
+  const T &operator[](size_t i) const {
+    return *(&x + i);
+  }
 
   // For local frames, the notation n,t and s is more appropriate than x,y and z
-  const T n() const { return x; }
-  const T t() const { return y; }
-  const T s() const { return z; }
+  const T n() const {
+    return x;
+  }
+  const T t() const {
+    return y;
+  }
+  const T s() const {
+    return z;
+  }
 
   // Arithmetic operations
   vec3 &operator+=(const vec3 &a) {
@@ -283,15 +315,25 @@ public:
     return *this;
   }
 
-  friend vec3 operator+(const vec3 &a, const vec3 &b) { return vec3(a.x + b.x, a.y + b.y, a.z + b.z); }
+  friend vec3 operator+(const vec3 &a, const vec3 &b) {
+    return vec3(a.x + b.x, a.y + b.y, a.z + b.z);
+  }
 
-  friend vec3 operator-(const vec3 &a, const vec3 &b) { return vec3(a.x - b.x, a.y - b.y, a.z - b.z); }
+  friend vec3 operator-(const vec3 &a, const vec3 &b) {
+    return vec3(a.x - b.x, a.y - b.y, a.z - b.z);
+  }
 
-  friend vec3 operator-(const vec3 &a) { return vec3(-a.x, -a.y, -a.z); }
+  friend vec3 operator-(const vec3 &a) {
+    return vec3(-a.x, -a.y, -a.z);
+  }
 
-  friend vec3 operator*(const vec3 &a, T k) { return vec3(a.x * k, a.y * k, a.z * k); }
+  friend vec3 operator*(const vec3 &a, T k) {
+    return vec3(a.x * k, a.y * k, a.z * k);
+  }
 
-  friend vec3 operator*(T k, const vec3 &a) { return vec3(a.x * k, a.y * k, a.z * k); }
+  friend vec3 operator*(T k, const vec3 &a) {
+    return vec3(a.x * k, a.y * k, a.z * k);
+  }
 
   friend vec3 operator/(const vec3 &a, T k) {
     T invk = 1.0 / k;
@@ -301,9 +343,13 @@ public:
   // --- Specific external operations ---
 
   /// Dot product
-  friend T operator*(const vec3 &a, const vec3 &b) { return (a.x * b.x + a.y * b.y + a.z * b.z); }
+  friend T operator*(const vec3 &a, const vec3 &b) {
+    return (a.x * b.x + a.y * b.y + a.z * b.z);
+  }
 
-  friend T dot(const vec3 &a, const vec3 &b) { return (a.x * b.x + a.y * b.y + a.z * b.z); }
+  friend T dot(const vec3 &a, const vec3 &b) {
+    return (a.x * b.x + a.y * b.y + a.z * b.z);
+  }
 
   /// Multiply each component one another
   friend vec3<T> component_product(const vec3<T> &a, const vec3<T> &b) {
@@ -321,7 +367,9 @@ public:
   }
 
   /// Absolut value of the components
-  friend vec3<T> component_abs(const vec3<T> &a) { return vec3<T>(fabs(a.x), fabs(a.y), fabs(a.z)); }
+  friend vec3<T> component_abs(const vec3<T> &a) {
+    return vec3<T>(fabs(a.x), fabs(a.y), fabs(a.z));
+  }
 
   /// Cross product
   friend vec3<T> operator^(const vec3<T> &a, const vec3<T> &b) {
@@ -333,16 +381,26 @@ public:
   }
 
   /// Linear interpolation
-  friend vec3<T> lerp(double t, const vec3<T> &a, const vec3<T> &b) { return (1.0f - t) * a + t * b; }
+  friend vec3<T> lerp(double t, const vec3<T> &a, const vec3<T> &b) {
+    return (1.0f - t) * a + t * b;
+  }
 
   /// Squared length of the vector
-  friend T norm2(const vec3 &a) { return a * a; }
+  friend T norm2(const vec3 &a) {
+    return a * a;
+  }
 
   /// Length of the vector
-  friend T norm(const vec3 &a) { return sqrt(a * a); }
-  T length() const { return norm(*this); }
+  friend T norm(const vec3 &a) {
+    return sqrt(a * a);
+  }
+  T length() const {
+    return norm(*this);
+  }
 
-  T normSup() const { return std::max({std::abs(x), std::abs(y), std::abs(z)}); }
+  T normSup() const {
+    return std::max({std::abs(x), std::abs(y), std::abs(z)});
+  }
 
   /// Normalize and return length (before being normalized)
   T normalize() {
@@ -406,13 +464,13 @@ public:
   ///   }
   T normalizeQuotientAlgo() {
 #define NQ(X, Y, Z, N)                                                                                                 \
-  T f = 1.0 / Z;                                                                                                       \
+  T f  = 1.0 / Z;                                                                                                      \
   T q1 = X * f, q2 = Y * f;                                                                                            \
   T h = sqrt(1.0 + q1 * q1 + q2 * q2);                                                                                 \
   T r = N * h;                                                                                                         \
-  Z = copysign(1.0, Z) / h;                                                                                            \
-  X = q1 * Z;                                                                                                          \
-  Y = q2 * Z;                                                                                                          \
+  Z   = copysign(1.0, Z) / h;                                                                                          \
+  X   = q1 * Z;                                                                                                        \
+  Y   = q2 * Z;                                                                                                        \
   return r;
 
     T x1 = fabs(x), x2 = fabs(y), x3 = fabs(z);
@@ -424,8 +482,7 @@ public:
       }
     } else {
       if (x3 > x2) {
-        if (z == 0)
-          return 0;
+        if (z == 0) return 0;
         NQ(x, y, z, x3);
       } else {
         NQ(x, z, y, x2);
@@ -453,14 +510,18 @@ public:
     return (this->x == other.x && this->y == other.y && this->z == other.z);
   }
 
-  bool operator!=(const vec3<T> &other) const { return !(*this == other); }
+  bool operator!=(const vec3<T> &other) const {
+    return !(*this == other);
+  }
 
   // input/output
   friend std::ostream &operator<<(std::ostream &pStr, const vec3 &pV) {
     return (pStr << pV.x << ' ' << pV.y << ' ' << pV.z);
   }
 
-  friend std::istream &operator>>(std::istream &pStr, vec3 &pV) { return (pStr >> pV.x >> pV.y >> pV.z); }
+  friend std::istream &operator>>(std::istream &pStr, vec3 &pV) {
+    return (pStr >> pV.x >> pV.y >> pV.z);
+  }
 };
 
 typedef vec3<double> vec3r;
@@ -471,12 +532,9 @@ typedef vec3<bool> vec3b;
 namespace std {
 template <class T> struct less<vec3<T>> {
   bool operator()(const vec3<T> &lhs, const vec3<T> &rhs) const {
-    if (lhs.x < rhs.x)
-      return true;
-    else if (lhs.x == rhs.x && lhs.y < rhs.y)
-      return true;
-    else if (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z)
-      return true;
+    if (lhs.x < rhs.x) return true;
+    else if (lhs.x == rhs.x && lhs.y < rhs.y) return true;
+    else if (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z) return true;
     return false;
   }
 };

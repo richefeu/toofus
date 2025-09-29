@@ -47,9 +47,7 @@ public:
   }
 
   Transformation &translate(T x, T y, T z) {
-    if (x == (T)0 && y == (T)0 && z == (T)0) {
-      return *this;
-    }
+    if (x == (T)0 && y == (T)0 && z == (T)0) { return *this; }
     Transformation tr;
     tr.tx = x;
     tr.ty = y;
@@ -61,16 +59,14 @@ public:
   // Variante matricielle directe
   // https://fr.wikipedia.org/wiki/Formule_d%27Euler%E2%80%93Rodrigues
   Transformation &rotate(T axe_x, T axe_y, T axe_z, T angle) {
-    if (angle == (T)0 || (axe_x == (T)0 && axe_y == (T)0 && axe_z == (T)0)) {
-      return *this;
-    }
+    if (angle == (T)0 || (axe_x == (T)0 && axe_y == (T)0 && axe_z == (T)0)) { return *this; }
     Transformation tr;
-    T ca = cos(angle);
-    T sa = sin(angle);
-    T invn = 1.0f / sqrt(axe_x * axe_x + axe_y * axe_y + axe_z * axe_z);
-    T nx = axe_x * invn;
-    T ny = axe_y * invn;
-    T nz = axe_z * invn;
+    T ca     = cos(angle);
+    T sa     = sin(angle);
+    T invn   = 1.0f / sqrt(axe_x * axe_x + axe_y * axe_y + axe_z * axe_z);
+    T nx     = axe_x * invn;
+    T ny     = axe_y * invn;
+    T nz     = axe_z * invn;
     T one_ca = (T)1 - ca;
 
     tr.xx = nx * nx * one_ca + ca;
@@ -98,9 +94,9 @@ public:
     T vx = xx * v.x + xy * v.y + xz * v.z + tx;
     T vy = yx * v.x + yy * v.y + yz * v.z + ty;
     T vz = zx * v.x + zy * v.y + zz * v.z + tz;
-    v.x = vx;
-    v.y = vy;
-    v.z = vz;
+    v.x  = vx;
+    v.y  = vy;
+    v.z  = vz;
   }
 
   /**
@@ -121,27 +117,27 @@ public:
     zz = 1;
     tz = 0;
   }
-  
+
   /**
    * Resets the translation part of the transformation to its neutral element.
    *
    * This will not touch the rotation part of the transformation.
    */
   void reset_translation() {
-    //xx = 1;
-    //xy = 0;
-    //xz = 0;
+    // xx = 1;
+    // xy = 0;
+    // xz = 0;
     tx = 0;
-    //yx = 0;
-    //yy = 1;
-    //yz = 0;
+    // yx = 0;
+    // yy = 1;
+    // yz = 0;
     ty = 0;
-    //zx = 0;
-    //zy = 0;
-    //zz = 1;
+    // zx = 0;
+    // zy = 0;
+    // zz = 1;
     tz = 0;
   }
-  
+
   /**
    * Resets the rotation part of the transformation to its neutral element.
    *
@@ -151,15 +147,15 @@ public:
     xx = 1;
     xy = 0;
     xz = 0;
-    //tx = 0;
+    // tx = 0;
     yx = 0;
     yy = 1;
     yz = 0;
-    //ty = 0;
+    // ty = 0;
     zx = 0;
     zy = 0;
     zz = 1;
-    //tz = 0;
+    // tz = 0;
   }
 
   /**
@@ -179,7 +175,7 @@ public:
    * Multiplies two transformation matrices.
    *
    * This function performs matrix multiplication on two 4x4 transformation matrices,
-   * combining their effects. The resulting transformation matrix represents the 
+   * combining their effects. The resulting transformation matrix represents the
    * sequential application of the transformations represented by the input matrices.
    *
    * @param a The first transformation matrix.

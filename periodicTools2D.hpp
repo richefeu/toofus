@@ -21,7 +21,6 @@ void GreenLagrangeStrain(mat4r &h0, mat4r &h, mat4r &E) {
   return 0.5 * (F.transposed() * F - mat4r::unit());
 }
 
-
 /**
  * @brief Adjusts the velocity vector based on periodic movement. ix and iy can be -1.0, 0.0, or 1.0
  *
@@ -41,8 +40,9 @@ vec2r correctVelocity(mat4r &vh, double ix, double iy) {
  * @param numPerioMove Vector of periodic displacement along the x and y axes.
  * @return Corrected velocity vector.
  */
-vec2r correctVelocity(mat4r &vh, vec2r &numPerioMove) { 
-  return vh * numPerioMove; }
+vec2r correctVelocity(mat4r &vh, vec2r &numPerioMove) {
+  return vh * numPerioMove;
+}
 
 } // namespace periodictools2D
 

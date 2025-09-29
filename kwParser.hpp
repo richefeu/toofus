@@ -18,22 +18,28 @@
 #include <functional>
 #include <iostream>
 #include <map>
-#include <string>
 #include <sstream>
+#include <string>
 
 #define __DO__(IS) [&](std::istream & IS)
 #define __GET__(IS, WHAT) [&](std::istream &IS) { IS >> (WHAT); }
 class kwParser {
 public:
-  kwParser() : warn(true) { breakStr = "EOF"; }
-  kwParser(bool Warn) : warn(Warn) { breakStr = "EOF"; }
+  kwParser() : warn(true) {
+    breakStr = "EOF";
+  }
+  kwParser(bool Warn) : warn(Warn) {
+    breakStr = "EOF";
+  }
 
   // This function is actually not very usefull
   // instead do:
   //    myParser.kwMap["key"] = [&](std::istream & is) { is >> values; };
   // or (simpler)
   //    myParser.kwMap["key"] = __DO__ { is >> values; };
-  void addKw(std::string kw, std::function<void(std::istream &)> func) { kwMap[kw] = func; }
+  void addKw(std::string kw, std::function<void(std::istream &)> func) {
+    kwMap[kw] = func;
+  }
 
   /**
    * \brief Parse a file
@@ -45,12 +51,10 @@ public:
    */
   void parse(const char *filename) {
     std::ifstream file(filename);
-    if (file)
-      parse(file);
-    else
-      std::cerr << "@kwParser::parse, file " << filename << " cannot be opened" << std::endl;
+    if (file) parse(file);
+    else std::cerr << "@kwParser::parse, file " << filename << " cannot be opened" << std::endl;
   }
-  
+
   /**
    * \brief Parse a string
    *
@@ -63,10 +67,8 @@ public:
   void parseString(const char *chain) {
     std::stringstream ss;
     ss.str(chain);
-    if (ss)
-      parse(ss);
-    else
-      std::cerr << "@kwParser::parseString, stream cannot be created" << std::endl;
+    if (ss) parse(ss);
+    else std::cerr << "@kwParser::parseString, stream cannot be created" << std::endl;
   }
 
   /**
@@ -90,15 +92,11 @@ public:
         getline(is, token); // ignore the rest of the current line
         is >> token;        // next token
         continue;
-      } else if (token == breakStr)
-        break;
+      } else if (token == breakStr) break;
       else {
         auto it = kwMap.find(token);
-        if (it != kwMap.end())
-          it->second(is);
-        else if (warn) {
-          std::cerr << "@kwParser::parse, unknown token: " << token << std::endl;
-        }
+        if (it != kwMap.end()) it->second(is);
+        else if (warn) { std::cerr << "@kwParser::parse, unknown token: " << token << std::endl; }
       }
 
       is >> token;

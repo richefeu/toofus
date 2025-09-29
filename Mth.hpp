@@ -24,17 +24,17 @@
 namespace Mth {
 
 // All const are with external linkage by default
-const double pi = 3.14159265358979323846;
-const double invPi = 1.0 / pi;
-const double piSqr = pi * pi;
-const double pi_2 = pi / 2.0;
-const double pi_4 = pi / 4.0;
-const double _2pi = 2.0 * pi;
-const double _1_3 = 1.0 / 3.0;
-const double _4_3 = 4.0 / 3.0;
-const double e = 2.71828182845904523536;
-const double deg2rad = pi / 180.0;
-const double rad2deg = 180.0 / pi;
+const double pi         = 3.14159265358979323846;
+const double invPi      = 1.0 / pi;
+const double piSqr      = pi * pi;
+const double pi_2       = pi / 2.0;
+const double pi_4       = pi / 4.0;
+const double _2pi       = 2.0 * pi;
+const double _1_3       = 1.0 / 3.0;
+const double _4_3       = 4.0 / 3.0;
+const double e          = 2.71828182845904523536;
+const double deg2rad    = pi / 180.0;
+const double rad2deg    = 180.0 / pi;
 const double randFactor = 1.0 / (double)(RAND_MAX);
 
 /// @brief Gives angle between 0 and 4,
@@ -52,12 +52,18 @@ template <typename T> T DiamondAngle(T x, T y) {
 /// @tparam T The type of the value.
 /// @param value The value to be checked.
 /// @return The original value if it is positive, or zero if it is negative.
-template <typename T> T keepPositive(T value) { return (value > (T)0) ? value : (T)0; }
+template <typename T> T keepPositive(T value) {
+  return (value > (T)0) ? value : (T)0;
+}
 
 /// @brief Return the sign of a value (1 is positive, -1 is negative)
-template <typename T> T sign(T value) { return std::copysign(1, value); }
+template <typename T> T sign(T value) {
+  return std::copysign(1, value);
+}
 
-template <typename T> T sqr(T value) { return value * value; }
+template <typename T> T sqr(T value) {
+  return value * value;
+}
 
 /// @brief Maps a value from one range to another.
 ///
@@ -70,9 +76,13 @@ template <typename T> T map(T value, T minA, T maxA, T minB, T maxB) {
   return (value - minA) / (maxA - minA) * (maxB - minB) + minB;
 }
 
-template <typename T> T lerp(T min, T max, T amount) { return min + amount * (max - min); }
+template <typename T> T lerp(T min, T max, T amount) {
+  return min + amount * (max - min);
+}
 
-template <typename T> T norm(T num, T min, T max) { return (num - min) / (max - min); }
+template <typename T> T norm(T num, T min, T max) {
+  return (num - min) / (max - min);
+}
 
 /// @brief Constrains a number to be within a specified range.
 ///
@@ -100,12 +110,20 @@ template <typename T> T floor0(T value) {
   }
 }
 
-template <typename T> double heaviside(T x) { return (x >= 0) ? 1.0 : 0.0; }
+template <typename T> double heaviside(T x) {
+  return (x >= 0) ? 1.0 : 0.0;
+}
 
-template <typename T> T round(T value) { return std::floor(value + 0.5); }
+template <typename T> T round(T value) {
+  return std::floor(value + 0.5);
+}
 
-template <typename T> T random(T value = 1) { return (std::rand() * randFactor * value); }
-template <typename T> T random(T min, T max) { return (min + std::rand() * randFactor * (max - min)); }
+template <typename T> T random(T value = 1) {
+  return (std::rand() * randFactor * value);
+}
+template <typename T> T random(T min, T max) {
+  return (min + std::rand() * randFactor * (max - min));
+}
 
 template <typename T> T random(std::vector<T> &data) {
   static std::random_device rd;
@@ -116,12 +134,10 @@ template <typename T> T random(std::vector<T> &data) {
 }
 
 template <typename T> T getPulse(double t, double period, double delta, T VAL_WAIT, T VAL_PULSE) {
-  if (t < 0 || period <= 0 || delta <= 0 || delta > period) {
-    return 0;
-  }
+  if (t < 0 || period <= 0 || delta <= 0 || delta > period) { return 0; }
 
   double start = std::floor(t / period) * period;
-  double end = start + delta;
+  double end   = start + delta;
 
   if (t >= start && t < end) {
     return VAL_PULSE;
@@ -143,33 +159,24 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
   static size_t in;
   static std::vector<size_t> ix(MAXDIM);
   static std::vector<size_t *> iu(MAXBIT);
-  static size_t ip[MAXDIM] = {0, 1, 1, 2, 1, 4};
+  static size_t ip[MAXDIM]          = {0, 1, 1, 2, 1, 4};
   static size_t iv[MAXDIM * MAXBIT] = {1, 1, 1, 1, 1, 1, 3, 1, 3, 3, 1, 1, 5, 7, 7, 3, 3, 5, 15, 11, 5, 15, 13, 9};
   static double fac;
 
   if (n < 0) {
-    for (k = 0; k < MAXDIM; k++) {
-      ix[k] = 0;
-    }
+    for (k = 0; k < MAXDIM; k++) { ix[k] = 0; }
     in = 0;
-    if (iv[0] != 1) {
-      return;
-    }
+    if (iv[0] != 1) { return; }
     fac = 1.0 / (1 << MAXBIT);
-    for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM) {
-      iu[j] = &iv[k];
-    }
+    for (j = 0, k = 0; j < MAXBIT; j++, k += MAXDIM) { iu[j] = &iv[k]; }
     for (k = 0; k < MAXDIM; k++) {
-      for (j = 0; j < mdeg[k]; j++) {
-        iu[j][k] <<= (MAXBIT - 1 - j);
-      }
+      for (j = 0; j < mdeg[k]; j++) { iu[j][k] <<= (MAXBIT - 1 - j); }
       for (j = mdeg[k]; j < MAXBIT; j++) {
         ipp = ip[k];
-        i = iu[j - mdeg[k]][k];
+        i   = iu[j - mdeg[k]][k];
         i ^= (i >> mdeg[k]);
         for (l = mdeg[k] - 1; l >= 1; l--) {
-          if (ipp & 1)
-            i ^= iu[j - l][k];
+          if (ipp & 1) i ^= iu[j - l][k];
           ipp >>= 1;
         }
         iu[j][k] = i;
@@ -178,15 +185,11 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
   } else { // n >= 0
     im = in++;
     for (j = 0; j < MAXBIT; j++) {
-      if (!(im & 1)) {
-        break;
-      }
+      if (!(im & 1)) { break; }
       im >>= 1;
     }
-    if (j >= MAXBIT) {
-      return;
-    } // std::cerr << "MAXBIT too small in sobseq" << std::endl;
-    im = j * MAXDIM;
+    if (j >= MAXBIT) { return; } // std::cerr << "MAXBIT too small in sobseq" << std::endl;
+    im          = j * MAXDIM;
     size_t kmax = (static_cast<size_t>(n) < MAXDIM) ? static_cast<size_t>(n) : MAXDIM;
     for (k = 0; k < kmax; k++) {
       ix[k] ^= iv[im + k];
@@ -195,7 +198,9 @@ inline static void sobolSequence(const int n, std::vector<double> &x) {
   }
 }
 
-template <typename T> T dist(T x1, T x2) { return std::fabs(x2 - x1); }
+template <typename T> T dist(T x1, T x2) {
+  return std::fabs(x2 - x1);
+}
 template <typename T> T dist(T x1, T y1, T x2, T y2) {
   T dx = x2 - x1;
   T dy = y2 - y1;
@@ -212,7 +217,7 @@ template <typename T> T dist(T x1, T y1, T z1, T x2, T y2, T z2) {
 // Thanks to compiler optimisations, using 1.0/sqrt(v) will have
 // better performance than these functions
 template <typename T> T Q_rsqrt(T number) {
-  const T x2 = number * 0.5F;
+  const T x2         = number * 0.5F;
   const T threehalfs = 1.5F;
 
   union {
@@ -230,7 +235,7 @@ template <typename T> T Q_rsqrt(T number) {
 /// @param[in] number the input number
 /// @return the inverse square root of the input number
 template <typename T> T Q_accurate_rsqrt(T number) {
-  const T x2 = number * 0.5F;
+  const T x2         = number * 0.5F;
   const T threehalfs = 1.5F;
 
   union {
@@ -247,13 +252,9 @@ template <typename T> T Q_accurate_rsqrt(T number) {
 /// @brief Compute the mean value and the variance of some data
 template <typename T> void MeanAndVariance(std::vector<T> &data, double &mean, double &var) {
   mean = 0.0;
-  var = 0.0;
-  if (data.size() < 2) {
-    return;
-  }
-  for (size_t i = 0; i < data.size(); i++) {
-    mean += data[i];
-  }
+  var  = 0.0;
+  if (data.size() < 2) { return; }
+  for (size_t i = 0; i < data.size(); i++) { mean += data[i]; }
   mean /= (double)data.size();
   double s = 0.0;
   for (size_t i = 0; i < data.size(); i++) {
@@ -266,11 +267,10 @@ template <typename T> void MeanAndVariance(std::vector<T> &data, double &mean, d
 /// @brief Coefficient of variation (CV) or relative standard deviation (RSD)
 template <typename T> T RSD(std::vector<T> &data) {
   double mean = 0.0;
-  double var = 0.0;
+  double var  = 0.0;
   MeanAndVariance(data, mean, var);
   double CV = 0.0;
-  if (std::fabs(mean) > 1e-20)
-    CV = std::sqrt(var) / mean;
+  if (std::fabs(mean) > 1e-20) CV = std::sqrt(var) / mean;
   return CV;
 }
 

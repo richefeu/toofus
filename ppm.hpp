@@ -31,8 +31,8 @@ class ppm {
    * to their default values of 0, 0, and 255 respectively.
    */
   void init() {
-    width = 0;
-    height = 0;
+    width       = 0;
+    height      = 0;
     max_col_val = 255;
   }
 
@@ -51,7 +51,9 @@ public:
   unsigned int max_col_val; ///< maximum color value in the PPM image
   unsigned int size;        ///< total number of elements (pixels)
 
-  ppm() { init(); }
+  ppm() {
+    init();
+  }
 
   /// constructs a PPM object and loads data from the specified file
   ppm(const std::string &fname) {
@@ -68,11 +70,11 @@ public:
    */
   ppm(const unsigned int _width, const unsigned int _height) {
     init();
-    width = _width;
-    height = _height;
-    nr_lines = height;
+    width      = _width;
+    height     = _height;
+    nr_lines   = height;
     nr_columns = width;
-    size = width * height;
+    size       = width * height;
 
     // fill r, g and b with 0
     r.resize(size);
@@ -91,15 +93,13 @@ public:
         return;
       }
       std::getline(inp, line);
-      while (line[0] == '#') {
-        std::getline(inp, line);
-      }
+      while (line[0] == '#') { std::getline(inp, line); }
       std::stringstream dimensions(line);
 
       try {
         dimensions >> width;
         dimensions >> height;
-        nr_lines = height;
+        nr_lines   = height;
         nr_columns = width;
       } catch (std::exception &e) {
         std::cout << "Header file format error. " << e.what() << std::endl;

@@ -34,9 +34,8 @@ public:
     const size_t kMaxNameLen = 4096;
     char function[kMaxNameLen];
     size_t start = stackString.find('(');
-    size_t end = stackString.find('+');
-    if (std::string::npos == start || std::string::npos == end)
-      return stackString;
+    size_t end   = stackString.find('+');
+    if (std::string::npos == start || std::string::npos == end) return stackString;
     int status;
     ++start; // puts us pass the '('
     size_t n = end - start;
@@ -63,11 +62,9 @@ public:
     void *stackAddrs[kMaxDepth];
     int stackDepth;
     char **stackStrings;
-    stackDepth = backtrace(stackAddrs, kMaxDepth);
+    stackDepth   = backtrace(stackAddrs, kMaxDepth);
     stackStrings = backtrace_symbols(stackAddrs, stackDepth);
-    for (int i = 1; i < stackDepth; ++i) {
-      result << "   " << DeMangleCXXName(stackStrings[i]) << std::endl;
-    }
+    for (int i = 1; i < stackDepth; ++i) { result << "   " << DeMangleCXXName(stackStrings[i]) << std::endl; }
     std::free(stackStrings);
 #endif
 
@@ -119,9 +116,7 @@ public:
       std::cerr << "(\033[31mTerminate\033[0m) Termination request sent to program." << std::endl;
     }
 
-    if (sig != SIGINT) {
-      std::cerr << StackTrace() << std::endl;
-    }
+    if (sig != SIGINT) { std::cerr << StackTrace() << std::endl; }
     exit(EXIT_SUCCESS);
   }
 

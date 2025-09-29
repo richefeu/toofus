@@ -57,11 +57,11 @@ public:
   std::function<void(T *, size_t, double &, double &)> getXY;
 
   ElementSelector() {
-    inputOption = "NONE";
+    inputOption   = "NONE";
     actionForNone = [](T *) {};
-    actionForId = [](T *, size_t) {};
+    actionForId   = [](T *, size_t) {};
     ContainerSize = [](T *) -> size_t { return 0; };
-    getXY = [](T *, size_t, double &x, double &y) {
+    getXY         = [](T *, size_t, double &x, double &y) {
       x = 0.0;
       y = 0.0;
     };
@@ -72,15 +72,11 @@ public:
     if (inputOption == "NONE") {
       actionForNone(Obj);
     } else if (inputOption == "ALL") {
-      for (size_t p = 0; p < ContainerSize(Obj); p++) {
-        actionForId(Obj, p);
-      }
+      for (size_t p = 0; p < ContainerSize(Obj); p++) { actionForId(Obj, p); }
     } else if (inputOption == "ID") {
       actionForId(Obj, ID);
     } else if (inputOption == "LIST") {
-      for (size_t i = 0; i < ID_LIST.size(); i++) {
-        actionForId(Obj, ID_LIST[i]);
-      }
+      for (size_t i = 0; i < ID_LIST.size(); i++) { actionForId(Obj, ID_LIST[i]); }
     } else if (inputOption == "GRID") {
 
       for (size_t p = 0; p < ContainerSize(Obj); p++) {
@@ -90,9 +86,7 @@ public:
         double Y0 = std::round((y - GRID_Y0) / GRID_LY) * GRID_LY - 0.5 * GRID_TOL;
         double X1 = X0 + GRID_TOL;
         double Y1 = Y0 + GRID_TOL;
-        if ((x >= X0 && x <= X1) || (y >= Y0 && y <= Y1)) {
-          actionForId(Obj, p);
-        }
+        if ((x >= X0 && x <= X1) || (y >= Y0 && y <= Y1)) { actionForId(Obj, p); }
       }
 
     } else if (inputOption == "BOX") {
@@ -100,9 +94,7 @@ public:
       for (size_t p = 0; p < ContainerSize(Obj); p++) {
         double x, y;
         getXY(Obj, p, x, y);
-        if (x >= BOX_X0 && x <= BOX_X1 && y >= BOX_Y0 && y <= BOX_Y1) {
-          actionForId(Obj, p);
-        }
+        if (x >= BOX_X0 && x <= BOX_X1 && y >= BOX_Y0 && y <= BOX_Y1) { actionForId(Obj, p); }
       }
     }
   }

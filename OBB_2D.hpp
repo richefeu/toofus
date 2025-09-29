@@ -33,26 +33,18 @@ struct OBB_2D {
     double c = cos(rotation);
     double s = sin(rotation);
     axis.set(c, s);
-    if (isSeparatedByAxis(vertices1, vertices2, axis)) {
-      return false;
-    }
+    if (isSeparatedByAxis(vertices1, vertices2, axis)) { return false; }
 
     axis.set(-s, c);
-    if (isSeparatedByAxis(vertices1, vertices2, axis)) {
-      return false;
-    }
+    if (isSeparatedByAxis(vertices1, vertices2, axis)) { return false; }
 
     c = cos(other.rotation);
     s = sin(other.rotation);
     axis.set(c, s);
-    if (isSeparatedByAxis(vertices1, vertices2, axis)) {
-      return false;
-    }
+    if (isSeparatedByAxis(vertices1, vertices2, axis)) { return false; }
 
     axis.set(-s, c);
-    if (isSeparatedByAxis(vertices1, vertices2, axis)) {
-      return false;
-    }
+    if (isSeparatedByAxis(vertices1, vertices2, axis)) { return false; }
 
     // No separation along any axis, the OBBs intersect
     return true;
@@ -60,7 +52,7 @@ struct OBB_2D {
 
   bool contains(const vec2r &point) const {
     // Calculate the half extents
-    double halfWidth = width / 2.0;
+    double halfWidth  = width / 2.0;
     double halfHeight = height / 2.0;
 
     // Calculate the rotation matrix
@@ -82,13 +74,14 @@ struct OBB_2D {
     return (abs(projectedX) <= halfWidth) && (abs(projectedY) <= halfHeight);
   }
 
-  bool contains(const OBB_2D &other) const { return contains(other.position); }
+  bool contains(const OBB_2D &other) const {
+    return contains(other.position);
+  }
 
 private:
-  
   std::array<vec2r, 4> calculateVertices() const {
     // Calculate the half extents
-    double halfWidth = width / 2.0;
+    double halfWidth  = width / 2.0;
     double halfHeight = height / 2.0;
 
     // Calculate the rotation matrix
@@ -118,14 +111,14 @@ private:
 
     for (const auto &vertex : vertices1) {
       double projection = vertex * axis;
-      minProjection1 = std::min(minProjection1, projection);
-      maxProjection1 = std::max(maxProjection1, projection);
+      minProjection1    = std::min(minProjection1, projection);
+      maxProjection1    = std::max(maxProjection1, projection);
     }
 
     for (const auto &vertex : vertices2) {
       double projection = vertex * axis;
-      minProjection2 = std::min(minProjection2, projection);
-      maxProjection2 = std::max(maxProjection2, projection);
+      minProjection2    = std::min(minProjection2, projection);
+      maxProjection2    = std::max(maxProjection2, projection);
     }
 
     return (maxProjection1 < minProjection2 || maxProjection2 < minProjection1);

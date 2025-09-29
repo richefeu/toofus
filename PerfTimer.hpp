@@ -38,9 +38,15 @@ private:
   std::chrono::high_resolution_clock::time_point epoch;
 
 public:
-  PerfTimer() { reset(); }
-  void reset() { epoch = std::chrono::high_resolution_clock::now(); }
-  void start() { reset(); }
+  PerfTimer() {
+    reset();
+  }
+  void reset() {
+    epoch = std::chrono::high_resolution_clock::now();
+  }
+  void start() {
+    reset();
+  }
   double getElapsedTimeSeconds() {
     auto duration_ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - epoch)

@@ -30,22 +30,14 @@ typedef std::vector<double> cvector;
 typedef std::vector<cvector> cmatrix;
 
 void cvector_add_inplace(cvector &m, cvector &b) {
-  if (m.size() != b.size()) {
-    std::cerr << "@cvector_add_inplace, m and b must have the same size\n";
-  }
-  for (size_t i = 0; i < m.size(); i++) {
-    m[i] += b[i];
-  }
+  if (m.size() != b.size()) { std::cerr << "@cvector_add_inplace, m and b must have the same size\n"; }
+  for (size_t i = 0; i < m.size(); i++) { m[i] += b[i]; }
 }
 
 cvector cvector_substract(cvector &a, cvector &b) {
-  if (a.size() != b.size()) {
-    std::cerr << "@cvector_substract, a and b must have the same size\n";
-  }
+  if (a.size() != b.size()) { std::cerr << "@cvector_substract, a and b must have the same size\n"; }
   cvector result(a.size());
-  for (size_t i = 0; i < a.size(); i++) {
-    result[i] = a[i] - b[i];
-  }
+  for (size_t i = 0; i < a.size(); i++) { result[i] = a[i] - b[i]; }
   return result;
 }
 
@@ -54,9 +46,7 @@ cmatrix cmatrix_create(size_t rows, size_t cols) {
   M.resize(rows);
   for (size_t i = 0; i < rows; i++) {
     M[i].resize(cols);
-    for (size_t j = 0; j < cols; j++) {
-      M[i][j] = 0.0;
-    }
+    for (size_t j = 0; j < cols; j++) { M[i][j] = 0.0; }
   }
   return M;
 }
@@ -74,9 +64,7 @@ void cmatrix_randomize_gaussian_inplace(cmatrix &m, double stddev = 1.0) {
   std::normal_distribution<double> distribution(0.0, stddev);
 
   for (size_t i = 0; i < rows; i++) {
-    for (size_t j = 0; j < cols; j++) {
-      m[i][j] = distribution(generator);
-    }
+    for (size_t j = 0; j < cols; j++) { m[i][j] = distribution(generator); }
   }
 }
 
@@ -85,31 +73,23 @@ void cmatrix_randomize_inplace(cmatrix &m, double min = -1.0, double max = 1.0) 
   cmatrix_getSizes(m, rows, cols);
 
   for (size_t i = 0; i < rows; i++) {
-    for (size_t j = 0; j < cols; j++) {
-      m[i][j] = min + (rand() / (double)RAND_MAX) * (max - min);
-    }
+    for (size_t j = 0; j < cols; j++) { m[i][j] = min + (rand() / (double)RAND_MAX) * (max - min); }
   }
 }
 
 void cvector_randomize_gaussian_inplace(cvector &v, double stddev = 1.0) {
   std::default_random_engine generator;
   std::normal_distribution<double> distribution(0.0, stddev);
-  for (size_t i = 0; i < v.size(); i++) {
-    v[i] = distribution(generator);
-  }
+  for (size_t i = 0; i < v.size(); i++) { v[i] = distribution(generator); }
 }
 
 void cvector_randomize_inplace(cvector &v, double min = -1.0, double max = 1.0) {
-  for (size_t i = 0; i < v.size(); i++) {
-    v[i] = min + (rand() / (double)RAND_MAX) * (max - min);
-  }
+  for (size_t i = 0; i < v.size(); i++) { v[i] = min + (rand() / (double)RAND_MAX) * (max - min); }
 }
 
 // example with lambda: cvector_map_inplace(m, [](double x) -> double { return 2.0 * x; });
 void cvector_map_inplace(cvector &m, std::function<double(double)> func) {
-  for (size_t i = 0; i < m.size(); i++) {
-    m[i] = func(m[i]);
-  }
+  for (size_t i = 0; i < m.size(); i++) { m[i] = func(m[i]); }
 }
 
 cvector cmatrix_mult(cmatrix &a, cvector &b) {
@@ -125,9 +105,7 @@ cvector cmatrix_mult(cmatrix &a, cvector &b) {
   cvector result(a_rows);
   for (size_t i = 0; i < a_rows; i++) {
     double sum = 0.0;
-    for (size_t k = 0; k < a_cols; k++) {
-      sum += a[i][k] * b[k];
-    }
+    for (size_t k = 0; k < a_cols; k++) { sum += a[i][k] * b[k]; }
     result[i] = sum;
   }
   return result;
@@ -145,9 +123,7 @@ void cmatrix_add_inplace(cmatrix &a, cmatrix &b) {
   }
 
   for (size_t i = 0; i < a_rows; i++) {
-    for (size_t j = 0; j < a_cols; j++) {
-      a[i][j] += b[i][j];
-    }
+    for (size_t j = 0; j < a_cols; j++) { a[i][j] += b[i][j]; }
   }
 }
 
@@ -155,18 +131,14 @@ void print(cmatrix &m) {
   size_t rows, cols;
   cmatrix_getSizes(m, rows, cols);
   for (size_t i = 0; i < rows; i++) {
-    for (size_t j = 0; j < cols; j++) {
-      std::cout << m[i][j] << ' ';
-    }
+    for (size_t j = 0; j < cols; j++) { std::cout << m[i][j] << ' '; }
     std::cout << '\n';
   }
   std::cout << '\n';
 }
 
 void print(cvector &v) {
-  for (size_t i = 0; i < v.size(); i++) {
-    std::cout << v[i] << '\n';
-  }
+  for (size_t i = 0; i < v.size(); i++) { std::cout << v[i] << '\n'; }
   std::cout << '\n';
 }
 
@@ -174,56 +146,68 @@ void print(cvector &v) {
 
 // SIGMOID
 int SIGMOID_ACTIVATOR_ID = 0;
-double sigmoid(double x) { return (1.0 / (1.0 + exp(-x))); }
-double dsigmoid(double s) { return (s * (1.0 - s)); }
-double invSigmoid(double y) { return (log(y / (1.0 - y))); }
+double sigmoid(double x) {
+  return (1.0 / (1.0 + exp(-x)));
+}
+double dsigmoid(double s) {
+  return (s * (1.0 - s));
+}
+double invSigmoid(double y) {
+  return (log(y / (1.0 - y)));
+}
 
 // TANH
 int TANH_ACTIVATOR_ID = 1;
-double Tanh(double x) { return tanh(x); }
+double Tanh(double x) {
+  return tanh(x);
+}
 double dTanh(double s) {
   double th = tanh(s);
   return (1.0 - th * th);
 }
-double invTanh(double y) { return 0.5 * log((1.0 + y) / (1.0 - y)); }
+double invTanh(double y) {
+  return 0.5 * log((1.0 + y) / (1.0 - y));
+}
 
 // BINARY STEP
 int BINARY_STEP_ACTIVATOR_ID = 2;
 double binary(double x) {
-  if (fabs(x) < 1.0)
-    return 0.5 * (x + 1.0);
-  if (x < 0.0)
-    return 0.0;
+  if (fabs(x) < 1.0) return 0.5 * (x + 1.0);
+  if (x < 0.0) return 0.0;
   return 1.0;
 }
 double dBinary(double x) {
-  if (fabs(x) < 1.0)
-    return 0.5;
+  if (fabs(x) < 1.0) return 0.5;
   return 0.0;
 }
-double invBinary(double x) { return 0.0; } // TODO
+double invBinary(double x) {
+  return 0.0;
+} // TODO
 
 // IDENTITY
 int IDENTITY_ACTIVATOR_ID = 3;
-double identity(double x) { return x; }
-double dIdentity(double s) { return 1.0; }
-double invIdentity(double y) { return y; }
+double identity(double x) {
+  return x;
+}
+double dIdentity(double s) {
+  return 1.0;
+}
+double invIdentity(double y) {
+  return y;
+}
 
 // BINARY STEP
 int RELU_ACTIVATOR_ID = 4;
 double reLU(double x) {
-  if (x < 0.0)
-    return 0.0;
+  if (x < 0.0) return 0.0;
   return x;
 }
 double dReLU(double x) {
-  if (x < 0.0)
-    return 0.0;
+  if (x < 0.0) return 0.0;
   return 1.0;
 }
 double invReLU(double y) {
-  if (y < 0.0)
-    return -1.0;
+  if (y < 0.0) return -1.0;
   return y;
 }
 
@@ -251,10 +235,10 @@ public:
 
   NeuralNetwork(size_t nbInputs_, size_t nbHiddenNodes_, size_t nbOutputs_, double learnRate_,
                 int activatorId_ = SIGMOID_ACTIVATOR_ID) {
-    nbInputs = nbInputs_;
+    nbInputs      = nbInputs_;
     nbHiddenNodes = nbHiddenNodes_;
-    nbOutputs = nbOutputs_;
-    learnRate = learnRate_;
+    nbOutputs     = nbOutputs_;
+    learnRate     = learnRate_;
     setActivator(activatorId_);
 
     // initiation (TODO: add possibility to use different strategies)
@@ -278,65 +262,53 @@ public:
 
     W_ih = cmatrix_create(nbHiddenNodes, nbInputs);
     for (size_t i = 0; i < nbHiddenNodes; i++) {
-      for (size_t j = 0; j < nbInputs; j++) {
-        file >> W_ih[i][j];
-      }
+      for (size_t j = 0; j < nbInputs; j++) { file >> W_ih[i][j]; }
     }
 
     bias_h.resize(nbHiddenNodes);
-    for (size_t i = 0; i < bias_h.size(); i++) {
-      file >> bias_h[i];
-    }
+    for (size_t i = 0; i < bias_h.size(); i++) { file >> bias_h[i]; }
 
     W_ho = cmatrix_create(nbOutputs, nbHiddenNodes);
     for (size_t i = 0; i < nbOutputs; i++) {
-      for (size_t j = 0; j < nbHiddenNodes; j++) {
-        file >> W_ho[i][j];
-      }
+      for (size_t j = 0; j < nbHiddenNodes; j++) { file >> W_ho[i][j]; }
     }
 
     bias_o.resize(nbOutputs);
-    for (size_t i = 0; i < bias_o.size(); i++) {
-      file >> bias_o[i];
-    }
+    for (size_t i = 0; i < bias_o.size(); i++) { file >> bias_o[i]; }
   }
 
   void setActivator(int activatorId_ = 0) {
     activatorId = activatorId_;
     if (activatorId == SIGMOID_ACTIVATOR_ID) {
-      Activatorfunc = sigmoid;
-      dActivatorfunc = dsigmoid;
+      Activatorfunc    = sigmoid;
+      dActivatorfunc   = dsigmoid;
       invActivatorfunc = invSigmoid;
     } else if (activatorId == BINARY_STEP_ACTIVATOR_ID) {
-      Activatorfunc = binary;
-      dActivatorfunc = dBinary;
+      Activatorfunc    = binary;
+      dActivatorfunc   = dBinary;
       invActivatorfunc = invBinary;
     } else if (activatorId == RELU_ACTIVATOR_ID) {
-      Activatorfunc = reLU;
-      dActivatorfunc = dReLU;
+      Activatorfunc    = reLU;
+      dActivatorfunc   = dReLU;
       invActivatorfunc = invReLU;
     } else if (activatorId == TANH_ACTIVATOR_ID) {
-      Activatorfunc = Tanh;
-      dActivatorfunc = dTanh;
+      Activatorfunc    = Tanh;
+      dActivatorfunc   = dTanh;
       invActivatorfunc = invTanh;
     } else if (activatorId == IDENTITY_ACTIVATOR_ID) {
-      Activatorfunc = identity;
-      dActivatorfunc = dIdentity;
+      Activatorfunc    = identity;
+      dActivatorfunc   = dIdentity;
       invActivatorfunc = invIdentity;
     } else { // default activator is sigmoid
-      Activatorfunc = sigmoid;
-      dActivatorfunc = dsigmoid;
+      Activatorfunc    = sigmoid;
+      dActivatorfunc   = dsigmoid;
       invActivatorfunc = invSigmoid;
     }
   }
 
   void query(cvector &inputs, cvector &outputs) {
-    if (inputs.size() != nbInputs) {
-      std::cerr << "@NeuralNetwork::predict, size of input vector doesn't match\n";
-    }
-    if (outputs.size() != nbOutputs) {
-      std::cerr << "@NeuralNetwork::predict, size of output vector doesn't match\n";
-    }
+    if (inputs.size() != nbInputs) { std::cerr << "@NeuralNetwork::predict, size of input vector doesn't match\n"; }
+    if (outputs.size() != nbOutputs) { std::cerr << "@NeuralNetwork::predict, size of output vector doesn't match\n"; }
 
     cvector H = cmatrix_mult(W_ih, inputs);
     cvector_add_inplace(H, bias_h);
@@ -348,12 +320,8 @@ public:
   }
 
   void train(cvector &inputs, cvector &targets) {
-    if (inputs.size() != nbInputs) {
-      std::cerr << "@NeuralNetwork::train, size of input vector doesn't match\n";
-    }
-    if (targets.size() != nbOutputs) {
-      std::cerr << "@NeuralNetwork::train, size of target vector doesn't match\n";
-    }
+    if (inputs.size() != nbInputs) { std::cerr << "@NeuralNetwork::train, size of input vector doesn't match\n"; }
+    if (targets.size() != nbOutputs) { std::cerr << "@NeuralNetwork::train, size of target vector doesn't match\n"; }
 
     // feedforward
     cvector H = cmatrix_mult(W_ih, inputs);
@@ -369,49 +337,35 @@ public:
 
     // gradient_ho
     cvector grad_ho(nbOutputs);
-    for (size_t i = 0; i < nbOutputs; i++) {
-      grad_ho[i] = learnRate * output_errors[i] * dActivatorfunc(outputs[i]);
-    }
+    for (size_t i = 0; i < nbOutputs; i++) { grad_ho[i] = learnRate * output_errors[i] * dActivatorfunc(outputs[i]); }
     // delta_ho
     cmatrix delta_ho = cmatrix_create(nbOutputs, nbHiddenNodes);
     for (size_t i = 0; i < nbOutputs; i++) {
-      for (size_t j = 0; j < nbHiddenNodes; j++) {
-        delta_ho[i][j] = grad_ho[i] * H[j];
-      }
+      for (size_t j = 0; j < nbHiddenNodes; j++) { delta_ho[i][j] = grad_ho[i] * H[j]; }
     }
     // corrections
     cmatrix_add_inplace(W_ho, delta_ho);
-    for (size_t i = 0; i < bias_o.size(); i++) {
-      bias_o[i] += grad_ho[i];
-    }
+    for (size_t i = 0; i < bias_o.size(); i++) { bias_o[i] += grad_ho[i]; }
 
     // errors in the hidden layer: W_ho^T * output_errors
     cvector hidden_errors(nbHiddenNodes);
     for (size_t i = 0; i < nbHiddenNodes; i++) {
       double sum = 0.0;
-      for (size_t j = 0; j < nbOutputs; j++) {
-        sum += W_ho[j][i] * output_errors[j];
-      }
+      for (size_t j = 0; j < nbOutputs; j++) { sum += W_ho[j][i] * output_errors[j]; }
       hidden_errors[i] = sum;
     }
 
     // gradient_ih
     cvector grad_ih(nbHiddenNodes);
-    for (size_t i = 0; i < nbHiddenNodes; i++) {
-      grad_ih[i] = learnRate * hidden_errors[i] * dActivatorfunc(H[i]);
-    }
+    for (size_t i = 0; i < nbHiddenNodes; i++) { grad_ih[i] = learnRate * hidden_errors[i] * dActivatorfunc(H[i]); }
     // delta_ih
     cmatrix delta_ih = cmatrix_create(nbHiddenNodes, nbInputs);
     for (size_t i = 0; i < nbHiddenNodes; i++) {
-      for (size_t j = 0; j < nbInputs; j++) {
-        delta_ih[i][j] = grad_ih[i] * inputs[j];
-      }
+      for (size_t j = 0; j < nbInputs; j++) { delta_ih[i][j] = grad_ih[i] * inputs[j]; }
     }
     // corrections
     cmatrix_add_inplace(W_ih, delta_ih);
-    for (size_t i = 0; i < bias_h.size(); i++) {
-      bias_h[i] += grad_ih[i];
-    }
+    for (size_t i = 0; i < bias_h.size(); i++) { bias_h[i] += grad_ih[i]; }
   }
 
   void backQuery(cvector &ouputs, cvector &inputs) {
@@ -425,29 +379,21 @@ public:
     file << nbInputs << ' ' << nbHiddenNodes << ' ' << nbOutputs << ' ' << learnRate << '\n';
 
     for (size_t i = 0; i < nbHiddenNodes; i++) {
-      for (size_t j = 0; j < nbInputs; j++) {
-        file << W_ih[i][j] << ' ';
-      }
+      for (size_t j = 0; j < nbInputs; j++) { file << W_ih[i][j] << ' '; }
       file << '\n';
     }
     file << '\n';
 
-    for (size_t i = 0; i < bias_h.size(); i++) {
-      file << bias_h[i] << '\n';
-    }
+    for (size_t i = 0; i < bias_h.size(); i++) { file << bias_h[i] << '\n'; }
     file << '\n';
 
     for (size_t i = 0; i < nbOutputs; i++) {
-      for (size_t j = 0; j < nbHiddenNodes; j++) {
-        file << W_ho[i][j] << ' ';
-      }
+      for (size_t j = 0; j < nbHiddenNodes; j++) { file << W_ho[i][j] << ' '; }
       file << '\n';
     }
     file << '\n';
 
-    for (size_t i = 0; i < bias_o.size(); i++) {
-      file << bias_o[i] << '\n';
-    }
+    for (size_t i = 0; i < bias_o.size(); i++) { file << bias_o[i] << '\n'; }
     file << '\n';
   }
 };

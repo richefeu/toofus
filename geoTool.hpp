@@ -30,30 +30,18 @@ public:
   // AABB - Line Segment intersection test
   static bool isIntersectedSegmentAABB(const vec3r &p1, const vec3r &p2, const vec3r &min, const vec3r &max) {
 #define EPSILON 1e-12
-    vec3r d = (p2 - p1) * 0.5f;
-    vec3r e = (max - min) * 0.5f;
-    vec3r c = p1 + d - (min + max) * 0.5f;
+    vec3r d  = (p2 - p1) * 0.5f;
+    vec3r e  = (max - min) * 0.5f;
+    vec3r c  = p1 + d - (min + max) * 0.5f;
     vec3r ad = component_abs(d); // Returns same vector with all components positive
 
-    if (fabs(c[0]) > e[0] + ad[0]) {
-      return false;
-    }
-    if (fabs(c[1]) > e[1] + ad[1]) {
-      return false;
-    }
-    if (fabs(c[2]) > e[2] + ad[2]) {
-      return false;
-    }
+    if (fabs(c[0]) > e[0] + ad[0]) { return false; }
+    if (fabs(c[1]) > e[1] + ad[1]) { return false; }
+    if (fabs(c[2]) > e[2] + ad[2]) { return false; }
 
-    if (fabs(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + EPSILON) {
-      return false;
-    }
-    if (fabs(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + EPSILON) {
-      return false;
-    }
-    if (fabs(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + EPSILON) {
-      return false;
-    }
+    if (fabs(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + EPSILON) { return false; }
+    if (fabs(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + EPSILON) { return false; }
+    if (fabs(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + EPSILON) { return false; }
 
     return true;
 #undef EPSILON
@@ -73,8 +61,8 @@ public:
     n = cross(u, v);
     // Here we suppose that the triangle is not degenerated
     w0 = orig - vert0;
-    a = -(n * w0);
-    b = n * dir;
+    a  = -(n * w0);
+    b  = n * dir;
     if (fabs(b) < 1.0e-15) {
       if (a == 0) {
         return 2;
@@ -83,27 +71,21 @@ public:
       }
     }
     r = a / b;
-    if (r < 0.0) {
-      return 0;
-    }
+    if (r < 0.0) { return 0; }
     I = orig + r * dir; // This is the intersection point (not returned by the function)
     double uu, uv, vv, wu, wv, D;
     uu = u * u;
     uv = u * v;
     vv = v * v;
-    w = I - vert0;
+    w  = I - vert0;
     wu = w * u;
     wv = w * v;
-    D = 1.0 / (uv * uv - uu * vv);
+    D  = 1.0 / (uv * uv - uu * vv);
     double s, t;
     s = (uv * wv - vv * wu) * D;
-    if (s < 0.0 || s > 1.0) {
-      return 0;
-    }
+    if (s < 0.0 || s > 1.0) { return 0; }
     t = (uv * wu - uu * wv) * D;
-    if (t < 0.0 || (s + t) > 1.0) {
-      return 0;
-    }
+    if (t < 0.0 || (s + t) > 1.0) { return 0; }
     return 1;
   }
 
@@ -113,18 +95,18 @@ public:
   // static void intersect_edge(const vec3r & A, const vec3r & B, const plan & pl, double & alpha)
   static void intersect_edge(const vec3r &A, const vec3r &B, const vec3r &pl_pos, const vec3r &pl_normal,
                              double &alpha) {
-    vec3r PA = A - pl_pos;
-    vec3r u = B - A; // do not normalize!
-    double un = u * pl_normal;
+    vec3r PA   = A - pl_pos;
+    vec3r u    = B - A; // do not normalize!
+    double un  = u * pl_normal;
     double PAn = PA * pl_normal;
-    alpha = -PAn / un;
+    alpha      = -PAn / un;
   }
 
   //
   static vec3r rotatePoint(vec3r const &p, vec3r const &center, vec3r const &axis, double theta) {
     double const c = cos(theta), s = sin(theta);
     double const C = 1.0 - c;
-    vec3r tmp = p - center;
+    vec3r tmp      = p - center;
     return center + vec3r(tmp[0] * (axis[0] * axis[0] * C + c) + tmp[1] * (axis[0] * axis[1] * C - axis[2] * s) +
                               tmp[2] * (axis[0] * axis[2] * C + axis[1] * s),
                           tmp[0] * (axis[1] * axis[0] * C + axis[2] * s) + tmp[1] * (axis[1] * axis[1] * C + c) +
@@ -141,7 +123,7 @@ public:
     double y41 = v4.y - v1.y;
     double z31 = v3.z - v1.z;
     double z41 = v4.z - v1.z;
-    double V = (v2.x - v1.x) * (y31 * z41 - z31 * y41) - (v2.y - v1.y) * (x31 * z41 - z31 * x41) +
+    double V   = (v2.x - v1.x) * (y31 * z41 - z31 * y41) - (v2.y - v1.y) * (x31 * z41 - z31 * x41) +
                (v2.z - v1.z) * (x31 * y41 - y31 * x41);
     return (fabs(V) / 6.0);
   }

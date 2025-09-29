@@ -26,7 +26,9 @@ struct viewZone {
   double x, y, w, h;
   double scalex, scaley, x0, y0;
 
-  viewZone(double x_, double y_, double w_, double h_) { setZone(x_, y_, w_, h_); }
+  viewZone(double x_, double y_, double w_, double h_) {
+    setZone(x_, y_, w_, h_);
+  }
 
   /// Set the zone of the view.
   ///
@@ -51,10 +53,10 @@ struct viewZone {
   void adjustRange(double xmin, double xmax, double ymin, double ymax) {
     double dx = xmax - xmin;
     double dy = ymax - ymin;
-    scalex = w / dx;
-    scaley = -h / dy;
-    x0 = x - xmin * scalex;
-    y0 = y + h - ymin * scaley;
+    scalex    = w / dx;
+    scaley    = -h / dy;
+    x0        = x - xmin * scalex;
+    y0        = y + h - ymin * scaley;
   }
 };
 
@@ -82,14 +84,18 @@ public:
   /// @brief Write the closing tag of the SVG file.
   ///
   /// This function writes the "</svg>" tag to the output stream to close the SVG file.
-  void end() { os << "</svg>\n"; }
+  void end() {
+    os << "</svg>\n";
+  }
 
   /// @brief Write a string to the SVG file.
   ///
   /// This function writes the given string followed by a newline character to the output stream.
   ///
   /// @param s The string to be written to the SVG file.
-  void put(const char *s) { os << s << '\n'; }
+  void put(const char *s) {
+    os << s << '\n';
+  }
 
   /// @brief Write a line to the SVG file.
   ///
@@ -159,9 +165,7 @@ public:
   /// @param style The style string for the polygon, e.g. "stroke: black; stroke-width: 1.0; fill: none".
   void polygon(std::vector<vec2r> &vert, const char *style) {
     os << "<polygon points=\"";
-    for (size_t i = 0; i < vert.size(); i++) {
-      os << vert[i].x << "," << vert[i].y << " ";
-    }
+    for (size_t i = 0; i < vert.size(); i++) { os << vert[i].x << "," << vert[i].y << " "; }
     os << "\" style=\"" << style << "\" />\n";
   }
 
@@ -204,7 +208,9 @@ public:
   /// @param cy The y-coordinate of the center of the circle.
   /// @param r The radius of the circle.
   /// @param style The style string for the circle, e.g. "stroke: black; stroke-width: 1.0; fill: none".
-  void circle(viewZone &vz, double cx, double cy, double r, const char *style) { ellipse(vz, cx, cy, r, r, style); }
+  void circle(viewZone &vz, double cx, double cy, double r, const char *style) {
+    ellipse(vz, cx, cy, r, r, style);
+  }
 
   /// @brief Write an ellipse to the SVG file.
   ///
@@ -251,7 +257,7 @@ public:
 
     // Calculate the large-arc-flag and sweep-flag
     int largeArcFlag = (a1 - a0 <= M_PI) ? 0 : 1;
-    int sweepFlag = (a1 > a0) ? 0 : 1;
+    int sweepFlag    = (a1 > a0) ? 0 : 1;
 
     // Scale and translate the coordinates
     double scaledX0 = x0 * vz.scalex + vz.x0;
@@ -311,13 +317,17 @@ public:
   /// allowing subsequent elements to be grouped together.
   ///
   /// @param id The identifier for the SVG group element.
-  void group(const char *id) { os << "<g id=\"" << id << "\">\n"; }
+  void group(const char *id) {
+    os << "<g id=\"" << id << "\">\n";
+  }
 
   /// @brief End the current group element in the SVG file.
   ///
   /// This function writes the closing tag for the most recently opened group
   /// element in the SVG file, effectively marking the end of that group.
-  void endGroup() { os << "</g>\n"; }
+  void endGroup() {
+    os << "</g>\n";
+  }
 
   /// @brief Write a use element to the SVG file.
   ///

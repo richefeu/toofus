@@ -16,7 +16,6 @@
 
 #include "glTools.hpp"
 
-
 // FIXME: remane glutInputBox
 class glInputBox {
 public:
@@ -32,10 +31,10 @@ public:
   glInputBox(int *W, int *H) : inputMode(false), cursorPos(0), width(W), height(H) {}
 
   void start(const std::string &prompt, std::function<void()> callback) {
-    inputMode = true;
+    inputMode  = true;
     promptText = prompt;
     inputText.clear();
-    cursorPos = 0;
+    cursorPos       = 0;
     onEnterCallback = callback;
   }
 
@@ -62,14 +61,10 @@ public:
   void specialKeyboard(int key) {
     switch (key) {
     case GLUT_KEY_LEFT:
-      if (cursorPos > 0) {
-        --cursorPos;
-      }
+      if (cursorPos > 0) { --cursorPos; }
       break;
     case GLUT_KEY_RIGHT:
-      if (cursorPos < inputText.size()) {
-        ++cursorPos;
-      }
+      if (cursorPos < inputText.size()) { ++cursorPos; }
       break;
     }
     glutPostRedisplay();
@@ -91,12 +86,11 @@ public:
     snprintf(txt, 256, "%s: %s", promptText.c_str(), inputText.c_str());
     glText::print(4, *height - 16, txt);
     int shiftPrompt = static_cast<int>(promptText.length()) + 2;
-    int shift = 4 + (shiftPrompt + static_cast<int>(cursorPos)) * 10;
+    int shift       = 4 + (shiftPrompt + static_cast<int>(cursorPos)) * 10;
     glText::print(shift, *height - 16, "_");
-    
+
     switch2D::back();
   }
 };
-
 
 #endif /* end of include guard: GLUT_TOOLS_HPP */

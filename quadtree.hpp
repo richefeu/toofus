@@ -26,7 +26,9 @@ struct qdt_Point {
 
   qdt_Point() : x(0.0), y(0.0), userData(nullptr), order(0) {}
   qdt_Point(double x_, double y_, void *userData_, size_t o) : x(x_), y(y_), userData(userData_), order(o) {}
-  bool operator<(qdt_Point const &right) const { return (order < right.order); }
+  bool operator<(qdt_Point const &right) const {
+    return (order < right.order);
+  }
 };
 
 struct qdt_Circle {
@@ -78,7 +80,9 @@ struct qdt_Rectangle {
   ///
   /// \param p The point to check.
   /// \return True if the point is inside the rectangle, false otherwise.
-  bool contains(const qdt_Point &p) { return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax); }
+  bool contains(const qdt_Point &p) {
+    return !(p.x < xmin || p.x > xmax || p.y < ymin || p.y > ymax);
+  }
 
   /// \brief Check if the rectangle intersects with the given range.
   ///
@@ -144,7 +148,7 @@ private:
     xmax_ymin = new QuadTree(xmid, ymin, xmax, ymid, capacity);
     xmax_ymax = new QuadTree(xmid, ymid, xmax, ymax, capacity);
     xmin_ymax = new QuadTree(xmin, ymid, xmid, ymax, capacity);
-    divided = true;
+    divided   = true;
   }
 
   /// \brief Recursively deletes all nodes in the quadtree.
@@ -157,8 +161,7 @@ private:
   /// \param node The root node of the subtree to delete. If nullptr, the
   ///             function does nothing.
   void deleteTree(QuadTree *node) {
-    if (node == nullptr)
-      return;
+    if (node == nullptr) return;
 
     // first delete both subtrees
     deleteTree(node->xmin_ymin);
@@ -181,8 +184,8 @@ public:
     boundary.ymin = 0.0;
     boundary.xmax = 0.0;
     boundary.ymax = 0.0;
-    capacity = 0;
-    divided = false;
+    capacity      = 0;
+    divided       = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
@@ -195,8 +198,8 @@ public:
   /// \param boundary_ The rectangle boundary of the quadtree node.
   /// \param capacity_ The maximum number of points the quadtree node can hold.
   QuadTree(qdt_Rectangle &boundary_, size_t capacity_) : boundary(boundary_) {
-    capacity = capacity_;
-    divided = false;
+    capacity  = capacity_;
+    divided   = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
@@ -217,8 +220,8 @@ public:
     boundary.ymin = ymin_;
     boundary.xmax = xmax_;
     boundary.ymax = ymax_;
-    capacity = capacity_;
-    divided = false;
+    capacity      = capacity_;
+    divided       = false;
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
   }
 
@@ -233,7 +236,7 @@ public:
     deleteTree(xmax_ymax);
     deleteTree(xmin_ymax);
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
-    divided = false;
+    divided                                       = false;
   }
 
   /// \brief Reset the quadtree node to its original state with new boundary and capacity.
@@ -252,13 +255,13 @@ public:
     boundary.ymin = ymin_;
     boundary.xmax = xmax_;
     boundary.ymax = ymax_;
-    capacity = capacity_;
+    capacity      = capacity_;
     deleteTree(xmin_ymin);
     deleteTree(xmax_ymin);
     deleteTree(xmax_ymax);
     deleteTree(xmin_ymax);
     xmin_ymin = xmax_ymin = xmax_ymax = xmin_ymax = nullptr;
-    divided = false;
+    divided                                       = false;
   }
 
   /// \brief Insert a point into the quadtree node.
@@ -273,17 +276,13 @@ public:
   ///
   /// \return true if the point was inserted, false otherwise.
   bool insert(qdt_Point &point) {
-    if (!boundary.contains(point)) {
-      return false;
-    }
+    if (!boundary.contains(point)) { return false; }
 
     if (points.size() < capacity) {
       points.push_back(point);
       return true;
     } else {
-      if (!divided) {
-        subdivide();
-      }
+      if (!divided) { subdivide(); }
 
       if (xmin_ymin->insert(point)) {
         return true;
@@ -307,13 +306,9 @@ public:
   /// \param range The range to search for points in.
   /// \param found The vector of points found in the range.
   void query(qdt_Rectangle &range, std::vector<qdt_Point> &found) {
-    if (!boundary.intersects(range)) {
-      return;
-    }
+    if (!boundary.intersects(range)) { return; }
     for (size_t i = 0; i < points.size(); i++) {
-      if (range.contains(points[i])) {
-        found.push_back(points[i]);
-      }
+      if (range.contains(points[i])) { found.push_back(points[i]); }
     }
     if (divided) {
       xmin_ymin->query(range, found);
@@ -340,13 +335,9 @@ public:
   /// \param found The set of points found in the range with the specified order.
   /// \param order_min The minimum order of points to be included in the result.
   void query(qdt_Rectangle &range, std::set<qdt_Point> &found, size_t order_min = 0) {
-    if (!boundary.intersects(range)) {
-      return;
-    }
+    if (!boundary.intersects(range)) { return; }
     for (size_t i = 0; i < points.size(); i++) {
-      if (points[i].order >= order_min && range.contains(points[i])) {
-        found.insert(points[i]);
-      }
+      if (points[i].order >= order_min && range.contains(points[i])) { found.insert(points[i]); }
     }
     if (divided) {
       xmin_ymin->query(range, found, order_min);
@@ -366,13 +357,9 @@ public:
   /// \param crange The circle range to search for points in.
   /// \param found The vector of points found in the range.
   void query(qdt_Circle &crange, std::vector<qdt_Point> &found) {
-    if (!boundary.intersects(crange)) {
-      return;
-    }
+    if (!boundary.intersects(crange)) { return; }
     for (size_t i = 0; i < points.size(); i++) {
-      if (crange.contains(points[i])) {
-        found.push_back(points[i]);
-      }
+      if (crange.contains(points[i])) { found.push_back(points[i]); }
     }
     if (divided) {
       xmin_ymin->query(crange, found);
@@ -399,13 +386,9 @@ public:
   /// \param found The set of points found in the range with the specified order.
   /// \param order_min The minimum order of points to be included in the result.
   void query(qdt_Circle &crange, std::set<qdt_Point> &found, size_t order_min = 0) {
-    if (!boundary.intersects(crange)) {
-      return;
-    }
+    if (!boundary.intersects(crange)) { return; }
     for (size_t i = 0; i < points.size(); i++) {
-      if (points[i].order >= order_min && crange.contains(points[i])) {
-        found.insert(points[i]);
-      }
+      if (points[i].order >= order_min && crange.contains(points[i])) { found.insert(points[i]); }
     }
     if (divided) {
       xmin_ymin->query(crange, found, order_min);
@@ -427,20 +410,20 @@ public:
   void query_periodic(qdt_Rectangle &range, std::vector<qdt_Point> &found) {
     double cpyX = 0;
     double cpyY = 0;
-    bool cut = false;
+    bool cut    = false;
     if (range.xmax > boundary.xmax && range.xmin < boundary.xmax) {
       cpyX = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.xmin < boundary.xmin && range.xmax > boundary.xmin) {
       cpyX = 1.0;
-      cut = true;
+      cut  = true;
     }
     if (range.ymax > boundary.ymax && range.ymin < boundary.ymax) {
       cpyY = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.ymin < boundary.ymin && range.ymax > boundary.ymin) {
       cpyY = 1.0;
-      cut = true;
+      cut  = true;
     }
 
     query(range, found);
@@ -481,21 +464,21 @@ public:
   void query_periodic(qdt_Circle &crange, std::vector<qdt_Point> &found) {
     double cpyX = 0;
     double cpyY = 0;
-    bool cut = false;
+    bool cut    = false;
     qdt_Rectangle range(crange.x - crange.r, crange.y - crange.r, crange.x + crange.r, crange.y + crange.r);
     if (range.xmax > boundary.xmax && range.xmin < boundary.xmax) {
       cpyX = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.xmin < boundary.xmin && range.xmax > boundary.xmin) {
       cpyX = 1.0;
-      cut = true;
+      cut  = true;
     }
     if (range.ymax > boundary.ymax && range.ymin < boundary.ymax) {
       cpyY = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.ymin < boundary.ymin && range.ymax > boundary.ymin) {
       cpyY = 1.0;
-      cut = true;
+      cut  = true;
     }
 
     query(crange, found);

@@ -26,9 +26,7 @@ namespace {
 /// @return  'a' as a vector of n+1 coefficients
 ///          n is the degree of Polynomial
 void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<double> &a) {
-  if (x.size() != y.size()) {
-    std::cerr << "@polyreg, vectors x and y are not the same size." << std::endl;
-  }
+  if (x.size() != y.size()) { std::cerr << "@polyreg, vectors x and y are not the same size." << std::endl; }
   int N = (int)(x.size());
   a.resize(n + 1, 0.0); // values of the final coefficients
 
@@ -60,8 +58,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
   }
 
   // Load the values of Y as the last column of B(Normal Matrix but augmented)
-  for (int i = 0; i <= n; i++)
-    B[i][n + 1] = Y[i];
+  for (int i = 0; i <= n; i++) B[i][n + 1] = Y[i];
 
   // n is made n+1 because the Gaussian Elimination part below was for n equations,
   // but here n is the degree of polynomial and for n degree we get n+1 equations
@@ -71,9 +68,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
   for (int i = 0; i < n; i++) {
     for (int k = i + 1; k < n; k++) {
       if (B[i][i] < B[k][i]) {
-        for (int j = 0; j <= n; j++) {
-          std::swap(B[i][j], B[k][j]);
-        }
+        for (int j = 0; j <= n; j++) { std::swap(B[i][j], B[k][j]); }
       }
     }
   }
@@ -83,8 +78,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
     for (int k = i + 1; k < n; k++) {
       double t = B[k][i] / B[i][i];
       // make the elements below the pivot elements equal to zero or elimnate the variables
-      for (int j = 0; j <= n; j++)
-        B[k][j] = B[k][j] - t * B[i][j];
+      for (int j = 0; j <= n; j++) B[k][j] = B[k][j] - t * B[i][j];
     }
   }
 
@@ -95,8 +89,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
          [n]; // make the variable to be calculated equal to the rhs of the last equation
               // Then subtract all the lhs values except the coefficient of the variable whose value is being calculated
     for (int j = 0; j < n; j++)
-      if (j != i)
-        a[i] = a[i] - B[i][j] * a[j];
+      if (j != i) a[i] = a[i] - B[i][j] * a[j];
     // now finally divide the rhs by the coefficient of the variable to be calculated
     a[i] = a[i] / B[i][i];
   }

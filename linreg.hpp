@@ -32,16 +32,15 @@ public:
   double err;
 
   /// @brief Make a linear regression of a set of (x, y) pairs
-  ///        it computes orig, slope and err so that the line (y = slope x + orig) is the linear regression of data x and y.
-  ///        err is the coefficient of correlation.
+  ///        it computes orig, slope and err so that the line (y = slope x + orig) is the linear regression of data x
+  ///        and y. err is the coefficient of correlation.
   void run(std::vector<double> &x, std::vector<double> &y) {
     if (x.size() != y.size()) {
       std::cerr << "@linreg, x and y must have the same size" << std::endl;
       return;
     }
     size_t N = x.size();
-    if (N == 0)
-      return;
+    if (N == 0) return;
     double invN = 1.0f / (double)N;
 
     double xmean = 0.0;
@@ -53,8 +52,8 @@ public:
     xmean *= invN;
     ymean *= invN;
 
-    double Sx = 0.0;
-    double Sy = 0.0;
+    double Sx  = 0.0;
+    double Sy  = 0.0;
     double Sxy = 0.0;
     for (size_t i = 0; i < N; i++) {
       double dx = x[i] - xmean;
@@ -65,7 +64,7 @@ public:
     }
 
     slope = Sxy / Sx; // suppose that Sx cannot be zero
-    orig = ymean - slope * xmean;
+    orig  = ymean - slope * xmean;
     if (Sy == 0.0) {
       err = 1.0;
     } else {

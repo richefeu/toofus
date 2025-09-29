@@ -13,7 +13,9 @@ public:
   AABB_2D_quadtree(const AABB_2D &bounds, int maxCapacity = 4, int maxDepth = 10)
       : MAX_CAPACITY(maxCapacity), MAX_DEPTH(maxDepth), root(std::make_unique<TreeNode>(bounds)) {}
 
-  void insert(const AABB_2D &object) { insert(object, root, 0); }
+  void insert(const AABB_2D &object) {
+    insert(object, root, 0);
+  }
 
   std::vector<AABB_2D> query(const AABB_2D &range) const {
     std::vector<AABB_2D> result;
@@ -21,9 +23,13 @@ public:
     return result;
   }
 
-  void setMaxCapacity(int maxCapacity) { MAX_CAPACITY = maxCapacity; }
+  void setMaxCapacity(int maxCapacity) {
+    MAX_CAPACITY = maxCapacity;
+  }
 
-  void setMaxDepth(int maxDepth) { MAX_DEPTH = maxDepth; }
+  void setMaxDepth(int maxDepth) {
+    MAX_DEPTH = maxDepth;
+  }
 
 private:
   int MAX_CAPACITY;
@@ -40,21 +46,16 @@ private:
   std::unique_ptr<TreeNode> root;
 
   void insert(const AABB_2D &object, std::unique_ptr<TreeNode> &node, int depth) {
-    if (depth >= MAX_DEPTH || !node->bounds.intersect(object))
-      return;
+    if (depth >= MAX_DEPTH || !node->bounds.intersect(object)) return;
 
     if (node->objects.size() < MAX_CAPACITY) {
       node->objects.push_back(object);
       return;
     }
 
-    if (node->children[0] == nullptr) {
-      splitNode(node);
-    }
+    if (node->children[0] == nullptr) { splitNode(node); }
 
-    for (auto &child : node->children) {
-      insert(object, child, depth + 1);
-    }
+    for (auto &child : node->children) { insert(object, child, depth + 1); }
   }
 
   void splitNode(std::unique_ptr<TreeNode> &node) {
@@ -67,9 +68,7 @@ private:
     node->children[3] = std::make_unique<TreeNode>(AABB_2D(xMid, node->bounds.max.x, yMid, node->bounds.max.y));
 
     for (const auto &obj : node->objects) {
-      for (auto &child : node->children) {
-        insert(obj, child, 0);
-      }
+      for (auto &child : node->children) { insert(obj, child, 0); }
     }
 
     node->objects.clear();
@@ -77,17 +76,13 @@ private:
 
   void query(const AABB_2D &range, const std::unique_ptr<TreeNode> &node, std::vector<AABB_2D> &result) const {
 
-    if (!node || !node->bounds.intersect(range))
-      return;
+    if (!node || !node->bounds.intersect(range)) return;
 
     for (const auto &obj : node->objects) {
-      if (obj.intersect(range))
-        result.push_back(obj);
+      if (obj.intersect(range)) result.push_back(obj);
     }
 
-    for (const auto &child : node->children) {
-      query(range, child, result);
-    }
+    for (const auto &child : node->children) { query(range, child, result); }
   }
 };
 

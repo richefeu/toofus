@@ -33,16 +33,21 @@ public:
     ncols = c;
   }
 
-  void fill(const T &val = 0) { std::fill(Data.begin(), Data.end(), val); }
+  void fill(const T &val = 0) {
+    std::fill(Data.begin(), Data.end(), val);
+  }
 
-  T &operator()(size_t r, size_t c) { return Data[c * nrows + r]; }
+  T &operator()(size_t r, size_t c) {
+    return Data[c * nrows + r];
+  }
 
-  const T &operator()(size_t r, size_t c) const { return Data[c * nrows + r]; }
+  const T &operator()(size_t r, size_t c) const {
+    return Data[c * nrows + r];
+  }
 
   // input/output
   friend ostream &operator<<(ostream &pStr, const grid2 &Grd) {
-    for (size_t i = 0; i < Grd.Data.size() - 1; ++i)
-      pStr << Grd.Data[i] << ' ';
+    for (size_t i = 0; i < Grd.Data.size() - 1; ++i) pStr << Grd.Data[i] << ' ';
     pStr << Grd.Data[Grd.Data.size() - 1];
     return pStr;
   }

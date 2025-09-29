@@ -27,11 +27,11 @@ public:
     int i;
     double s1, s2, s3, xabs, x1max, x3max, agiant;
 
-    s1 = 0.0;
-    s2 = 0.0;
-    s3 = 0.0;
-    x1max = 0.0;
-    x3max = 0.0;
+    s1     = 0.0;
+    s2     = 0.0;
+    s3     = 0.0;
+    x1max  = 0.0;
+    x3max  = 0.0;
     agiant = DBL_MAX / (double)n;
     for (i = 0; i < n; ++i) {
       xabs = fabs(x[i]);
@@ -39,8 +39,8 @@ public:
         // sum for large components
         if (xabs > x1max) {
           // Computing 2nd power
-          d1 = x1max / xabs;
-          s1 = 1.0 + s1 * (d1 * d1);
+          d1    = x1max / xabs;
+          s1    = 1.0 + s1 * (d1 * d1);
           x1max = xabs;
         } else {
           // Computing 2nd power
@@ -51,8 +51,8 @@ public:
         // sum for small components
         if (xabs > x3max) {
           // Computing 2nd power
-          d1 = x3max / xabs;
-          s3 = 1.0 + s3 * (d1 * d1);
+          d1    = x3max / xabs;
+          s3    = 1.0 + s3 * (d1 * d1);
           x3max = xabs;
         } else if (xabs != 0.0) {
           // Computing 2nd power
@@ -95,23 +95,17 @@ public:
     eps = sqrt((std::max(epsfcn, epsmch)));
     for (j = 0; j < n; ++j) {
       temp = x[j];
-      h = eps * fabs(temp);
-      if (h == 0.0) {
-        h = eps;
-      }
+      h    = eps * fabs(temp);
+      if (h == 0.0) { h = eps; }
       x[j] = temp + h;
       // the last parameter of fcn_mn() is set to 2 to differentiate
       // calls made to compute the function from calls made to compute
       // the Jacobian (see fcn() in examples/lmfdrv.c, and how njev
       // is used to compute the number of Jacobian evaluations)
       iflag = fcn_mn(p, m, n, x, wa, 2);
-      if (iflag < 0) {
-        return iflag;
-      }
+      if (iflag < 0) { return iflag; }
       x[j] = temp;
-      for (i = 0; i < m; ++i) {
-        fjac[i + j * ldfjac] = (wa[i] - fvec[i]) / h;
-      }
+      for (i = 0; i < m; ++i) { fjac[i + j * ldfjac] = (wa[i] - fvec[i]) / h; }
     }
 
     return 0;
@@ -138,11 +132,9 @@ public:
 
     for (j = 0; j < n; ++j) {
       acnorm[j] = enorm(m, &a[j * lda + 0]);
-      rdiag[j] = acnorm[j];
-      wa[j] = rdiag[j];
-      if (pivot) {
-        ipvt[j] = j + 1;
-      }
+      rdiag[j]  = acnorm[j];
+      wa[j]     = rdiag[j];
+      if (pivot) { ipvt[j] = j + 1; }
     }
 
     // reduce a to r with householder transformations
@@ -155,21 +147,19 @@ public:
 
         int kmax = j;
         for (k = j; k < n; ++k) {
-          if (rdiag[k] > rdiag[kmax]) {
-            kmax = k;
-          }
+          if (rdiag[k] > rdiag[kmax]) { kmax = k; }
         }
         if (kmax != j) {
           for (i = 0; i < m; ++i) {
-            temp = a[i + j * lda];
-            a[i + j * lda] = a[i + kmax * lda];
+            temp              = a[i + j * lda];
+            a[i + j * lda]    = a[i + kmax * lda];
             a[i + kmax * lda] = temp;
           }
           rdiag[kmax] = rdiag[j];
-          wa[kmax] = wa[j];
-          k = ipvt[j];
-          ipvt[j] = ipvt[kmax];
-          ipvt[kmax] = k;
+          wa[kmax]    = wa[j];
+          k           = ipvt[j];
+          ipvt[j]     = ipvt[kmax];
+          ipvt[kmax]  = k;
         }
       }
 
@@ -178,12 +168,8 @@ public:
 
       ajnorm = enorm(m - (j + 1) + 1, &a[j + j * lda]);
       if (ajnorm != 0.) {
-        if (a[j + j * lda] < 0.0) {
-          ajnorm = -ajnorm;
-        }
-        for (i = j; i < m; ++i) {
-          a[i + j * lda] /= ajnorm;
-        }
+        if (a[j + j * lda] < 0.0) { ajnorm = -ajnorm; }
+        for (i = j; i < m; ++i) { a[i + j * lda] /= ajnorm; }
         a[j + j * lda] += 1;
 
         // apply the transformation to the remaining columns
@@ -193,13 +179,9 @@ public:
         if (n > jp1) {
           for (k = jp1; k < n; ++k) {
             sum = 0.0;
-            for (i = j; i < m; ++i) {
-              sum += a[i + j * lda] * a[i + k * lda];
-            }
+            for (i = j; i < m; ++i) { sum += a[i + j * lda] * a[i + k * lda]; }
             temp = sum / a[j + j * lda];
-            for (i = j; i < m; ++i) {
-              a[i + k * lda] -= temp * a[i + j * lda];
-            }
+            for (i = j; i < m; ++i) { a[i + k * lda] -= temp * a[i + j * lda]; }
             if (pivot && rdiag[k] != 0.0) {
               temp = a[j + k * lda] / rdiag[k];
               // Computing MAX
@@ -209,7 +191,7 @@ public:
               d1 = rdiag[k] / wa[k];
               if (0.05 * (d1 * d1) <= epsmch) {
                 rdiag[k] = enorm(m - (j + 1), &a[jp1 + k * lda]);
-                wa[k] = rdiag[k];
+                wa[k]    = rdiag[k];
               }
             }
           }
@@ -231,10 +213,8 @@ public:
     // in particular, save the diagonal elements of r in x
 
     for (j = 0; j < n; ++j) {
-      for (i = j; i < n; ++i) {
-        r[i + j * ldr] = r[j + i * ldr];
-      }
-      x[j] = r[j + j * ldr];
+      for (i = j; i < n; ++i) { r[i + j * ldr] = r[j + i * ldr]; }
+      x[j]  = r[j + j * ldr];
       wa[j] = qtb[j];
     }
 
@@ -247,9 +227,7 @@ public:
 
       l = ipvt[j] - 1;
       if (diag[l] != 0.0) {
-        for (k = j; k < n; ++k) {
-          sdiag[k] = 0.0;
-        }
+        for (k = j; k < n; ++k) { sdiag[k] = 0.0; }
         sdiag[j] = diag[l];
 
         // the transformations to eliminate the row of d
@@ -267,8 +245,8 @@ public:
             if (fabs(r[k + k * ldr]) < fabs(sdiag[k])) {
               double cotan;
               cotan = r[k + k * ldr] / sdiag[k];
-              Sin = 0.5 / sqrt(0.25 + 0.25 * (cotan * cotan));
-              Cos = Sin * cotan;
+              Sin   = 0.5 / sqrt(0.25 + 0.25 * (cotan * cotan));
+              Cos   = Sin * cotan;
             } else {
               double Tan;
               Tan = sdiag[k] / r[k + k * ldr];
@@ -279,7 +257,7 @@ public:
             // compute the modified diagonal element of r and
             // the modified element of ((q transpose)*b,0)
 
-            temp = Cos * wa[k] + Sin * qtbpj;
+            temp  = Cos * wa[k] + Sin * qtbpj;
             qtbpj = -Sin * wa[k] + Cos * qtbpj;
             wa[k] = temp;
 
@@ -288,8 +266,8 @@ public:
             r[k + k * ldr] = Cos * r[k + k * ldr] + Sin * sdiag[k];
             if (n > k + 1) {
               for (i = k + 1; i < n; ++i) {
-                temp = Cos * r[i + k * ldr] + Sin * sdiag[i];
-                sdiag[i] = -Sin * r[i + k * ldr] + Cos * sdiag[i];
+                temp           = Cos * r[i + k * ldr] + Sin * sdiag[i];
+                sdiag[i]       = -Sin * r[i + k * ldr] + Cos * sdiag[i];
                 r[i + k * ldr] = temp;
               }
             }
@@ -300,7 +278,7 @@ public:
       // store the diagonal element of s and restore
       // the corresponding diagonal element of r
 
-      sdiag[j] = r[j + j * ldr];
+      sdiag[j]       = r[j + j * ldr];
       r[j + j * ldr] = x[j];
     }
 
@@ -309,21 +287,15 @@ public:
 
     nsing = n;
     for (j = 0; j < n; ++j) {
-      if (sdiag[j] == 0.0 && nsing == n) {
-        nsing = j;
-      }
-      if (nsing < n) {
-        wa[j] = 0.0;
-      }
+      if (sdiag[j] == 0.0 && nsing == n) { nsing = j; }
+      if (nsing < n) { wa[j] = 0.0; }
     }
     if (nsing >= 1) {
       for (k = 1; k <= nsing; ++k) {
-        j = nsing - k;
+        j   = nsing - k;
         sum = 0.0;
         if (nsing > j + 1) {
-          for (i = j + 1; i < nsing; ++i) {
-            sum += r[i + j * ldr] * wa[i];
-          }
+          for (i = j + 1; i < nsing; ++i) { sum += r[i + j * ldr] * wa[i]; }
         }
         wa[j] = (wa[j] - sum) / sdiag[j];
       }
@@ -332,7 +304,7 @@ public:
     // permute the components of z back to components of x
 
     for (j = 0; j < n; ++j) {
-      l = ipvt[j] - 1;
+      l    = ipvt[j] - 1;
       x[l] = wa[j];
     }
     return;
@@ -361,12 +333,8 @@ public:
     nsing = n;
     for (j = 0; j < n; ++j) {
       wa1[j] = qtb[j];
-      if (r[j + j * ldr] == 0.0 && nsing == n) {
-        nsing = j;
-      }
-      if (nsing < n) {
-        wa1[j] = 0.0;
-      }
+      if (r[j + j * ldr] == 0.0 && nsing == n) { nsing = j; }
+      if (nsing < n) { wa1[j] = 0.0; }
     }
 
     if (nsing >= 1) {
@@ -377,15 +345,13 @@ public:
         temp = wa1[j];
         if (j >= 1) {
           int i;
-          for (i = 0; i < j; ++i) {
-            wa1[i] -= r[i + j * ldr] * temp;
-          }
+          for (i = 0; i < j; ++i) { wa1[i] -= r[i + j * ldr] * temp; }
         }
       }
     }
 
     for (j = 0; j < n; ++j) {
-      l = ipvt[j] - 1;
+      l    = ipvt[j] - 1;
       x[l] = wa1[j];
     }
 
@@ -394,14 +360,10 @@ public:
     // for acceptance of the gauss-newton direction
 
     iter = 0;
-    for (j = 0; j < n; ++j) {
-      wa2[j] = diag[j] * x[j];
-    }
+    for (j = 0; j < n; ++j) { wa2[j] = diag[j] * x[j]; }
     dxnorm = enorm(n, wa2);
-    fp = dxnorm - delta;
-    if (fp <= 0.1 * delta) {
-      goto TERMINATE;
-    }
+    fp     = dxnorm - delta;
+    if (fp <= 0.1 * delta) { goto TERMINATE; }
 
     // if the jacobian is not rank deficient, the newton
     // step provides a lower bound, parl, for the zero of
@@ -410,7 +372,7 @@ public:
     parl = 0.0;
     if (nsing >= n) {
       for (j = 0; j < n; ++j) {
-        l = ipvt[j] - 1;
+        l      = ipvt[j] - 1;
         wa1[j] = diag[l] * (wa2[l] / dxnorm);
       }
 
@@ -418,9 +380,7 @@ public:
         double sum = 0.0;
         if (j >= 1) {
           int i;
-          for (i = 0; i < j; ++i) {
-            sum += r[i + j * ldr] * wa1[i];
-          }
+          for (i = 0; i < j; ++i) { sum += r[i + j * ldr] * wa1[i]; }
         }
         wa1[j] = (wa1[j] - sum) / r[j + j * ldr];
       }
@@ -436,27 +396,21 @@ public:
 
       int i;
       sum = 0.0;
-      for (i = 0; i <= j; ++i) {
-        sum += r[i + j * ldr] * qtb[i];
-      }
+      for (i = 0; i <= j; ++i) { sum += r[i + j * ldr] * qtb[i]; }
 
-      l = ipvt[j] - 1;
+      l      = ipvt[j] - 1;
       wa1[j] = sum / diag[l];
     }
     gnorm = enorm(n, wa1);
-    paru = gnorm / delta;
-    if (paru == 0.0) {
-      paru = dwarf / std::min(delta, (double)0.1);
-    }
+    paru  = gnorm / delta;
+    if (paru == 0.0) { paru = dwarf / std::min(delta, (double)0.1); }
 
     // if the input par lies outside of the interval (parl,paru),
     // set par to the closer endpoint
 
     *par = std::max(*par, parl);
     *par = std::min(*par, paru);
-    if (*par == 0.0) {
-      *par = gnorm / dxnorm;
-    }
+    if (*par == 0.0) { *par = gnorm / dxnorm; }
 
     // beginning of an iteration
 
@@ -471,29 +425,23 @@ public:
         *par = std::max(d1, d2);
       }
       temp = sqrt(*par);
-      for (j = 0; j < n; ++j) {
-        wa1[j] = temp * diag[j];
-      }
+      for (j = 0; j < n; ++j) { wa1[j] = temp * diag[j]; }
       qrsolv(n, r, ldr, ipvt, wa1, qtb, x, sdiag, wa2);
-      for (j = 0; j < n; ++j) {
-        wa2[j] = diag[j] * x[j];
-      }
+      for (j = 0; j < n; ++j) { wa2[j] = diag[j] * x[j]; }
       dxnorm = enorm(n, wa2);
-      temp = fp;
-      fp = dxnorm - delta;
+      temp   = fp;
+      fp     = dxnorm - delta;
 
       // if the function is small enough, accept the current value
       // of par. also test for the exceptional cases where parl
       // is zero or the number of iterations has reached 10
 
-      if (fabs(fp) <= 0.1 * delta || (parl == 0.0 && fp <= temp && temp < 0.0) || iter == 10) {
-        goto TERMINATE;
-      }
+      if (fabs(fp) <= 0.1 * delta || (parl == 0.0 && fp <= temp && temp < 0.0) || iter == 10) { goto TERMINATE; }
 
       // compute the newton correction
 
       for (j = 0; j < n; ++j) {
-        l = ipvt[j] - 1;
+        l      = ipvt[j] - 1;
         wa1[j] = diag[l] * (wa2[l] / dxnorm);
       }
       for (j = 0; j < n; ++j) {
@@ -501,9 +449,7 @@ public:
         temp = wa1[j];
         if (n > j + 1) {
           int i;
-          for (i = j + 1; i < n; ++i) {
-            wa1[i] -= r[i + j * ldr] * temp;
-          }
+          for (i = j + 1; i < n; ++i) { wa1[i] -= r[i + j * ldr] * temp; }
         }
       }
 
@@ -512,12 +458,8 @@ public:
 
       // depending on the sign of the function, update parl or paru
 
-      if (fp > 0.) {
-        parl = std::max(parl, *par);
-      }
-      if (fp < 0.) {
-        paru = std::min(paru, *par);
-      }
+      if (fp > 0.) { parl = std::max(parl, *par); }
+      if (fp < 0.) { paru = std::min(paru, *par); }
 
       // compute an improved estimate for par
       d1 = parl, d2 = *par + parc;
@@ -528,9 +470,7 @@ public:
 
   TERMINATE:
 
-    if (iter == 0) {
-      *par = 0.0;
-    }
+    if (iter == 0) { *par = 0.0; }
   }
 
   static int lmdif(std::function<int(void *, int, int, const double *, double *, int)> fcn_mn, void *p, int m, int n,
@@ -555,7 +495,7 @@ public:
 
     epsmch = DBL_EPSILON;
 
-    info = 0;
+    info  = 0;
     iflag = 0;
     *nfev = 0;
 
@@ -566,9 +506,7 @@ public:
     }
     if (mode == 2) {
       for (j = 0; j < n; ++j) {
-        if (diag[j] <= 0.0) {
-          goto TERMINATE;
-        }
+        if (diag[j] <= 0.0) { goto TERMINATE; }
       }
     }
 
@@ -577,14 +515,12 @@ public:
 
     iflag = fcn_mn(p, m, n, x, fvec, 1);
     *nfev = 1;
-    if (iflag < 0) {
-      goto TERMINATE;
-    }
+    if (iflag < 0) { goto TERMINATE; }
     fnorm = enorm(m, fvec);
 
     // initialize levenberg-marquardt parameter and iteration counter
 
-    par = 0.0;
+    par  = 0.0;
     iter = 1;
 
     // beginning of the outer loop
@@ -595,20 +531,14 @@ public:
 
       iflag = fdjac2(fcn_mn, p, m, n, x, fvec, fjac, ldfjac, epsfcn, wa4);
       *nfev += n;
-      if (iflag < 0) {
-        goto TERMINATE;
-      }
+      if (iflag < 0) { goto TERMINATE; }
 
       // if requested, call fcn to enable printing of iterates
 
       if (nprint > 0) {
         iflag = 0;
-        if ((iter - 1) % nprint == 0) {
-          iflag = fcn_mn(p, m, n, x, fvec, 0);
-        }
-        if (iflag < 0) {
-          goto TERMINATE;
-        }
+        if ((iter - 1) % nprint == 0) { iflag = fcn_mn(p, m, n, x, fvec, 0); }
+        if (iflag < 0) { goto TERMINATE; }
       }
 
       // compute the qr factorization of the jacobian
@@ -622,43 +552,31 @@ public:
         if (mode != 2) {
           for (j = 0; j < n; ++j) {
             diag[j] = wa2[j];
-            if (wa2[j] == 0.0) {
-              diag[j] = 1.0;
-            }
+            if (wa2[j] == 0.0) { diag[j] = 1.0; }
           }
         }
 
         // on the first iteration, calculate the norm of the scaled x
         // and initialize the step bound delta
 
-        for (j = 0; j < n; ++j) {
-          wa3[j] = diag[j] * x[j];
-        }
+        for (j = 0; j < n; ++j) { wa3[j] = diag[j] * x[j]; }
         xnorm = enorm(n, wa3);
         delta = factor * xnorm;
-        if (delta == 0.0) {
-          delta = factor;
-        }
+        if (delta == 0.0) { delta = factor; }
       }
 
       // form (q transpose)*fvec and store the first n components in qtf
 
-      for (i = 0; i < m; ++i) {
-        wa4[i] = fvec[i];
-      }
+      for (i = 0; i < m; ++i) { wa4[i] = fvec[i]; }
       for (j = 0; j < n; ++j) {
         if (fjac[j + j * ldfjac] != 0.0) {
           sum = 0.0;
-          for (i = j; i < m; ++i) {
-            sum += fjac[i + j * ldfjac] * wa4[i];
-          }
+          for (i = j; i < m; ++i) { sum += fjac[i + j * ldfjac] * wa4[i]; }
           temp = -sum / fjac[j + j * ldfjac];
-          for (i = j; i < m; ++i) {
-            wa4[i] += fjac[i + j * ldfjac] * temp;
-          }
+          for (i = j; i < m; ++i) { wa4[i] += fjac[i + j * ldfjac] * temp; }
         }
         fjac[j + j * ldfjac] = wa1[j];
-        qtf[j] = wa4[j];
+        qtf[j]               = wa4[j];
       }
 
       // compute the norm of the scaled gradient
@@ -669,11 +587,9 @@ public:
           l = ipvt[j] - 1;
           if (wa2[l] != 0.0) {
             sum = 0.0;
-            for (i = 0; i <= j; ++i) {
-              sum += fjac[i + j * ldfjac] * (qtf[i] / fnorm);
-            }
+            for (i = 0; i <= j; ++i) { sum += fjac[i + j * ldfjac] * (qtf[i] / fnorm); }
             // Computing MAX
-            d1 = fabs(sum / wa2[l]);
+            d1    = fabs(sum / wa2[l]);
             gnorm = std::max(gnorm, d1);
           }
         }
@@ -681,12 +597,8 @@ public:
 
       // test for convergence of the gradient norm
 
-      if (gnorm <= gtol) {
-        info = 4;
-      }
-      if (info != 0) {
-        goto TERMINATE;
-      }
+      if (gnorm <= gtol) { info = 4; }
+      if (info != 0) { goto TERMINATE; }
 
       // rescale if necessary
 
@@ -715,17 +627,13 @@ public:
 
         // on the first iteration, adjust the initial step bound
 
-        if (iter == 1) {
-          delta = std::min(delta, pnorm);
-        }
+        if (iter == 1) { delta = std::min(delta, pnorm); }
 
         // evaluate the function at x + p and calculate its norm
 
         iflag = fcn_mn(p, m, n, wa2, wa4, 1);
         ++(*nfev);
-        if (iflag < 0) {
-          goto TERMINATE;
-        }
+        if (iflag < 0) { goto TERMINATE; }
         fnorm1 = enorm(m, wa4);
 
         // compute the scaled actual reduction
@@ -733,7 +641,7 @@ public:
         actred = -1.0;
         if (0.1 * fnorm1 < fnorm) {
           // Computing 2nd power
-          d1 = fnorm1 / fnorm;
+          d1     = fnorm1 / fnorm;
           actred = 1 - d1 * d1;
         }
 
@@ -742,23 +650,19 @@ public:
 
         for (j = 0; j < n; ++j) {
           wa3[j] = 0.0;
-          l = ipvt[j] - 1;
-          temp = wa1[l];
-          for (i = 0; i <= j; ++i) {
-            wa3[i] += fjac[i + j * ldfjac] * temp;
-          }
+          l      = ipvt[j] - 1;
+          temp   = wa1[l];
+          for (i = 0; i <= j; ++i) { wa3[i] += fjac[i + j * ldfjac] * temp; }
         }
-        temp1 = enorm(n, wa3) / fnorm;
-        temp2 = (sqrt(par) * pnorm) / fnorm;
+        temp1  = enorm(n, wa3) / fnorm;
+        temp2  = (sqrt(par) * pnorm) / fnorm;
         prered = temp1 * temp1 + temp2 * temp2 / 0.5;
         dirder = -(temp1 * temp1 + temp2 * temp2);
 
         // compute the ratio of the actual to the predicted reduction
 
         ratio = 0.0;
-        if (prered != 0.0) {
-          ratio = actred / prered;
-        }
+        if (prered != 0.0) { ratio = actred / prered; }
 
         // update the step bound
 
@@ -768,17 +672,15 @@ public:
           } else {
             temp = 0.5 * dirder / (dirder + 0.5 * actred);
           }
-          if (0.1 * fnorm1 >= fnorm || temp < 0.1) {
-            temp = 0.1;
-          }
+          if (0.1 * fnorm1 >= fnorm || temp < 0.1) { temp = 0.1; }
           // Computing MIN
-          d1 = pnorm / 0.1;
+          d1    = pnorm / 0.1;
           delta = temp * std::min(delta, d1);
           par /= temp;
         } else {
           if (par == 0.0 || ratio >= 0.75) {
             delta = pnorm / 0.5;
-            par = 0.5 * par;
+            par   = 0.5 * par;
           }
         }
 
@@ -789,12 +691,10 @@ public:
           // successful iteration. update x, fvec, and their norms
 
           for (j = 0; j < n; ++j) {
-            x[j] = wa2[j];
+            x[j]   = wa2[j];
             wa2[j] = diag[j] * x[j];
           }
-          for (i = 0; i < m; ++i) {
-            fvec[i] = wa4[i];
-          }
+          for (i = 0; i < m; ++i) { fvec[i] = wa4[i]; }
           xnorm = enorm(n, wa2);
           fnorm = fnorm1;
           ++iter;
@@ -802,36 +702,18 @@ public:
 
         // tests for convergence
 
-        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0) {
-          info = 1;
-        }
-        if (delta <= xtol * xnorm) {
-          info = 2;
-        }
-        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0 && info == 2) {
-          info = 3;
-        }
-        if (info != 0) {
-          goto TERMINATE;
-        }
+        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0) { info = 1; }
+        if (delta <= xtol * xnorm) { info = 2; }
+        if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1.0 && info == 2) { info = 3; }
+        if (info != 0) { goto TERMINATE; }
 
         // tests for termination and stringent tolerances
 
-        if (*nfev >= maxfev) {
-          info = 5;
-        }
-        if (fabs(actred) <= epsmch && prered <= epsmch && 0.5 * ratio <= 1.0) {
-          info = 6;
-        }
-        if (delta <= epsmch * xnorm) {
-          info = 7;
-        }
-        if (gnorm <= epsmch) {
-          info = 8;
-        }
-        if (info != 0) {
-          goto TERMINATE;
-        }
+        if (*nfev >= maxfev) { info = 5; }
+        if (fabs(actred) <= epsmch && prered <= epsmch && 0.5 * ratio <= 1.0) { info = 6; }
+        if (delta <= epsmch * xnorm) { info = 7; }
+        if (gnorm <= epsmch) { info = 8; }
+        if (info != 0) { goto TERMINATE; }
 
         // end of the inner loop. repeat if iteration unsuccessful
 
@@ -844,12 +726,8 @@ public:
 
     // termination, either normal or user imposed
 
-    if (iflag < 0) {
-      info = iflag;
-    }
-    if (nprint > 0) {
-      fcn_mn(p, m, n, x, fvec, 0);
-    }
+    if (iflag < 0) { info = iflag; }
+    if (nprint > 0) { fcn_mn(p, m, n, x, fvec, 0); }
 
     return info;
   }
@@ -866,28 +744,26 @@ public:
     int info;
 
     // check the input parameters for errors
-    if (n <= 0 || m < n || tol < 0.0 || lwa < m * n + n * 5 + m) {
-      return 0;
-    }
+    if (n <= 0 || m < n || tol < 0.0 || lwa < m * n + n * 5 + m) { return 0; }
 
     // call lmdif
     maxfev = (n + 1) * 200;
-    ftol = tol;
-    xtol = tol;
-    gtol = 0.0;
+    ftol   = tol;
+    xtol   = tol;
+    gtol   = 0.0;
     epsfcn = 0.0;
-    mode = 1;
+    mode   = 1;
     nprint = 0;
-    mp5n = m + n * 5;
+    mp5n   = m + n * 5;
     info = lmdif(fcn_mn, p, m, n, x, fvec, ftol, xtol, gtol, maxfev, epsfcn, wa, mode, factor, nprint, &nfev, &wa[mp5n],
                  m, iwa, &wa[n], &wa[(n << 1)], &wa[n * 3], &wa[(n << 2)], &wa[n * 5]);
-    if (info == 8) {
-      info = 4;
-    }
+    if (info == 8) { info = 4; }
     return info;
   }
 
-  static int get_lwa(int m, int n) { return m * n + 5 * n + m; }
+  static int get_lwa(int m, int n) {
+    return m * n + 5 * n + m;
+  }
 
   static std::string getInfo(int info) {
     std::string txt;

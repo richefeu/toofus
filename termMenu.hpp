@@ -42,13 +42,17 @@ public:
   ///
   /// The prompt is displayed with inverted colors, so it
   /// should be short and not too verbose.
-  void setPrompt(const std::string &p) { prompt = p; }
+  void setPrompt(const std::string &p) {
+    prompt = p;
+  }
 
   /// Add a choice to the menu
   ///
   /// The choice is added to the bottom of the menu, and the
   /// selected item is not changed.
-  void addChoice(const std::string &choice) { choices.push_back(choice); }
+  void addChoice(const std::string &choice) {
+    choices.push_back(choice);
+  }
 
   /// Display the menu
   ///
@@ -89,7 +93,7 @@ public:
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);
     int rows, cols;
     std::string cmd = "stty size";
-    FILE *pipe = popen(cmd.c_str(), "r");
+    FILE *pipe      = popen(cmd.c_str(), "r");
     if (pipe == nullptr) {
       std::cerr << "Error: could not run stty command" << std::endl;
       return -1;
@@ -107,9 +111,7 @@ public:
     std::cin >> startCol;
     if (startRow > rows - choices.size() - 1) {
       startRow = rows - choices.size() - 1;
-      for (size_t l = 0; l < choices.size() + 1; l++) {
-        std::cout << '\n';
-      }
+      for (size_t l = 0; l < choices.size() + 1; l++) { std::cout << '\n'; }
     }
     displayMenu();
     while ((c = getchar()) != '\n') {

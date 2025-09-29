@@ -24,8 +24,8 @@ public:
    * Initializes the range with a minimum value of 0, a maximum value of 0, and 0 slices.
    */
   slicedRange() {
-    vmin = 0;
-    n = 0;
+    vmin  = 0;
+    n     = 0;
     scale = 1.0;
   }
 
@@ -38,7 +38,9 @@ public:
    * @param Vmax The maximum value of the range.
    * @param N The number of slices.
    */
-  slicedRange(T Vmin, T Vmax, int N) : vmin(Vmin), n(N) { scale = (T)n / (Vmax - Vmin); }
+  slicedRange(T Vmin, T Vmax, int N) : vmin(Vmin), n(N) {
+    scale = (T)n / (Vmax - Vmin);
+  }
 
   /**
    * @brief Sets the minimum value, maximum value, and number of slices for the range.
@@ -48,8 +50,8 @@ public:
    * @param N The number of slices.
    */
   void set(T Vmin, T Vmax, int N) {
-    vmin = Vmin;
-    n = N;
+    vmin  = Vmin;
+    n     = N;
     scale = (T)n / (Vmax - Vmin);
   }
 
@@ -62,7 +64,9 @@ public:
    * @param Vmax The maximum value of the range.
    * @param N The number of slices.
    */
-  void set_MinMaxNb(T Vmin, T Vmax, int N) { set(Vmin, Vmax, N); }
+  void set_MinMaxNb(T Vmin, T Vmax, int N) {
+    set(Vmin, Vmax, N);
+  }
 
   /**
    * @brief Sets the minimum value, the width of the slice, and the number of slices for the range.
@@ -73,7 +77,9 @@ public:
    * @param W The width of each slice.
    * @param N The number of slices.
    */
-  void set_MinWidthNb(T Vmin, T W, int N) { set(Vmin, Vmin + (double)N * W, N); }
+  void set_MinWidthNb(T Vmin, T W, int N) {
+    set(Vmin, Vmin + (double)N * W, N);
+  }
 
   /**
    * @brief Returns the ID of a given value in the range.
@@ -86,9 +92,7 @@ public:
    */
   int getID(T value) {
     int i = (int)floor(scale * (value - vmin));
-    if (i >= n) {
-      i = -i;
-    }
+    if (i >= n) { i = -i; }
     return i;
   }
 
@@ -101,7 +105,9 @@ public:
    *
    * @return The step size of each slice.
    */
-  T getStep() const { return (1.0f / scale); }
+  T getStep() const {
+    return (1.0f / scale);
+  }
 
   /**
    * @brief Returns the total number of slices in the range.
@@ -110,9 +116,13 @@ public:
    *
    * @return The total number of slices in the range.
    */
-  int getNumberOfSlices() const { return n; }
+  int getNumberOfSlices() const {
+    return n;
+  }
 
-  T getLeftValue() const { return vmin; }
+  T getLeftValue() const {
+    return vmin;
+  }
   /**
    * @brief Returns the leftmost value of the range.
    *
@@ -130,7 +140,9 @@ public:
    *
    * @return The rightmost value of the range.
    */
-  T getRightValue() const { return vmin + (double)n / scale; }
+  T getRightValue() const {
+    return vmin + (double)n / scale;
+  }
 
 protected:
   T vmin;  ///< left value

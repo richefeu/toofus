@@ -88,10 +88,10 @@ public:
     double w = fade(z);
 
     // Hash coordinates of the 8 cube corners
-    int A = p[X] + Y;
+    int A  = p[X] + Y;
     int AA = p[A] + Z;
     int AB = p[A + 1] + Z;
-    int B = p[X + 1] + Y;
+    int B  = p[X + 1] + Y;
     int BA = p[B] + Z;
     int BB = p[B + 1] + Z;
 
@@ -105,8 +105,12 @@ public:
   }
 
 private:
-  double fade(double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-  double lerp(double t, double a, double b) { return a + t * (b - a); }
+  double fade(double t) {
+    return t * t * t * (t * (t * 6 - 15) + 10);
+  }
+  double lerp(double t, double a, double b) {
+    return a + t * (b - a);
+  }
   double grad(int hash, double x, double y, double z) {
     int h = hash & 15;
     // Convert lower 4 bits of hash into 12 gradient directions

@@ -90,7 +90,9 @@ GLuint facetSphere::tindices[20][3] = {{0, 4, 1},  {0, 9, 4},  {9, 5, 4},  {4, 5
 
 class glShape {
 public:
-  static void sphere(float radius, int ndiv) { facetSphere::draw(ndiv, radius); }
+  static void sphere(float radius, int ndiv) {
+    facetSphere::draw(ndiv, radius);
+  }
 
   static void arrow(const vec3r &orig, const vec3r &arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
     vec3r dest = orig + arrow;
@@ -101,11 +103,9 @@ public:
     glVertex3d(dest.x, dest.y, dest.z);
     glEnd();
 
-    vec3r v = arrow;
+    vec3r v    = arrow;
     double len = v.normalize();
-    if (arrowSize <= 0.0) {
-      arrowSize = 0.04 * len;
-    }
+    if (arrowSize <= 0.0) { arrowSize = 0.04 * len; }
     vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
     vec3r a;
@@ -133,7 +133,7 @@ public:
 
   static void tube(vec3r &orig, vec3r &arrow, double diam) {
     vec3r dest = orig + arrow;
-    vec3r v = arrow;
+    vec3r v    = arrow;
     v.normalize();
     vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
 
@@ -178,12 +178,8 @@ public:
     glDisable(GL_LIGHTING);
 
     double arrowSize = lx;
-    if (ly > arrowSize) {
-      arrowSize = ly;
-    }
-    if (lz > arrowSize) {
-      arrowSize = lz;
-    }
+    if (ly > arrowSize) { arrowSize = ly; }
+    if (lz > arrowSize) { arrowSize = lz; }
     arrowSize *= 0.02;
 
     glColor4ub(255, 0, 0, 255);
@@ -202,9 +198,9 @@ public:
     glLineWidth(1.0f);
 
     vec3r orig = obb.center;
-    vec3r e0 = obb.extent[0] * obb.e[0];
-    vec3r e1 = obb.extent[1] * obb.e[1];
-    vec3r e2 = obb.extent[2] * obb.e[2];
+    vec3r e0   = obb.extent[0] * obb.e[0];
+    vec3r e1   = obb.extent[1] * obb.e[1];
+    vec3r e2   = obb.extent[2] * obb.e[2];
 
     vec3r p0 = orig - e0 + e1 + e2;
     vec3r p1 = orig - e0 - e1 + e2;
@@ -279,7 +275,6 @@ public:
 
 class glText {
 public:
-
   static void makeRasterFont() {
     GLuint i;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -454,35 +449,25 @@ public:
   glTextZone(int n, int *W, int *H) : nbLine(n), width(W), height(H) {}
 
   void set_nbLine(int nb) {
-    if (nb > 0 && nb < NB_LINE_MAX) {
-      nbLine = nb;
-    }
+    if (nb > 0 && nb < NB_LINE_MAX) { nbLine = nb; }
   }
 
   void set_min_nbLine(int min) {
-    if (nbLine < min && min > 0 && min < NB_LINE_MAX) {
-      nbLine = min;
-    }
+    if (nbLine < min && min > 0 && min < NB_LINE_MAX) { nbLine = min; }
   }
 
   void increase_nbLine() {
     nbLine++;
-    if (nbLine >= NB_LINE_MAX) {
-      nbLine = NB_LINE_MAX - 1;
-    }
+    if (nbLine >= NB_LINE_MAX) { nbLine = NB_LINE_MAX - 1; }
   }
 
   void decrease_nbLine() {
     nbLine--;
-    if (nbLine < 1) {
-      nbLine = 1;
-    }
+    if (nbLine < 1) { nbLine = 1; }
   }
 
   void reset() {
-    for (size_t i = 0; i < NB_LINE_MAX; i++) {
-      textzone[i][0] = '\0';
-    }
+    for (size_t i = 0; i < NB_LINE_MAX; i++) { textzone[i][0] = '\0'; }
   }
 
   void draw() {
@@ -490,9 +475,7 @@ public:
     drawBackground();
 
     glColor3i(0, 0, 0);
-    for (int i = 0; i < nbLine; ++i) {
-      glText::print(4, 4 + i * 16, textzone[i]);
-    }
+    for (int i = 0; i < nbLine; ++i) { glText::print(4, 4 + i * 16, textzone[i]); }
 
     switch2D::back();
   }
@@ -502,9 +485,7 @@ public:
     va_start(args, fmt);
     char buffer[128];
     vsnprintf(buffer, 128, fmt, args);
-    for (int i = NB_LINE_MAX - 1; i > 0; i--) {
-      strncpy(textzone[i], textzone[i - 1], 128);
-    }
+    for (int i = NB_LINE_MAX - 1; i > 0; i--) { strncpy(textzone[i], textzone[i - 1], 128); }
     snprintf((char *)textzone[0], 128, "%s", buffer);
     va_end(args);
   }
@@ -524,7 +505,9 @@ protected:
   std::vector<std::string> labels;
 
 public:
-  glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) { snprintf(title, 128, "notitle"); }
+  glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) {
+    snprintf(title, 128, "notitle");
+  }
 
   void addLabel(int i, std::string &lab, ColorTable &ct) {
     if (i >= 0 && i < ct.getSize()) {
@@ -543,7 +526,9 @@ public:
     hbox = h;
   }
 
-  void setTitle(const char *t) { strncpy(title, t, 128); }
+  void setTitle(const char *t) {
+    strncpy(title, t, 128);
+  }
 
   void show(int W, int H, ColorTable &ct) {
     switch2D::go(W, H);
@@ -553,7 +538,7 @@ public:
     float value;
     float dval = (ct.getMax() - ct.getMin()) / (float)(ct.getSize() - 1);
     // std::cout << "dval = " << dval << std::endl;
-    float dH = (float)hbox / (float)(ct.getSize());
+    float dH     = (float)hbox / (float)(ct.getSize());
     float bottom = (float)(H - (ypos + hbox));
 
     // draw the color bar
@@ -610,9 +595,7 @@ public:
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (!grad) {
-      return;
-    }
+    if (!grad) { return; }
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

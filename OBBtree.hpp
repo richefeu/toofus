@@ -44,7 +44,9 @@ public:
   OBBnode *second;
   T data;
   OBBnode() : boundary(), first(nullptr), second(nullptr) {}
-  bool isLeaf() { return (first == nullptr && second == nullptr); }
+  bool isLeaf() {
+    return (first == nullptr && second == nullptr);
+  }
 };
 
 template <class T> class OBBtree {
@@ -52,11 +54,12 @@ public:
   OBBnode<T> *root; // the root of the OBB-tree
 
   OBBtree() : root(nullptr) {}
-  ~OBBtree() { reset(root); }
+  ~OBBtree() {
+    reset(root);
+  }
 
   void reset(OBBnode<T> *node) {
-    if (node == nullptr)
-      return;
+    if (node == nullptr) return;
 
     // first delete subtrees
     reset(node->first);
@@ -69,8 +72,7 @@ public:
 
   static void subdivide(std::vector<OBBbundle<T>> &OBBs, std::vector<OBBbundle<T>> &first_OBBs,
                         std::vector<OBBbundle<T>> &second_OBBs) {
-    if (OBBs.size() <= 1)
-      return;
+    if (OBBs.size() <= 1) return;
     if (OBBs.size() == 2) {
       first_OBBs.push_back(OBBs[0]);
       second_OBBs.push_back(OBBs[1]);
@@ -86,9 +88,7 @@ public:
 
     // project onto this axis
     std::vector<std::pair<double, size_t>> proj;
-    for (size_t i = 0; i < OBBs.size(); i++) {
-      proj.push_back(std::make_pair(OBBs[i].obb.center * u, i));
-    }
+    for (size_t i = 0; i < OBBs.size(); i++) { proj.push_back(std::make_pair(OBBs[i].obb.center * u, i)); }
 
     // By default the sort function sorts the vector elements on basis of first
     // element of pairs.
@@ -96,12 +96,8 @@ public:
 
     // distribute
     size_t half = proj.size() / 2;
-    for (size_t i = 0; i < half; i++) {
-      first_OBBs.push_back(OBBs[proj[i].second]);
-    }
-    for (size_t i = half; i < proj.size(); i++) {
-      second_OBBs.push_back(OBBs[proj[i].second]);
-    }
+    for (size_t i = 0; i < half; i++) { first_OBBs.push_back(OBBs[proj[i].second]); }
+    for (size_t i = half; i < proj.size(); i++) { second_OBBs.push_back(OBBs[proj[i].second]); }
   }
 
   // Build the covariance matrix with the points in OBB bundles
@@ -186,18 +182,12 @@ public:
     for (size_t io = 0; io < OBBs.size(); io++) {
       for (size_t p = 0; p < OBBs[io].points.size(); p++) {
         vec3r p_prime(r * OBBs[io].points[p], u * OBBs[io].points[p], f * OBBs[io].points[p]);
-        if (minim.x > p_prime.x)
-          minim.x = p_prime.x;
-        if (minim.y > p_prime.y)
-          minim.y = p_prime.y;
-        if (minim.z > p_prime.z)
-          minim.z = p_prime.z;
-        if (maxim.x < p_prime.x)
-          maxim.x = p_prime.x;
-        if (maxim.y < p_prime.y)
-          maxim.y = p_prime.y;
-        if (maxim.z < p_prime.z)
-          maxim.z = p_prime.z;
+        if (minim.x > p_prime.x) minim.x = p_prime.x;
+        if (minim.y > p_prime.y) minim.y = p_prime.y;
+        if (minim.z > p_prime.z) minim.z = p_prime.z;
+        if (maxim.x < p_prime.x) maxim.x = p_prime.x;
+        if (maxim.y < p_prime.y) maxim.y = p_prime.y;
+        if (maxim.z < p_prime.z) maxim.z = p_prime.z;
       }
     }
 
@@ -205,9 +195,9 @@ public:
     // minimum and maximum, and the extents be half of the
     // difference between the minimum and maximum
     fittedObb.center = eigvec * (0.5 * (maxim + minim));
-    fittedObb.e[0] = r;
-    fittedObb.e[1] = u;
-    fittedObb.e[2] = f;
+    fittedObb.e[0]   = r;
+    fittedObb.e[1]   = u;
+    fittedObb.e[2]   = f;
     fittedObb.extent = 0.5 * (maxim - minim);
 
     fittedObb.enlarge(radius); // Add the Minskowski radius
@@ -221,7 +211,7 @@ public:
   // obbtree.root = OBBtree::recursiveBuild(obbtree.root, OBBbundles, radius);
   static OBBnode<T> *recursiveBuild(OBBnode<T> *node, std::vector<OBBbundle<T>> &OBBs, double radius = 0.0) {
     if (OBBs.size() >= 1 && node == nullptr) {
-      node = new OBBnode<T>();
+      node           = new OBBnode<T>();
       node->boundary = OBBtree<T>::fitOBB(OBBs, radius);
     } else {
       return nullptr;
@@ -253,9 +243,7 @@ public:
   static void TreeIntersectionIds(OBBnode<T> *nodeA, OBBnode<T> *nodeB, std::vector<std::pair<T, T>> &intersections,
                                   double scaleFactorA, double scaleFactorB, double enlargeValue,
                                   vec3r &posB_relativeTo_posA, quat &QB_relativeTo_QA) {
-    if (nodeA == nullptr || nodeB == nullptr) {
-      return;
-    }
+    if (nodeA == nullptr || nodeB == nullptr) { return; }
 
     OBB BoundaryA = nodeA->boundary;
     BoundaryA.center *= scaleFactorA;
@@ -269,9 +257,7 @@ public:
     movedBoundaryB.rotate(QB_relativeTo_QA);
     movedBoundaryB.translate(posB_relativeTo_posA);
 
-    if (BoundaryA.intersect(movedBoundaryB) == false) {
-      return;
-    }
+    if (BoundaryA.intersect(movedBoundaryB) == false) { return; }
 
     if (nodeA->isLeaf() && nodeB->isLeaf()) {
       intersections.push_back(std::pair<T, T>(nodeA->data, nodeB->data));
@@ -298,13 +284,9 @@ public:
   }
 
   static void OBBIntersectionIds(OBB &obb, OBBnode<T> *node, std::vector<T> &intersections) {
-    if (node == nullptr) {
-      return;
-    }
+    if (node == nullptr) { return; }
 
-    if (obb.intersect(node->boundary) == false) {
-      return;
-    }
+    if (obb.intersect(node->boundary) == false) { return; }
 
     if (node->isLeaf()) {
       intersections.push_back(node->data);

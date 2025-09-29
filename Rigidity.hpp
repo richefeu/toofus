@@ -33,7 +33,9 @@ public:
    * @details Initializes the Rigidity object with default values for Young's modulus and Poisson's ratio.
    * The default Young's modulus is set to 5e6, and the default Poisson's ratio is set to 0.3.
    */
-  Rigidity() { set(5e6, 0.3); }
+  Rigidity() {
+    set(5e6, 0.3);
+  }
 
   /**
    * @brief Constructs a Rigidity object with specified material properties.
@@ -45,7 +47,9 @@ public:
    * Young's modulus and Poisson's ratio, setting up internal parameters based on
    * these values.
    */
-  Rigidity(double Young, double Poisson) { set(Young, Poisson); }
+  Rigidity(double Young, double Poisson) {
+    set(Young, Poisson);
+  }
 
   /**
    * @brief Sets the material properties for the Rigidity object.
@@ -61,9 +65,9 @@ public:
    */
   void set(double Young, double Poisson) {
     double factor = Young / ((1.0 + Poisson) * (1.0 - 2.0 * Poisson));
-    C1 = factor * (1.0 - Poisson);
-    C2 = factor * Poisson;
-    C3 = factor * (1.0 - 2.0 * Poisson) / 2.0;
+    C1            = factor * (1.0 - Poisson);
+    C2            = factor * Poisson;
+    C3            = factor * (1.0 - 2.0 * Poisson) / 2.0;
   }
 
   /**

@@ -77,30 +77,26 @@ struct LSfit {
 
   double run(std::vector<double> &X, std::vector<double> &Y, std::vector<double> &Params, paramFunc Func) {
     LS.func = Func;
-    for (size_t i = 0; i < Params.size(); i++)
-      LS.params.push_back(Params[i]);
+    for (size_t i = 0; i < Params.size(); i++) LS.params.push_back(Params[i]);
     LS.plugData(X, Y);
 
     Powell<LeastSquare> powell(LS);
     LS.params = powell.minimize(LS.params);
 
-    for (size_t i = 0; i < Params.size(); i++)
-      Params[i] = LS.params[i];
+    for (size_t i = 0; i < Params.size(); i++) Params[i] = LS.params[i];
     return powell.fret;
   }
 
   double run(std::vector<double> &X, std::vector<double> &Y, std::vector<double> &Params, const char *FuncName) {
     LS.func = LSfit::FuncDataBase[FuncName](Params);
 
-    for (size_t i = 0; i < Params.size(); i++)
-      LS.params.push_back(Params[i]);
+    for (size_t i = 0; i < Params.size(); i++) LS.params.push_back(Params[i]);
     LS.plugData(X, Y);
 
     Powell<LeastSquare> powell(LS);
     LS.params = powell.minimize(LS.params);
 
-    for (size_t i = 0; i < Params.size(); i++)
-      Params[i] = LS.params[i];
+    for (size_t i = 0; i < Params.size(); i++) Params[i] = LS.params[i];
     return powell.fret;
   }
 
@@ -216,8 +212,7 @@ void LSfit::add_distributions() {
                                   Params[1] = 1.0; // gamm, scale
                                 }
                                 return [](std::vector<double> &p, double x) -> double {
-                                  if (p[1] == 0.0)
-                                    return 1.0e20;
+                                  if (p[1] == 0.0) return 1.0e20;
                                   double f = (x - p[0]) / p[1];
                                   return 0.318309886183791 * atan(f) + 0.5;
                                 };
@@ -230,8 +225,7 @@ void LSfit::add_distributions() {
                                   Params[1] = 1.0; // gamma, scale
                                 }
                                 return [](std::vector<double> &p, double x) -> double {
-                                  if (p[1] == 0.0)
-                                    return 1.0e20;
+                                  if (p[1] == 0.0) return 1.0e20;
                                   double f = (x - p[0]) / p[1];
                                   return 1.0 / (3.141592653589793 * p[1] * (1.0 + f * f));
                                 };
@@ -244,8 +238,7 @@ void LSfit::add_distributions() {
                                   Params[1] = 1.0; // sigma, stddev
                                 }
                                 return [](std::vector<double> &p, double x) -> double {
-                                  if (p[1] == 0.0)
-                                    return 1.0e20;
+                                  if (p[1] == 0.0) return 1.0e20;
                                   double f = (x - p[0]) / p[1];
                                   return exp(-0.5 * f * f) / (p[1] * 2.506628274631001);
                                 };
@@ -258,8 +251,7 @@ void LSfit::add_distributions() {
                                   Params[1] = 1.0; // sigma, stddev
                                 }
                                 return [](std::vector<double> &p, double x) -> double {
-                                  if (p[1] == 0.0)
-                                    return 1.0e20;
+                                  if (p[1] == 0.0) return 1.0e20;
                                   double f = (x - p[0]) / (1.414213562373095 * p[1]);
                                   return 0.5 * (1.0 + erf(f));
                                 };

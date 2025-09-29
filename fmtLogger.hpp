@@ -49,68 +49,61 @@ enum class LogLevel { trace, debug, info, warn, error, critical, off };
 
 class Logger {
 private:
-    inline static LogLevel level = LogLevel::info;
-    inline static bool useColors = true; // Control whether to use colors
-    Logger() = delete;
-    Logger(const Logger&) = delete;
+  inline static LogLevel level = LogLevel::info;
+  inline static bool useColors = true; // Control whether to use colors
+  Logger()                     = delete;
+  Logger(const Logger &)       = delete;
 
-    template <typename... Args>
-    static void log(LogLevel msgLevel, const std::string& levelName, const std::string& colorCode, fmt::format_string<Args...> fmt, Args&&... args) {
-        if (level > msgLevel) return;
+  template <typename... Args>
+  static void log(LogLevel msgLevel, const std::string &levelName, const std::string &colorCode,
+                  fmt::format_string<Args...> fmt, Args &&...args) {
+    if (level > msgLevel) return;
 
-        if (useColors) {
-            fmt::print("{}[{}]{} ", colorCode, levelName, "\033[0m");
-        } else {
-            fmt::print("[{}] ", levelName);
-        }
-
-        fmt::print(fmt, std::forward<Args>(args)...);
-        fmt::print("\n");
+    if (useColors) {
+      fmt::print("{}[{}]{} ", colorCode, levelName, "\033[0m");
+    } else {
+      fmt::print("[{}] ", levelName);
     }
+
+    fmt::print(fmt, std::forward<Args>(args)...);
+    fmt::print("\n");
+  }
 
 public:
-    static void setLevel(LogLevel t_level) {
-        level = t_level;
-    }
+  static void setLevel(LogLevel t_level) {
+    level = t_level;
+  }
 
-    static void setUseColors(bool useColorsFlag) {
-        useColors = useColorsFlag;
-    }
+  static void setUseColors(bool useColorsFlag) {
+    useColors = useColorsFlag;
+  }
 
-    template <typename... Args>
-    static void trace(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::trace, "Trace", "\033[37m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void trace(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::trace, "Trace", "\033[37m", fmt, std::forward<Args>(args)...);
+  }
 
-    template <typename... Args>
-    static void debug(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::debug, "Debug", "\033[96m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void debug(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::debug, "Debug", "\033[96m", fmt, std::forward<Args>(args)...);
+  }
 
-    template <typename... Args>
-    static void info(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::info, "Info", "\033[92m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void info(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::info, "Info", "\033[92m", fmt, std::forward<Args>(args)...);
+  }
 
-    template <typename... Args>
-    static void warn(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::warn, "Warn", "\033[93m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void warn(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::warn, "Warn", "\033[93m", fmt, std::forward<Args>(args)...);
+  }
 
-    template <typename... Args>
-    static void error(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::error, "Error", "\033[91m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void error(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::error, "Error", "\033[91m", fmt, std::forward<Args>(args)...);
+  }
 
-    template <typename... Args>
-    static void critical(fmt::format_string<Args...> fmt, Args&&... args) {
-        log(LogLevel::critical, "Critical", "\033[41m", fmt, std::forward<Args>(args)...);
-    }
+  template <typename... Args> static void critical(fmt::format_string<Args...> fmt, Args &&...args) {
+    log(LogLevel::critical, "Critical", "\033[41m", fmt, std::forward<Args>(args)...);
+  }
 };
 
-
 #endif /* end of include guard: LOGGER_HPP */
-
 
 #if 0
 

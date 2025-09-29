@@ -36,16 +36,15 @@ void inplaceTrim(std::string &line) {
 std::string readQuotedString(std::istream &is) {
   char currentChar;
   std::string result;
-  bool inQuotes = false;
+  bool inQuotes  = false;
   char quoteChar = '\0';
 
   // Skip initial whitespace
-  while (is.get(currentChar) && isspace(currentChar)) {
-  }
+  while (is.get(currentChar) && isspace(currentChar)) {}
 
   // Check if the input starts with a quote
   if (currentChar == '"' || currentChar == '\'') {
-    inQuotes = true;
+    inQuotes  = true;
     quoteChar = currentChar;
   } else {
     // If not quoted, add the first character back to the stream
@@ -57,9 +56,7 @@ std::string readQuotedString(std::istream &is) {
     std::getline(is, result, quoteChar);
 
     // Check if the line ended before finding the closing quote
-    if (is.fail() && is.eof()) {
-      std::cerr << "Warning: End-of-line reached before closing quote." << std::endl;
-    }
+    if (is.fail() && is.eof()) { std::cerr << "Warning: End-of-line reached before closing quote." << std::endl; }
   } else {
     // Read until the next space or end of line
     std::getline(is, result, ' ');
@@ -107,17 +104,13 @@ std::unordered_set<std::string> tokenizeString(const std::string &str) {
   std::unordered_set<std::string> words;
   std::istringstream iss(str);
   std::string word;
-  while (iss >> word) {
-    words.insert(word);
-  }
+  while (iss >> word) { words.insert(word); }
   return words;
 }
 
 // Function to check if a word starts with a given prefix
 bool startsWith(const std::string &word, const std::string &prefix) {
-  if (prefix.size() > word.size()) {
-    return false;
-  }
+  if (prefix.size() > word.size()) { return false; }
   return std::equal(prefix.begin(), prefix.end(), word.begin());
 }
 
@@ -131,14 +124,12 @@ bool match(const std::string &s1, const std::string &s2, int &score) {
   // Count common words
   int commonWords = 0;
   for (const auto &word : words1) {
-    if (words2.find(word) != words2.end()) {
-      commonWords++;
-    }
+    if (words2.find(word) != words2.end()) { commonWords++; }
   }
 
   // Calculate similarity score
   int totalWords = std::max(words1.size(), words2.size());
-  score = (totalWords == 0) ? 0 : (commonWords * 100) / totalWords;
+  score          = (totalWords == 0) ? 0 : (commonWords * 100) / totalWords;
 
   // Consider it a match if at least half of the words match
   return commonWords >= totalWords / 2;

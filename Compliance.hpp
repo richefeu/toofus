@@ -37,13 +37,17 @@ public:
   /**
    * @brief Constructor with default values
    */
-  Compliance() { set(5e6, 0.3); }
+  Compliance() {
+    set(5e6, 0.3);
+  }
   /**
    * @brief Constructor with given values
    * @param Young Young modulus
    * @param Poisson Poisson's ratio
    */
-  Compliance(double Young, double Poisson) { set(Young, Poisson); }
+  Compliance(double Young, double Poisson) {
+    set(Young, Poisson);
+  }
 
   /**
    * @brief Set the compliance matrix
@@ -52,9 +56,9 @@ public:
    */
   void set(double Young, double Poisson) {
     double factor = 1.0 / Young;
-    Cinv1 = factor;
-    Cinv2 = -factor * Poisson;
-    Cinv3 = factor * (1.0 + Poisson); // Il faudrait multiplier par 2 ????????????
+    Cinv1         = factor;
+    Cinv2         = -factor * Poisson;
+    Cinv3         = factor * (1.0 + Poisson); // Il faudrait multiplier par 2 ????????????
   }
 
   /**
@@ -82,8 +86,8 @@ public:
 #endif /* end of include guard: COMPLIANCE_HPP */
 
 #if 0
-#include <iostream>
 #include "Rigidity.hpp"
+#include <iostream>
 int main(int argc, char const *argv[]) {
   Rigidity C(1e6, 0.3);
   Compliance Cinv(1e6, 0.3);
@@ -100,4 +104,3 @@ int main(int argc, char const *argv[]) {
 }
 
 #endif
-

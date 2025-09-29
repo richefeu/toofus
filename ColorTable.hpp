@@ -64,14 +64,14 @@ struct colorRGBA {
    */
   void set(int R, int G, int B, int A = 255) {
     static const float inv255 = 1.0f / 255.0f;
-    r = R;
-    g = G;
-    b = B;
-    a = A;
-    rr = (float)r * inv255;
-    gg = (float)g * inv255;
-    bb = (float)b * inv255;
-    aa = (float)a * inv255;
+    r                         = R;
+    g                         = G;
+    b                         = B;
+    a                         = A;
+    rr                        = (float)r * inv255;
+    gg                        = (float)g * inv255;
+    bb                        = (float)b * inv255;
+    aa                        = (float)a * inv255;
   }
 
   /**
@@ -91,10 +91,10 @@ struct colorRGBA {
     gg = GG;
     bb = BB;
     aa = AA;
-    r = (int)floor(rr * 255);
-    g = (int)floor(gg * 255);
-    b = (int)floor(bb * 255);
-    a = (int)floor(aa * 255);
+    r  = (int)floor(rr * 255);
+    g  = (int)floor(gg * 255);
+    b  = (int)floor(bb * 255);
+    a  = (int)floor(aa * 255);
   }
 
   /**
@@ -220,7 +220,9 @@ private:
    *
    * @return gray value between 0.0 and 1.0
    */
-  double gray(double s) { return s < 0.0 ? 0.0 : (s < 1.0 ? s : 1.0); }
+  double gray(double s) {
+    return s < 0.0 ? 0.0 : (s < 1.0 ? s : 1.0);
+  }
 
   /**
    * Computes the red component of a 'hot' colormap for a given normalized input value.
@@ -233,7 +235,9 @@ private:
    * @param s Normalized input value (typically between 0.0 and 1.0).
    * @return Red intensity value between 0.0 and 1.0.
    */
-  double hot_r(double s) { return s < 0.0 ? 0.0 : (s < 3.0 / 8.0 ? 8.0 / 3.0 * s : 1.0); }
+  double hot_r(double s) {
+    return s < 0.0 ? 0.0 : (s < 3.0 / 8.0 ? 8.0 / 3.0 * s : 1.0);
+  }
 
   /**
    * Computes the green component of a 'hot' colormap for a given normalized input value.
@@ -246,7 +250,9 @@ private:
    * @param s Normalized input value (typically between 0.0 and 1.0).
    * @return Green intensity value between 0.0 and 1.0.
    */
-  double hot_g(double s) { return s < 3.0 / 8.0 ? 0.0 : (s < 6.0 / 8.0 ? 8.0 / 3.0 * (s - 3.0 / 8.0) : 1.0); }
+  double hot_g(double s) {
+    return s < 3.0 / 8.0 ? 0.0 : (s < 6.0 / 8.0 ? 8.0 / 3.0 * (s - 3.0 / 8.0) : 1.0);
+  }
 
   /**
    * Computes the blue component of a 'hot' colormap for a given normalized input value.
@@ -259,7 +265,9 @@ private:
    * @param s Normalized input value (typically between 0.0 and 1.0).
    * @return Blue intensity value between 0.0 and 1.0.
    */
-  double hot_b(double s) { return s < 6.0 / 8.0 ? 0.0 : (s < 1.0 ? 8.0 / 2.0 * (s - 6.0 / 8.0) : 1.0); }
+  double hot_b(double s) {
+    return s < 6.0 / 8.0 ? 0.0 : (s < 1.0 ? 8.0 / 2.0 * (s - 6.0 / 8.0) : 1.0);
+  }
 
   /**
    * Compute a cubic polynomial for a given value of x.
@@ -274,7 +282,9 @@ private:
    *
    * @return The computed value of the cubic polynomial
    */
-  double cubic(double a, double b, double c, double d, double x) { return a + b * x + c * x * x + d * x * x * x; }
+  double cubic(double a, double b, double c, double d, double x) {
+    return a + b * x + c * x * x + d * x * x * x;
+  }
 
   /**
    * Converts a color specified in HSV (Hue, Saturation, Value) to one in RGB (Red, Green, Blue).
@@ -290,8 +300,8 @@ private:
     if (S < 5.0e-6) {
       *R = *G = *B = V;
     } else {
-      int i = (int)H;
-      double f = H - (float)i;
+      int i     = (int)H;
+      double f  = H - (float)i;
       double p1 = V * (1.0 - S);
       double p2 = V * (1.0 - S * f);
       double p3 = V * (1.0 - S * (1.0 - f));
@@ -346,23 +356,18 @@ private:
    */
   void RGB_to_HSV(double R, double G, double B, double *H, double *S, double *V) {
     double maxv = R > G ? R : G;
-    if (B > maxv)
-      maxv = B;
+    if (B > maxv) maxv = B;
     *V = maxv;
     if (maxv > 0) {
       double minv = R < G ? R : G;
-      if (B < minv)
-        minv = B;
+      if (B < minv) minv = B;
       *S = 1.0 - double(minv) / maxv;
       if (maxv > minv) {
         if (maxv == R) {
           *H = (G - B) / double(maxv - minv);
-          if (*H < 0)
-            *H += 6.0;
-        } else if (maxv == G)
-          *H = 2.0 + (B - R) / double(maxv - minv);
-        else
-          *H = 4.0 + (R - G) / double(maxv - minv);
+          if (*H < 0) *H += 6.0;
+        } else if (maxv == G) *H = 2.0 + (B - R) / double(maxv - minv);
+        else *H = 4.0 + (R - G) / double(maxv - minv);
       }
     }
   }
@@ -390,21 +395,21 @@ public:
    */
   ColorTable(int tableID_ = MATLAB_JET) {
     short int word = 0x0001;
-    char *byte = (char *)&word;
-    big_endian = (byte[0] ? false : true);
+    char *byte     = (char *)&word;
+    big_endian     = (byte[0] ? false : true);
 
-    rotation = 0.0;
-    bias = 0.0;
+    rotation  = 0.0;
+    bias      = 0.0;
     curvature = 0.0;
-    min = 0.0;
-    max = 1.0;
-    size = 256;
-    swap = false;
-    tableID = tableID_;
-    invert = false;
-    alphapow = 0.0;
-    alpha = 0.0;
-    beta = 0.0;
+    min       = 0.0;
+    max       = 1.0;
+    size      = 256;
+    swap      = false;
+    tableID   = tableID_;
+    invert    = false;
+    alphapow  = 0.0;
+    alpha     = 0.0;
+    beta      = 0.0;
 
     Rebuild();
   }
@@ -436,9 +441,7 @@ public:
     double s{0.0}, t{0.0}, gamma{0.0};
     int r{0}, g{0}, b{0}, a{0};
 
-    if (!table.empty()) {
-      table.clear();
-    }
+    if (!table.empty()) { table.clear(); }
     table.reserve(size);
 
     srand(seed); // so that random color order are actually not random
@@ -456,9 +459,7 @@ public:
         s = 0.0;
       }
 
-      if (swap) {
-        s = 1.0 - s;
-      }
+      if (swap) { s = 1.0 - s; }
 
       switch (tableID) {
       case 0: // all black
@@ -474,21 +475,17 @@ public:
       } break;
       case 2: { // matlab "jet"
         double ii = (double)(s - bias) * 128.0;
-        if (ii < 0) {
-          ii = 0;
-        }
-        if (ii > 128) {
-          ii = 128;
-        }
+        if (ii < 0) { ii = 0; }
+        if (ii > 128) { ii = 128; }
         double rr = ii <= 46 ? 0.0 : ii >= 111 ? -0.03125 * (ii - 111) + 1.0 : ii >= 78 ? 1. : 0.03125 * (ii - 46);
         double gg = ii <= 14 || ii >= 111 ? 0.
                     : ii >= 79            ? -0.03125 * (ii - 111)
                     : ii <= 46            ? 0.03125 * (ii - 14)
                                           : 1.0;
         double bb = ii >= 79 ? 0.0 : ii >= 47 ? -0.03125 * (ii - 79) : ii <= 14 ? 0.03125 * (ii - 14) + 1.0 : 1.0;
-        r = (int)(rr * 255.0);
-        g = (int)(gg * 255.0);
-        b = (int)(bb * 255.0);
+        r         = (int)(rr * 255.0);
+        g         = (int)(gg * 255.0);
+        b         = (int)(bb * 255.0);
       } break;
       case 3: // lucie, samcef (?)
       {
@@ -522,24 +519,24 @@ public:
           b = 255;
         } else if (s - bias <= 0.25 + curvature) {
           curvature = (curvature == -0.25f) ? -0.26f : curvature;
-          r = 0;
-          g = (int)((s - bias) * (255.0 / (0.25 + curvature)));
-          b = 255;
+          r         = 0;
+          g         = (int)((s - bias) * (255.0 / (0.25 + curvature)));
+          b         = 255;
         } else if (s - bias <= 0.50) {
           curvature = (curvature == 0.25f) ? 0.26f : curvature;
-          r = 0;
-          g = 255;
-          b = (int)(255. - (255. / (0.25 - curvature)) * (s - bias - 0.25 - curvature));
+          r         = 0;
+          g         = 255;
+          b         = (int)(255. - (255. / (0.25 - curvature)) * (s - bias - 0.25 - curvature));
         } else if (s - bias <= 0.75 - curvature) {
           curvature = (curvature == 0.25f) ? 0.26f : curvature;
-          r = (int)((s - bias - 0.5) * (255.0 / (0.25 - curvature)));
-          g = 255;
-          b = 0;
+          r         = (int)((s - bias - 0.5) * (255.0 / (0.25 - curvature)));
+          g         = 255;
+          b         = 0;
         } else if (s - bias <= 1.) {
           curvature = (curvature == -0.25f) ? -0.26f : curvature;
-          r = 255;
-          g = (int)(255.0 - (255.0 / (0.25 + curvature)) * (s - bias - 0.75 + curvature));
-          b = 0;
+          r         = 255;
+          g         = (int)(255.0 - (255.0 / (0.25 + curvature)) * (s - bias - 0.75 + curvature));
+          b         = 0;
         } else {
           r = 255;
           g = 0;
@@ -675,16 +672,16 @@ public:
         int prev_r = r;
         int prev_g = g;
         int prev_b = b;
-        r = (int)(rand() / (double)RAND_MAX * 255.0);
-        g = (int)(rand() / (double)RAND_MAX * 255.0);
-        b = (int)(rand() / (double)RAND_MAX * 255.0);
-        float dr = static_cast<float>(r - prev_r);
-        float dg = static_cast<float>(r - prev_g);
-        float db = static_cast<float>(r - prev_b);
+        r          = (int)(rand() / (double)RAND_MAX * 255.0);
+        g          = (int)(rand() / (double)RAND_MAX * 255.0);
+        b          = (int)(rand() / (double)RAND_MAX * 255.0);
+        float dr   = static_cast<float>(r - prev_r);
+        float dg   = static_cast<float>(r - prev_g);
+        float db   = static_cast<float>(r - prev_b);
         while (sqrt(dr * dr + dg * dg + db * db) < distmax) {
-          r = (int)(rand() / (double)RAND_MAX * 255.0);
-          g = (int)(rand() / (double)RAND_MAX * 255.0);
-          b = (int)(rand() / (double)RAND_MAX * 255.0);
+          r  = (int)(rand() / (double)RAND_MAX * 255.0);
+          g  = (int)(rand() / (double)RAND_MAX * 255.0);
+          b  = (int)(rand() / (double)RAND_MAX * 255.0);
           dr = static_cast<float>(r - prev_r);
           dg = static_cast<float>(r - prev_g);
           db = static_cast<float>(r - prev_b);
@@ -693,9 +690,9 @@ public:
       case 21: // Cyclic colors
       {
         int count = i % 8;
-        r = UNPACK_RED(colorCycle8[count]);
-        g = UNPACK_GREEN(colorCycle8[count]);
-        b = UNPACK_BLUE(colorCycle8[count]);
+        r         = UNPACK_RED(colorCycle8[count]);
+        g         = UNPACK_GREEN(colorCycle8[count]);
+        b         = UNPACK_BLUE(colorCycle8[count]);
       } break;
       default: {
         r = g = b = 0;
@@ -703,9 +700,7 @@ public:
       }
 
       float aa = 1.0;
-      if (alphapow) {
-        aa = static_cast<float>(pow((float)(s ? s : 1.0e-10), (float)alphapow));
-      }
+      if (alphapow) { aa = static_cast<float>(pow((float)(s ? s : 1.0e-10), (float)alphapow)); }
       a = (int)(255.0 * aa * alpha);
 
       if (beta) {
@@ -757,9 +752,7 @@ public:
    * without modifying the table.
    */
   void rebuild_interp_rgba(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
-    if (!table.empty()) {
-      table.clear();
-    }
+    if (!table.empty()) { table.clear(); }
     table.reserve(size);
 
     if (cpos.size() != cols.size()) {
@@ -783,10 +776,10 @@ public:
       colorRGBA col;
       for (int c = cpos[i - 1]; c <= cpos[i]; c++) {
         float w = (float)(c - cpos[i - 1]) / (float)(cpos[i] - cpos[i - 1]);
-        col.r = (int)((1.0 - w) * (float)cols[i - 1][0] + w * (float)cols[i][0]);
-        col.g = (int)((1.0 - w) * (float)cols[i - 1][1] + w * (float)cols[i][1]);
-        col.b = (int)((1.0 - w) * (float)cols[i - 1][2] + w * (float)cols[i][2]);
-        col.a = (int)((1.0 - w) * (float)cols[i - 1][3] + w * (float)cols[i][3]);
+        col.r   = (int)((1.0 - w) * (float)cols[i - 1][0] + w * (float)cols[i][0]);
+        col.g   = (int)((1.0 - w) * (float)cols[i - 1][1] + w * (float)cols[i][1]);
+        col.b   = (int)((1.0 - w) * (float)cols[i - 1][2] + w * (float)cols[i][2]);
+        col.a   = (int)((1.0 - w) * (float)cols[i - 1][3] + w * (float)cols[i][3]);
 
         // clamp to [0,255]
         col.r = col.r < 0 ? 0 : (col.r > 255 ? 255 : col.r);
@@ -813,9 +806,7 @@ public:
    * modifying the color table.
    */
   void rebuild_interp_hsv(std::vector<int> cpos, std::vector<std::vector<int>> cols) {
-    if (!table.empty()) {
-      table.clear();
-    }
+    if (!table.empty()) { table.clear(); }
     table.reserve(size);
 
     if (cpos.size() != cols.size()) {
@@ -901,9 +892,15 @@ public:
     }
   }
 
-  void setTableID(int id) { tableID = id; }
-  void setSwap(bool s) { swap = s; }
-  void setInvert(bool i) { invert = i; }
+  void setTableID(int id) {
+    tableID = id;
+  }
+  void setSwap(bool s) {
+    swap = s;
+  }
+  void setInvert(bool i) {
+    invert = i;
+  }
 
   /**
    * Set the minimum and maximum values for the color table. These values are
@@ -917,14 +914,28 @@ public:
     min = Min;
     max = Max;
   }
-  void setSize(int Size) { size = Size; }
-  void setBias(float Bias) { bias = Bias; }
-  void setCurvature(float Curv) { curvature = Curv; }
-  void setRotation(int Rot) { rotation = Rot; }
+  void setSize(int Size) {
+    size = Size;
+  }
+  void setBias(float Bias) {
+    bias = Bias;
+  }
+  void setCurvature(float Curv) {
+    curvature = Curv;
+  }
+  void setRotation(int Rot) {
+    rotation = Rot;
+  }
 
-  int getSize() { return size; }
-  float getMin() { return min; }
-  float getMax() { return max; }
+  int getSize() {
+    return size;
+  }
+  float getMin() {
+    return min;
+  }
+  float getMax() {
+    return max;
+  }
 
   /**
    * Retrieves the RGBA color corresponding to the given value from the color table.
@@ -946,8 +957,8 @@ public:
   void getRGB(float value, colorRGBA *col) {
     unsigned int i;
 
-    float pos = (value - min) / (max - min);                // in ]0.0 1.0[
-    i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
+    float pos = (value - min) / (max - min);                        // in ]0.0 1.0[
+    i         = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
     if (value <= min) {
       i = 0;
@@ -981,8 +992,8 @@ public:
   void getColor4ub(float value, color4ub *col) {
     unsigned int i;
 
-    float pos = (value - min) / (max - min);                // in ]0.0 1.0[
-    i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
+    float pos = (value - min) / (max - min);                        // in ]0.0 1.0[
+    i         = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
     if (value <= min) {
       i = 0;
@@ -1017,8 +1028,8 @@ public:
     static const float inv255 = 1.0f / 255.0f;
     unsigned int i;
 
-    float pos = (value - min) / (max - min);                // in ]0.0 1.0[
-    i = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
+    float pos = (value - min) / (max - min);                        // in ]0.0 1.0[
+    i         = (unsigned int)(floor(pos * (float)(size - 2))) + 1; // in [1 size-2]
 
     if (value <= min) {
       i = 0;
@@ -1049,9 +1060,7 @@ public:
         PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
     };
     unsigned int i = (unsigned int)floor(rand() / (double)RAND_MAX * 8);
-    if (i >= 8) {
-      i = 7;
-    }
+    if (i >= 8) { i = 7; }
     col->r = UNPACK_RED(tb[i]);
     col->g = UNPACK_GREEN(tb[i]);
     col->b = UNPACK_BLUE(tb[i]);
@@ -1078,14 +1087,12 @@ public:
         PACK_COLOR(208, 143, 72, 255), PACK_COLOR(118, 169, 155, 255),
     };
     static unsigned int count = 0;
-    col->r = UNPACK_RED(tb[count]);
-    col->g = UNPACK_GREEN(tb[count]);
-    col->b = UNPACK_BLUE(tb[count]);
-    col->a = UNPACK_ALPHA(tb[count]);
+    col->r                    = UNPACK_RED(tb[count]);
+    col->g                    = UNPACK_GREEN(tb[count]);
+    col->b                    = UNPACK_BLUE(tb[count]);
+    col->a                    = UNPACK_ALPHA(tb[count]);
     count++;
-    if (count >= 8) {
-      count = 0;
-    }
+    if (count >= 8) { count = 0; }
   }
 
   /**

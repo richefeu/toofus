@@ -53,8 +53,8 @@ public:
   GeoPack2D() {
     rmin = rmax = 0.0;
     gapTol = distNeighbor = distMin = 0.0;
-    max = 0;
-    k = 0;
+    max                             = 0;
+    k                               = 0;
     xmin = xmax = ymin = ymax = 0.0;
   }
 
@@ -91,12 +91,12 @@ public:
    */
   void parameters(double rmin_, double rmax_, int k_, double xmin_, double xmax_, double ymin_, double ymax_,
                   double gapTol_ = 0.0, int max_ = 0) {
-    rmin = rmin_;
-    rmax = rmax_;
-    gapTol = gapTol_;
+    rmin         = rmin_;
+    rmax         = rmax_;
+    gapTol       = gapTol_;
     distNeighbor = 2 * rmax + gapTol;
-    distMin = 0.0;
-    k = k_;
+    distMin      = 0.0;
+    k            = k_;
 
     // Domain
     xmin = xmin_;
@@ -108,31 +108,27 @@ public:
     if (max == 0) {
       int nx = (int)floor((xmax - xmin) / rmin);
       int ny = (int)floor((ymax - ymin) / rmin);
-      max = nx * ny;
+      max    = nx * ny;
     }
   }
-	
-  
+
   /**
    * @brief Calculates the solid fraction of the 2D domain.
    *
-   * @details This function computes the overall solid fraction by assuming 
-   * there is no overlap between disks. It calculates the total area of the 
-   * disks and divides it by the area of the domain. If the area of the 
+   * @details This function computes the overall solid fraction by assuming
+   * there is no overlap between disks. It calculates the total area of the
+   * disks and divides it by the area of the domain. If the area of the
    * domain is non-positive, it returns 0.0.
    *
-   * @return The solid fraction as a double value, representing the ratio of 
+   * @return The solid fraction as a double value, representing the ratio of
    * the total area of the disks to the total area of the domain.
    */
   double getSolidFraction() {
     double Vtot = (xmax - xmin) * (ymax - ymin);
-    if (Vtot <= 0.0)
-      return 0.0;
+    if (Vtot <= 0.0) return 0.0;
     double Vs = 0.0;
 
-    for (size_t i = 0; i < sample.size(); i++) {
-      Vs += M_PI * sample[i].r * sample[i].r;
-    }
+    for (size_t i = 0; i < sample.size(); i++) { Vs += M_PI * sample[i].r * sample[i].r; }
     return Vs / Vtot;
   }
 
@@ -143,8 +139,9 @@ public:
    * number generator. This is useful for generating different sequences of
    * random numbers.
    */
-  void seedTime() 
-  { srand(time(NULL)); }
+  void seedTime() {
+    srand(time(NULL));
+  }
 
   /**
    * @brief Adds a disk at given coordinates and radius.
@@ -169,7 +166,7 @@ public:
     for (int i = 0; i < particleIndex; i++) {
       double dx = fabs(sample[i].x - x_);
       double dy = fabs(sample[i].y - y_);
-      double d = sqrt(dx * dx + dy * dy);
+      double d  = sqrt(dx * dx + dy * dy);
       if (d < sample[i].r + r_ + distNeighbor + distMin) {
         prox[i].push_back(particleIndex);
         prox[particleIndex].push_back(i);
@@ -182,24 +179,20 @@ public:
   /**
    * @brief Reactivates a range of indices in the active list.
    *
-   * @details This function appends indices from a specified range [from, to) 
-   * into the active vector. If the 'to' parameter is not provided or is zero, 
-   * it defaults to the size of the sample vector. This effectively reactivates 
+   * @details This function appends indices from a specified range [from, to)
+   * into the active vector. If the 'to' parameter is not provided or is zero,
+   * it defaults to the size of the sample vector. This effectively reactivates
    * all indices from the 'from' position to the end of the sample vector.
    *
    * @param from The starting index of the range to reactivate (inclusive).
-   * @param to The ending index of the range to reactivate (exclusive). 
+   * @param to The ending index of the range to reactivate (exclusive).
    * Defaults to the size of the sample vector if set to 0.
    */
   void reActivate(int from = 0, int to = 0) {
-    if (to == 0)
-      to = sample.size();
-    for (int i = from; i < to; i++) {
-      active.push_back(i);
-    }
+    if (to == 0) to = sample.size();
+    for (int i = from; i < to; i++) { active.push_back(i); }
   }
 
-  
   /**
    * @brief Executes the packing algorithm.
    *
@@ -221,18 +214,18 @@ public:
 
     // step 2
     while (active.size() > 0 && sample.size() < (size_t)max) {
-      int randIndex = rand() % active.size();
+      int randIndex   = rand() % active.size();
       int currentDisk = active[randIndex];
-      double packedx = sample[currentDisk].x;
-      double packedy = sample[currentDisk].y;
-      double packedr = sample[currentDisk].r;
+      double packedx  = sample[currentDisk].x;
+      double packedy  = sample[currentDisk].y;
+      double packedr  = sample[currentDisk].r;
 
       bool found = false;
 
       for (int n = 0; n < k; n++) {
         double testr = ran(rmin, rmax);
         double angle = ran(0, 2.0 * M_PI);
-        double m = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
+        double m     = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
         double testx = packedx + m * cos(angle);
         double testy = packedy + m * sin(angle);
 
@@ -250,7 +243,7 @@ public:
 
             double dx = sample[neighborDisk].x - testx;
             double dy = sample[neighborDisk].y - testy;
-            double d = sqrt(dx * dx + dy * dy);
+            double d  = sqrt(dx * dx + dy * dy);
             if (d < testr + sample[neighborDisk].r + distMin) {
               ok = false;
               break;
@@ -270,7 +263,7 @@ public:
             //              continue;
             double dx = fabs(sample[i].x - testx);
             double dy = fabs(sample[i].y - testy);
-            double d = sqrt(dx * dx + dy * dy);
+            double d  = sqrt(dx * dx + dy * dy);
             if (d < sample[i].r + testr + distNeighbor + distMin) {
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
@@ -283,13 +276,11 @@ public:
       } // n-loop
 
       if (!found) {
-        for (int i = randIndex; i < (int)active.size() - 1; i++) {
-          active[i] = active[i + 1];
-        }
+        for (int i = randIndex; i < (int)active.size() - 1; i++) { active[i] = active[i + 1]; }
         active.pop_back();
       }
     } // end-while
-  }   // end-method-run
+  } // end-method-run
 
   /**
    * @brief Periodic execution of the packing algorithm.
@@ -311,31 +302,29 @@ public:
 
     // step 2
     while (active.size() > 0 && sample.size() < (size_t)max) {
-      int randIndex = rand() % active.size();
+      int randIndex   = rand() % active.size();
       int currentDisk = active[randIndex];
-      double packedx = sample[currentDisk].x;
-      double packedy = sample[currentDisk].y;
-      double packedr = sample[currentDisk].r;
+      double packedx  = sample[currentDisk].x;
+      double packedy  = sample[currentDisk].y;
+      double packedr  = sample[currentDisk].r;
 
       bool found = false;
 
       for (int n = 0; n < k; n++) {
         double testr = ran(rmin, rmax);
         double angle = ran(0, 2.0 * M_PI);
-        double m = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
+        double m     = ran(testr + packedr + distMin, testr + packedr + distMin + gapTol);
         double testx = packedx + m * cos(angle);
         double testy = packedy + m * sin(angle);
 
         bool ok = true;
         // boundaries
-        if (testx < xmin || testx > xmax || testy < ymin || testy > ymax) {
-          ok = false;
-        }
+        if (testx < xmin || testx > xmax || testy < ymin || testy > ymax) { ok = false; }
         double dv = 2.0 * rmax + distMin + gapTol;
         if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv) {
-          double lx = xmax - xmin;
+          double lx      = xmax - xmin;
           double half_lx = 0.5 * lx;
-          double ly = ymax - ymin;
+          double ly      = ymax - ymin;
           double half_ly = 0.5 * ly;
 
           for (size_t i = 0; i < boundaries.size(); i++) {
@@ -371,7 +360,7 @@ public:
 
             double dx = sample[neighborDisk].x - testx;
             double dy = sample[neighborDisk].y - testy;
-            double d = sqrt(dx * dx + dy * dy);
+            double d  = sqrt(dx * dx + dy * dy);
             if (d < testr + sample[neighborDisk].r + distMin) {
               ok = false;
               break;
@@ -386,7 +375,7 @@ public:
           prox.push_back(std::vector<int>());
 
           int particleIndex = sample.size() - 1;
-          double dv = 2.0 * rmax + distMin + gapTol; // a verifier
+          double dv         = 2.0 * rmax + distMin + gapTol; // a verifier
           if (testx < xmin + dv || testx > xmax - dv || testy < ymin + dv || testy > ymax - dv) {
             boundaries.push_back(particleIndex);
           }
@@ -394,7 +383,7 @@ public:
           for (int i = 0; i < particleIndex; i++) {
             double dx = fabs(sample[i].x - testx);
             double dy = fabs(sample[i].y - testy);
-            double d = sqrt(dx * dx + dy * dy);
+            double d  = sqrt(dx * dx + dy * dy);
             if (d < sample[i].r + testr + distNeighbor + distMin) {
               prox[i].push_back(particleIndex);
               prox[particleIndex].push_back(i);
@@ -407,14 +396,11 @@ public:
       } // n-loop
 
       if (!found) {
-        for (int i = randIndex; i < (int)active.size() - 1; i++) {
-          active[i] = active[i + 1];
-        }
+        for (int i = randIndex; i < (int)active.size() - 1; i++) { active[i] = active[i + 1]; }
         active.pop_back();
       }
     } // end-while
-  }   // end-execPeriodic
-
+  } // end-execPeriodic
 
   // With gnuplot, the disks can be plotted as follows:
   // set size ratio -1
@@ -427,7 +413,9 @@ public:
   }
 
 protected:
-  double ran(double min_, double max_) { return min_ + (rand() / (double)RAND_MAX) * (max_ - min_); }
+  double ran(double min_, double max_) {
+    return min_ + (rand() / (double)RAND_MAX) * (max_ - min_);
+  }
 };
 
 #endif /* end of include guard: GEOPACK2D_HPP */
@@ -457,4 +445,3 @@ int main(int argc, char const *argv[]) {
 }
 
 #endif
-

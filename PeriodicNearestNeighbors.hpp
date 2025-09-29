@@ -44,28 +44,23 @@ public:
 
     for (size_t i = 0; i < numPoints; ++i) {
       const IdPoint &point = points[i];
-      size_t cellIndex = calculateCellIndex(point);
+      size_t cellIndex     = calculateCellIndex(point);
       std::set<size_t> uniqueNeighborIndices;
 
       const std::vector<size_t> &neighborIndices = neighborCellIndices[cellIndex];
       for (size_t neighborCellIndex : neighborIndices) {
         for (size_t neighborIndex : grid[neighborCellIndex]) {
-          if (neighborIndex <= i)
-            continue;
+          if (neighborIndex <= i) continue;
 
           const IdPoint &neighbor = points[neighborIndex];
-          double sqrDistance = calculateSqrDistance(point, neighbor);
+          double sqrDistance      = calculateSqrDistance(point, neighbor);
 
-          if (sqrDistance <= dmax * dmax) {
-            uniqueNeighborIndices.insert(neighborIndex);
-          }
+          if (sqrDistance <= dmax * dmax) { uniqueNeighborIndices.insert(neighborIndex); }
         }
       }
 
       // neighbors[i].reserve(uniqueNeighborIndices.size());
-      for (size_t neighborIndex : uniqueNeighborIndices) {
-        neighbors[i].push_back(neighborIndex);
-      }
+      for (size_t neighborIndex : uniqueNeighborIndices) { neighbors[i].push_back(neighborIndex); }
     }
 
     return neighbors;
@@ -77,22 +72,19 @@ public:
 
     for (size_t i = 0; i < numPoints; ++i) {
       const IdPoint &point = points[i];
-      size_t cellIndex = calculateCellIndex(point);
+      size_t cellIndex     = calculateCellIndex(point);
       std::set<size_t> uniqueNeighborIndices;
 
       const std::vector<size_t> &neighborIndices = neighborCellIndices[cellIndex];
       for (size_t neighborCellIndex : neighborIndices) {
         for (size_t neighborIndex : grid[neighborCellIndex]) {
-          if (neighborIndex <= i)
-            continue;
+          if (neighborIndex <= i) continue;
           uniqueNeighborIndices.insert(neighborIndex);
         }
       }
 
       // neighbors[i].reserve(uniqueNeighborIndices.size());
-      for (size_t neighborIndex : uniqueNeighborIndices) {
-        neighbors[i].push_back(neighborIndex);
-      }
+      for (size_t neighborIndex : uniqueNeighborIndices) { neighbors[i].push_back(neighborIndex); }
     }
 
     return neighbors;
@@ -186,7 +178,7 @@ private:
 
     for (size_t i = 0; i < points.size(); ++i) {
       const IdPoint &point = points[i];
-      size_t cellIndex = calculateCellIndex(point);
+      size_t cellIndex     = calculateCellIndex(point);
       grid[cellIndex].push_back(i);
     }
   }

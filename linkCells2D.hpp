@@ -41,7 +41,9 @@ public:
   vec2ui N;                                     ///< Number of cells in each direction (x, y, and z)
 
   // Ctor
-  linkCells2D(AABB_2D &Box, vec2r &CellMinSizes) : box(Box), minSizes(CellMinSizes) { init(); }
+  linkCells2D(AABB_2D &Box, vec2r &CellMinSizes) : box(Box), minSizes(CellMinSizes) {
+    init();
+  }
 
   // Dtor
   ~linkCells2D() {}
@@ -61,10 +63,8 @@ public:
     N.y = (unsigned int)floor((box.max.y - box.min.y) / minSizes.y);
 
     // We've got at least one element per side
-    if (N.x < 1)
-      N.x = 1;
-    if (N.y < 1)
-      N.y = 1;
+    if (N.x < 1) N.x = 1;
+    if (N.y < 1) N.y = 1;
 
     // Cell dimensions
     double dx, dy;
@@ -76,10 +76,8 @@ public:
     // Reserve memory
     AABB_2D_Cell A;
     std::vector<AABB_2D_Cell> jvec;
-    for (size_t j = 0; j < N.y; ++j)
-      jvec.push_back(A);
-    for (size_t i = 0; i < N.x; ++i)
-      cells.push_back(jvec);
+    for (size_t j = 0; j < N.y; ++j) jvec.push_back(A);
+    for (size_t i = 0; i < N.x; ++i) cells.push_back(jvec);
 
     // Link the cells
     size_t ix0, ix1;
@@ -96,9 +94,7 @@ public:
         std::vector<size_t> yyy{iy0, iy, iy1};
 
         for (auto iix : xxx) {
-          for (auto iiy : yyy) {
-            cells[ix][iy].pcells.push_back(&cells[iix][iiy]);
-          }
+          for (auto iiy : yyy) { cells[ix][iy].pcells.push_back(&cells[iix][iiy]); }
         }
 
         cells[ix][iy].pcells.push_back(&oversized_bodies); // any cell 'see' the oversized_bodies
@@ -114,9 +110,7 @@ public:
    */
   void clear() {
     for (size_t ix = 0; ix < N.x; ++ix) {
-      for (size_t iy = 0; iy < N.y; ++iy) {
-        cells[ix][iy].bodies.clear();
-      }
+      for (size_t iy = 0; iy < N.y; ++iy) { cells[ix][iy].bodies.clear(); }
     }
     oversized_bodies.bodies.clear();
   }
@@ -134,11 +128,10 @@ public:
    */
   void add_body(size_t B, vec2r &pos, AABB_2D &aabb) {
     int ix, iy;
-    //vec2r diag =  aabb.max - aabb.min;
+    // vec2r diag =  aabb.max - aabb.min;
     double surf = fabs((aabb.max.x - aabb.min.x) * (aabb.max.y - aabb.min.y));
-    //if (diag.x > minSizes.x || diag.y > minSizes.y)
-		if (surf >= fabs(minSizes.x * minSizes.y))	
-      oversized_bodies.bodies.push_back(B);
+    // if (diag.x > minSizes.x || diag.y > minSizes.y)
+    if (surf >= fabs(minSizes.x * minSizes.y)) oversized_bodies.bodies.push_back(B);
     else {
       ix = (int)trunc((pos.x - box.min.x) * factor.x);
       iy = (int)trunc((pos.y - box.min.y) * factor.y);

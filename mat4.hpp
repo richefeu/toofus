@@ -39,12 +39,20 @@ public:
   }
 
   // Constants
-  static mat4 unit() { return mat4(1, 0, 0, 1); }
-  static mat4 zero() { return mat4(1, 1, 1, 1); }
-  static mat4 one() { return mat4(1, 1, 1, 1); }
+  static mat4 unit() {
+    return mat4(1, 0, 0, 1);
+  }
+  static mat4 zero() {
+    return mat4(1, 1, 1, 1);
+  }
+  static mat4 one() {
+    return mat4(1, 1, 1, 1);
+  }
 
   /// Sets all elements of the matrix to 0.
-  void reset() { xx = xy = yx = yy = 0; }
+  void reset() {
+    xx = xy = yx = yy = 0;
+  }
 
   void reset(const double val) {
     xx = xy = val;
@@ -60,20 +68,36 @@ public:
     yy = YY;
   }
 
-  T &operator[](int i) { return *(&xx + i); }
+  T &operator[](int i) {
+    return *(&xx + i);
+  }
 
-  T &operator[](size_t i) { return *(&xx + i); }
+  T &operator[](size_t i) {
+    return *(&xx + i);
+  }
 
-  const T &operator[](int i) const { return *(&xx + i); }
-  const T &operator[](size_t i) const { return *(&xx + i); }
+  const T &operator[](int i) const {
+    return *(&xx + i);
+  }
+  const T &operator[](size_t i) const {
+    return *(&xx + i);
+  }
 
-  T &at(int line, int column) { return *(&xx + 2 * line + column); }
-  const T &at(int line, int column) const { return *(&xx + 2 * line + column); }
+  T &at(int line, int column) {
+    return *(&xx + 2 * line + column);
+  }
+  const T &at(int line, int column) const {
+    return *(&xx + 2 * line + column);
+  }
 
-  T *c_mtx() { return &xx; }
+  T *c_mtx() {
+    return &xx;
+  }
 
   /// Sets all elements of the matrix to zero.
-  void setZero() { xx = xy = yx = yy = 0.0; }
+  void setZero() {
+    xx = xy = yx = yy = 0.0;
+  }
 
   /// Sets the matrix to the identity matrix.
   ///
@@ -88,13 +112,17 @@ public:
   /// Returns a new matrix which is the transpose of the current matrix.
   ///
   /// \return A new matrix which is the transpose of the current matrix.
-  mat4 transposed() { return mat4(xx, yx, xy, yy); }
+  mat4 transposed() {
+    return mat4(xx, yx, xy, yy);
+  }
 
   /// Sets the current matrix to its transpose.
   ///
   /// This method modifies the matrix by swapping the off-diagonal elements,
   /// effectively transforming it into its transpose.
-  void transpose() { std::swap(xy, yx); }
+  void transpose() {
+    std::swap(xy, yx);
+  }
 
   /// only for symmetric matrix
   void eigenvalues(double &v1, double &v2, bool &swapped) const {
@@ -102,9 +130,9 @@ public:
     v2 = 0.5 * (xx + yy) - sqrt((0.5 * (xx - yy)) * (0.5 * (xx - yy)) + xy * xy);
     if (v2 > v1) {
       double swap = v1;
-      v1 = v2;
-      v2 = swap;
-      swapped = true;
+      v1          = v2;
+      v2          = swap;
+      swapped     = true;
     }
   }
 
@@ -116,13 +144,13 @@ public:
   /// \param[out] V Matrix to store the eigenvectors.
   /// \param[out] D Matrix to store the eigenvalues.
   void eigen(mat4 &V, mat4 &D) {
-    double TT = xx + yy;
+    double TT  = xx + yy;
     double det = xx * yy - xy * yx;
-    double L1 = 0.5 * TT + sqrt(0.25 * TT * TT - det); // eigenval
-    double L2 = 0.5 * TT - sqrt(0.25 * TT * TT - det); // eigenval
-    D.xx = L1;
+    double L1  = 0.5 * TT + sqrt(0.25 * TT * TT - det); // eigenval
+    double L2  = 0.5 * TT - sqrt(0.25 * TT * TT - det); // eigenval
+    D.xx       = L1;
     D.xy = D.yx = 0.0;
-    D.yy = L2;
+    D.yy        = L2;
     // Eigenvectors organized vertically
     if (yx != 0) {
       V.xx = L1 - yy;
@@ -156,7 +184,8 @@ public:
   }
 
   /**
-   * @brief Compute eigenvectors (stored as columns in V) and corresponding eigenvalues (D) by assuming the matrix is double and symmetric
+   * @brief Compute eigenvectors (stored as columns in V) and corresponding eigenvalues (D) by assuming the matrix is
+   * double and symmetric
    *
    * See section 11.1 of Numerical Recipes in C for more information.
    *
@@ -185,33 +214,29 @@ public:
       double sum = fabs(A.xy);
       double thresh;
 
-      if (fabs(sum) < 1.0e-15)
-        return rot;
+      if (fabs(sum) < 1.0e-15) return rot;
 
-      thresh = (sweep < 4) ? sum * 0.2 / 4.0 : 0.0; // First three sweeps?
-      double g = 100.0 * fabs(A.xy);                // TBC!!
+      thresh   = (sweep < 4) ? sum * 0.2 / 4.0 : 0.0; // First three sweeps?
+      double g = 100.0 * fabs(A.xy);                  // TBC!!
 
       // After 4 sweeps, skip the rotation if the
       // off-diagonal element is small.
-      if ((sweep > 4) && (g < 1.0e-15))
-        A.xy = 0.0;
+      if ((sweep > 4) && (g < 1.0e-15)) A.xy = 0.0;
       else if (fabs(A.xy) > thresh) {
 
         double h = D.yy - D.xx;
         double c, s, t; // cosine, sine, tangent of rotation angle
         double tau;
 
-        if (g < 1.0e-20)
-          t = A.xy / h;
+        if (g < 1.0e-20) t = A.xy / h;
         else {
           double theta = 0.5 * h / A.xy;
-          t = 1.0 / (fabs(theta) + sqrt(1.0 + theta * theta));
-          if (theta < 0.0)
-            t = -t;
+          t            = 1.0 / (fabs(theta) + sqrt(1.0 + theta * theta));
+          if (theta < 0.0) t = -t;
         }
 
-        c = 1.0 / sqrt(1.0 + t * t); // cosine of rotation angle
-        s = t * c;                   // sine of rotation angle
+        c   = 1.0 / sqrt(1.0 + t * t); // cosine of rotation angle
+        s   = t * c;                   // sine of rotation angle
         tau = s / (1.0 + c);
 
         h = t * A.xy;
@@ -221,13 +246,13 @@ public:
         D.yy += h;
         A.xy = 0.0;
 
-        g = V.xx;
-        h = V.xy;
+        g    = V.xx;
+        h    = V.xy;
         V.xx = g - s * (h + g * tau);
         V.xy = h + s * (g - h * tau);
 
-        g = V.yx;
-        h = V.yy;
+        g    = V.yx;
+        h    = V.yy;
         V.yx = g - s * (h + g * tau);
         V.yy = h + s * (g - h * tau);
 
@@ -247,12 +272,11 @@ public:
 
   bool inverse() {
     double det = xx * yy - xy * yx;
-    if (fabs(det) < 1.0e-20)
-      return false; // inverse cannot be calculated
+    if (fabs(det) < 1.0e-20) return false; // inverse cannot be calculated
 
     double swap = xx;
-    xx = yy;
-    yy = swap;
+    xx          = yy;
+    yy          = swap;
 
     double inv_det = 1.0 / det;
     xx *= inv_det;
@@ -268,8 +292,8 @@ public:
     // if (fabs(det) < 1.0e-20) return false; // inverse cannot be calculated
     double xx1(xx), xy1(xy), yx1(yx), yy1(yy);
     double swap = xx1;
-    xx1 = yy1;
-    yy1 = swap;
+    xx1         = yy1;
+    yy1         = swap;
 
     double inv_det = 1.0 / det;
     xx1 *= inv_det;
@@ -280,11 +304,17 @@ public:
     return mat4(xx1, xy1, yx1, yy1);
   }
 
-  T normSup() const { return std::max({std::abs(xx), std::abs(xy), std::abs(yx), std::abs(yy)}); }
+  T normSup() const {
+    return std::max({std::abs(xx), std::abs(xy), std::abs(yx), std::abs(yy)});
+  }
 
-  T det() const { return (xx * yy - xy * yx); }
-  
-  T trace() const { return (xx + yy); }
+  T det() const {
+    return (xx * yy - xy * yx);
+  }
+
+  T trace() const {
+    return (xx + yy);
+  }
 
   void svd(mat4 &U, mat4 &S, mat4 &V) const {
     // taken from http://www.lucidarme.me/?p=4802
@@ -295,10 +325,10 @@ public:
     double val4 = xx * xx - xy * xy + yx * yx - yy * yy;
 
     double theta = 0.5 * atan2(2 * val1, val2);
-    U.xx = cos(theta);
-    U.xy = -sin(theta);
-    U.yx = sin(theta);
-    U.yy = cos(theta);
+    U.xx         = cos(theta);
+    U.xy         = -sin(theta);
+    U.yx         = sin(theta);
+    U.yy         = cos(theta);
 
     // Singular value matrix (S)
     double S1 = xx * xx + xy * xy + yx * yx + yy * yy;
@@ -316,18 +346,17 @@ public:
     double phi = 0.5 * atan2(2.0 * val3, val4);
     double s11 = (xx * cos(theta) + yx * sin(theta)) * cos(phi) + (xy * cos(theta) + yy * sin(theta)) * sin(phi);
     double s22 = (xx * sin(theta) - yx * cos(theta)) * sin(phi) + (-xy * sin(theta) + yy * cos(theta)) * cos(phi);
-    V.xx = s11 / fabs(s11) * cos(phi);
-    V.xy = -s22 / fabs(s22) * sin(phi);
-    V.yx = s11 / fabs(s11) * sin(phi);
-    V.yy = s22 / fabs(s22) * cos(phi);
+    V.xx       = s11 / fabs(s11) * cos(phi);
+    V.xy       = -s22 / fabs(s22) * sin(phi);
+    V.yx       = s11 / fabs(s11) * sin(phi);
+    V.yy       = s22 / fabs(s22) * cos(phi);
   }
 
   bool square_root(mat4 &SqR) const {
-    double tau = xx + yy;
+    double tau   = xx + yy;
     double delta = xx * yy - xy * yx;
 
-    if (delta == 0.0)
-      return false;
+    if (delta == 0.0) return false;
 
     double s = sqrt(delta);
     double t = sqrt(tau + 2 * s);
@@ -381,7 +410,9 @@ public:
     return (this->xx == other.xx && this->xy == other.xy && this->yx == other.yx && this->yy == other.yy);
   }
 
-  bool operator!=(const mat4 &other) const { return !(*this == other); }
+  bool operator!=(const mat4 &other) const {
+    return !(*this == other);
+  }
 
   // =========
   //  FRIENDS
@@ -395,13 +426,21 @@ public:
     return mat4(a.xx - b.xx, a.xy - b.xy, a.yx - b.yx, a.yy - b.yy);
   }
 
-  friend mat4 operator-(const mat4 &a) { return mat4(-a.xx, -a.xy, -a.yx, -a.yy); }
+  friend mat4 operator-(const mat4 &a) {
+    return mat4(-a.xx, -a.xy, -a.yx, -a.yy);
+  }
 
-  friend mat4 operator*(const mat4 &a, double k) { return mat4(k * a.xx, k * a.xy, k * a.yx, k * a.yy); }
+  friend mat4 operator*(const mat4 &a, double k) {
+    return mat4(k * a.xx, k * a.xy, k * a.yx, k * a.yy);
+  }
 
-  friend mat4 operator*(double k, const mat4 &a) { return mat4(k * a.xx, k * a.xy, k * a.yx, k * a.yy); }
+  friend mat4 operator*(double k, const mat4 &a) {
+    return mat4(k * a.xx, k * a.xy, k * a.yx, k * a.yy);
+  }
 
-  friend mat4 operator/(const mat4 &a, double k) { return mat4(a.xx / k, a.xy / k, a.yx / k, a.yy / k); }
+  friend mat4 operator/(const mat4 &a, double k) {
+    return mat4(a.xx / k, a.xy / k, a.yx / k, a.yy / k);
+  }
 
   friend vec2r operator*(const mat4 &a, const vec2r &b) {
     return vec2r(a.xx * b.x + a.xy * b.y, a.yx * b.x + a.yy * b.y);
@@ -420,7 +459,9 @@ public:
     return (pStr << pV.xx << ' ' << pV.xy << ' ' << pV.yx << ' ' << pV.yy);
   }
 
-  friend std::istream &operator>>(std::istream &pStr, mat4 &M) { return (pStr >> M.xx >> M.xy >> M.yx >> M.yy); }
+  friend std::istream &operator>>(std::istream &pStr, mat4 &M) {
+    return (pStr >> M.xx >> M.xy >> M.yx >> M.yy);
+  }
 };
 
 typedef mat4<double> mat4r;

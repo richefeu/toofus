@@ -49,7 +49,7 @@ public:
   bool parse(const std::string &expr, T &result) {
     this->expr = expr;
     skip_whitespace();
-    pos = 0;
+    pos    = 0;
     result = parse_expression();
     return pos == (expr.size() - 1);
   }
@@ -60,8 +60,9 @@ public:
    * The variable is identified by its name, and its value is passed by pointer.
    * The function stores the address of the variable in the variables map.
    */
-  void addVariable(const std::string &name, T *value) { 
-    variables[name] = value; }
+  void addVariable(const std::string &name, T *value) {
+    variables[name] = value;
+  }
 
   /**
    * Adds a constant to the parser.
@@ -73,9 +74,7 @@ public:
    * is stored in the variables map.
    */
   void addConstant(const std::string &name, T value) {
-    if (variables.find(name) != variables.end()) {
-      return;
-    }
+    if (variables.find(name) != variables.end()) { return; }
     constants.push_back(value);
     variables[name] = &(constants[constants.size() - 1]);
   }
@@ -129,7 +128,7 @@ private:
       char c = get_next_char();
       if (c == '^') {
         T exponent = parse_factor();
-        result = std::pow(result, exponent);
+        result     = std::pow(result, exponent);
       } else if (c == '*') {
         result *= parse_factor();
       } else if (c == '/') {
@@ -174,9 +173,7 @@ private:
     } else if (isalpha(c)) {
       std::string func;
       func += c;
-      while (isalpha(c = get_next_char())) {
-        func += c;
-      }
+      while (isalpha(c = get_next_char())) { func += c; }
       if (c == '(') {
         if (func == "sqrt") {
           return std::sqrt(parse_factor());
@@ -235,21 +232,21 @@ private:
    *   sets pos to the end of the expression to indicate an error.
    */
   T parse_number() {
-    T result = 0;
+    T result      = 0;
     bool negative = false;
-    char c = get_next_char();
+    char c        = get_next_char();
     if (c == '-') {
       negative = true;
-      c = get_next_char();
+      c        = get_next_char();
     }
     while (c >= '0' && c <= '9') {
       result = result * 10 + (c - '0');
-      c = get_next_char();
+      c      = get_next_char();
     }
     if (c == '.') {
-      T fraction = 0;
+      T fraction    = 0;
       T denominator = 1;
-      c = get_next_char();
+      c             = get_next_char();
       while (c >= '0' && c <= '9') {
         fraction = fraction * 10 + (c - '0');
         denominator *= 10;
@@ -259,17 +256,17 @@ private:
     }
     if (c == 'e' || c == 'E') {
       bool exp_negative = false;
-      c = get_next_char();
+      c                 = get_next_char();
       if (c == '-') {
         exp_negative = true;
-        c = get_next_char();
+        c            = get_next_char();
       } else if (c == '+') {
         c = get_next_char();
       }
       int exponent = 0;
       while (c >= '0' && c <= '9') {
         exponent = exponent * 10 + (c - '0');
-        c = get_next_char();
+        c        = get_next_char();
       }
       result *= std::pow(10, exp_negative ? -exponent : exponent);
     }
@@ -285,16 +282,12 @@ private:
    */
   char get_next_char() {
     skip_whitespace();
-    if (pos >= expr.size()) {
-      return '\0';
-    }
+    if (pos >= expr.size()) { return '\0'; }
     return expr[pos++];
   }
 
   void unget_char() {
-    if (pos > 0) {
-      pos--;
-    }
+    if (pos > 0) { pos--; }
   }
 
   /**
@@ -302,9 +295,7 @@ private:
    * parse position as it goes.
    */
   void skip_whitespace() {
-    while (pos < expr.size() && std::isspace(expr[pos])) {
-      pos++;
-    }
+    while (pos < expr.size() && std::isspace(expr[pos])) { pos++; }
   }
 };
 

@@ -50,9 +50,7 @@ namespace {
 /// @note   The last point in the returned list is the same than the first one.
 std::vector<vec2r> convexHull(std::vector<vec2r> &P) {
   int n = P.size(), k = 0;
-  if (n == 1) {
-    return P;
-  }
+  if (n == 1) { return P; }
   std::vector<vec2r> H(2 * n);
 
   // Sort points lexicographically
@@ -60,17 +58,13 @@ std::vector<vec2r> convexHull(std::vector<vec2r> &P) {
 
   // Build lower hull
   for (int i = 0; i < n; ++i) {
-    while (k >= 2 && cross(H[k - 1] - H[k - 2], P[i] - H[k - 2]) <= 0) {
-      k--;
-    }
+    while (k >= 2 && cross(H[k - 1] - H[k - 2], P[i] - H[k - 2]) <= 0) { k--; }
     H[k++] = P[i];
   }
 
   // Build upper hull
   for (int i = n - 2, t = k + 1; i >= 0; i--) {
-    while (k >= t && cross(H[k - 1] - H[k - 2], P[i] - H[k - 2]) <= 0) {
-      k--;
-    }
+    while (k >= t && cross(H[k - 1] - H[k - 2], P[i] - H[k - 2]) <= 0) { k--; }
     H[k++] = P[i];
   }
 

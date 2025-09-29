@@ -26,16 +26,15 @@
 template <typename T> T PROBKS(T ALAM) {
   const T EPS1 = 0.001;
   const T EPS2 = 1.0e-8;
-  T A2 = -2.0 * ALAM * ALAM;
-  T FAC = 2.0;
-  T SUM = 0.0;
-  T TERMBF = 0.0; // Previous term in sum.
+  T A2         = -2.0 * ALAM * ALAM;
+  T FAC        = 2.0;
+  T SUM        = 0.0;
+  T TERMBF     = 0.0; // Previous term in sum.
   for (int J = 1; J <= 100; J++) {
     T TERM = FAC * exp(A2 * J * J);
     SUM += TERM;
-    if (fabs(TERM) <= (EPS1 * TERMBF) || fabs(TERM) <= (EPS2 * SUM))
-      return SUM;
-    FAC = -FAC; // Alternating signs in sum.
+    if (fabs(TERM) <= (EPS1 * TERMBF) || fabs(TERM) <= (EPS2 * SUM)) return SUM;
+    FAC    = -FAC; // Alternating signs in sum.
     TERMBF = fabs(TERM);
   }
   return 1.0; // Get here only by failing to converge.
@@ -56,19 +55,18 @@ void KSONE(const std::vector<T> &data, std::vector<double> &Params,
   std::sort(DATA.begin(), DATA.end());
 
   T EN = (T)N;
-  D = 0.0;
+  D    = 0.0;
   T FO = 0.0;                                      // Data's c.d.f. before the next step.
   for (size_t J = 0; J < N; J++) {                 // Loop over the sorted data points.
     T FN = (T)(J + 1) / EN;                        // Data's c.d.f. after this step.
     T FF = func(Params, DATA[J]);                  // Compare to the user-supplied function.
     T DT = std::max(fabs(FO - FF), fabs(FN - FF)); // Maximum distance.
-    if (DT > D)
-      D = DT;
+    if (DT > D) D = DT;
     FO = FN;
   }
 
   // PROB = PROBKS(sqrt(EN) * D); // Compute significance.
-  EN = sqrt(EN);
+  EN   = sqrt(EN);
   PROB = PROBKS((EN + 0.12 + 0.11 / EN) * D);
 }
 
@@ -89,26 +87,24 @@ template <typename T> void KSTWO(const std::vector<T> &data1, const std::vector<
   std::sort(DATA1.begin(), DATA1.end());
   std::sort(DATA2.begin(), DATA2.end());
 
-  T EN1 = (T)N1;
-  T EN2 = (T)N2;
-  size_t J1 = 0; // Next value of DATA1 to be processed.
-  size_t J2 = 0; // Ditto, DATA2.
-  T FO1 = 0.0;   // value of c.d.f. before the next step.
-  T FO2 = 0.0;   // Ditto, for DATA2.
-  D = 0.0;
+  T EN1     = (T)N1;
+  T EN2     = (T)N2;
+  size_t J1 = 0;   // Next value of DATA1 to be processed.
+  size_t J2 = 0;   // Ditto, DATA2.
+  T FO1     = 0.0; // value of c.d.f. before the next step.
+  T FO2     = 0.0; // Ditto, for DATA2.
+  D         = 0.0;
   while (J1 < N1 && J2 < N2) {   // If we are not done...
     if (DATA1[J1] < DATA2[J2]) { // Next step is in DATA1.
       T FN1 = (T)(J1 + 1) / EN1;
-      T DT = std::max(fabs(FN1 - FO2), fabs(FO1 - FO2));
-      if (DT > D)
-        D = DT;
+      T DT  = std::max(fabs(FN1 - FO2), fabs(FO1 - FO2));
+      if (DT > D) D = DT;
       FO1 = FN1;
       J1++;
     } else { // Next step is in DATA2.
       T FN2 = (T)(J2 + 1) / EN2;
-      T DT = std::max(fabs(FN2 - FO1), fabs(FO2 - FO1));
-      if (DT > D)
-        D = DT;
+      T DT  = std::max(fabs(FN2 - FO1), fabs(FO2 - FO1));
+      if (DT > D) D = DT;
       FO2 = FN2;
       J2++;
     }

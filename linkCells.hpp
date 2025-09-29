@@ -20,7 +20,7 @@
 #include "vec3.hpp"
 
 enum linkCellOptions {
-  PERIODIC_LINKCELLS = 1,
+  PERIODIC_LINKCELLS       = 1,
   HALF_CONNECTED_LINKCELLS = 1 << 1,
 };
 
@@ -52,7 +52,9 @@ public:
   */
 
   // Ctor
-  linkCells(AABB &Box, vec3r &CellMinSizes, int options = 0) : box(Box), minSizes(CellMinSizes) { init(options); }
+  linkCells(AABB &Box, vec3r &CellMinSizes, int options = 0) : box(Box), minSizes(CellMinSizes) {
+    init(options);
+  }
 
   // Dtor
   ~linkCells() {}
@@ -64,12 +66,9 @@ public:
     N.z = (unsigned int)floor((box.max.z - box.min.z) / minSizes.z);
 
     // We've got at least one element per side
-    if (N.x < 1)
-      N.x = 1;
-    if (N.y < 1)
-      N.y = 1;
-    if (N.z < 1)
-      N.z = 1;
+    if (N.x < 1) N.x = 1;
+    if (N.y < 1) N.y = 1;
+    if (N.z < 1) N.z = 1;
 
     // Cell dimensions
     double dx, dy, dz;
@@ -82,14 +81,10 @@ public:
     // Reserve memory
     AABB_Cell A;
     std::vector<AABB_Cell> kvec;
-    for (size_t k = 0; k < N.z; ++k) {
-      kvec.push_back(A);
-    }
+    for (size_t k = 0; k < N.z; ++k) { kvec.push_back(A); }
     std::vector<std::vector<AABB_Cell>> jvec;
-    for (size_t j = 0; j < N.y; ++j)
-      jvec.push_back(kvec);
-    for (size_t i = 0; i < N.x; ++i)
-      cells.push_back(jvec);
+    for (size_t j = 0; j < N.y; ++j) jvec.push_back(kvec);
+    for (size_t i = 0; i < N.x; ++i) cells.push_back(jvec);
 
     // Link the cells
     size_t ix0, ix1;
@@ -148,9 +143,7 @@ cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
 
           for (auto iix : xxx) {
             for (auto iiy : yyy) {
-              for (auto iiz : zzz) {
-                cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
-              }
+              for (auto iiz : zzz) { cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]); }
             }
           }
 
@@ -163,9 +156,7 @@ cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
   void clear() {
     for (size_t ix = 0; ix < N.x; ++ix) {
       for (size_t iy = 0; iy < N.y; ++iy) {
-        for (size_t iz = 0; iz < N.z; ++iz) {
-          cells[ix][iy][iz].bodies.clear();
-        }
+        for (size_t iz = 0; iz < N.z; ++iz) { cells[ix][iy][iz].bodies.clear(); }
       }
     }
     oversized_bodies.bodies.clear();
@@ -174,8 +165,7 @@ cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
   void add_body(size_t B, vec3r &pos, vec3r diag) {
     int ix, iy, iz;
 
-    if (diag.x > minSizes.x || diag.y > minSizes.y || diag.z > minSizes.z)
-      oversized_bodies.bodies.push_back(B);
+    if (diag.x > minSizes.x || diag.y > minSizes.y || diag.z > minSizes.z) oversized_bodies.bodies.push_back(B);
     else {
       ix = (int)trunc((pos.x - box.min.x) * factor.x);
       iy = (int)trunc((pos.y - box.min.y) * factor.y);
@@ -201,8 +191,7 @@ cells[ix][iy][iz].pcells.push_back(&cells[iix][iiy][iiz]);
     int ix, iy, iz;
     vec3r diag = aabb.max - aabb.min;
 
-    if (diag.x > minSizes.x || diag.y > minSizes.y || diag.z > minSizes.z)
-      oversized_bodies.bodies.push_back(B);
+    if (diag.x > minSizes.x || diag.y > minSizes.y || diag.z > minSizes.z) oversized_bodies.bodies.push_back(B);
     else {
       ix = (int)trunc((pos.x - box.min.x) * factor.x);
       iy = (int)trunc((pos.y - box.min.y) * factor.y);

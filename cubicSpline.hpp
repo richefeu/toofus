@@ -56,25 +56,23 @@ std::vector<SplineSet> spline(std::vector<double> &x, std::vector<double> &y) {
   std::vector<double> d(n);
   std::vector<double> h(n);
 
-  for (size_t i = 0; i < n; ++i)
-    h[i] = (x[i + 1] - x[i]);
+  for (size_t i = 0; i < n; ++i) h[i] = (x[i + 1] - x[i]);
 
   std::vector<double> alpha(n);
-  for (size_t i = 1; i < n; ++i)
-    alpha[i] = (3.0 * (a[i + 1] - a[i]) / h[i] - 3.0 * (a[i] - a[i - 1]) / h[i - 1]);
+  for (size_t i = 1; i < n; ++i) alpha[i] = (3.0 * (a[i + 1] - a[i]) / h[i] - 3.0 * (a[i] - a[i - 1]) / h[i - 1]);
 
   std::vector<double> c(n + 1);
   std::vector<double> l(n + 1);
   std::vector<double> mu(n + 1);
   std::vector<double> z(n + 1);
-  l[0] = 1.0;
+  l[0]  = 1.0;
   mu[0] = 0.0;
-  z[0] = 0.0;
+  z[0]  = 0.0;
 
   for (size_t i = 1; i < n; ++i) {
-    l[i] = 2.0 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
+    l[i]  = 2.0 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
     mu[i] = h[i] / l[i];
-    z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
+    z[i]  = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
   }
 
   l[n] = 1.0;
@@ -105,16 +103,16 @@ void getSlineCurve(std::vector<SplineSet> &cs, std::vector<double> &xsv, std::ve
     double dx = (cs[i + 1].x - cs[i].x) / (double)ndiv;
     for (double xs = cs[i].x; xs < cs[i + 1].x; xs += dx) {
       double delta = xs - cs[i].x;
-      double ys = cs[i].a + cs[i].b * delta + cs[i].c * delta * delta + cs[i].d * delta * delta * delta;
+      double ys    = cs[i].a + cs[i].b * delta + cs[i].c * delta * delta + cs[i].d * delta * delta * delta;
       xsv.push_back(xs);
       ysv.push_back(ys);
     }
   }
   // last point
-  size_t i2 = cs.size() - 1;
-  size_t i1 = i2 - 1;
+  size_t i2    = cs.size() - 1;
+  size_t i1    = i2 - 1;
   double delta = cs[i2].x - cs[i1].x;
-  double ys = cs[i1].a + cs[i1].b * delta + cs[i1].c * delta * delta + cs[i1].d * delta * delta * delta;
+  double ys    = cs[i1].a + cs[i1].b * delta + cs[i1].c * delta * delta + cs[i1].d * delta * delta * delta;
   xsv.push_back(cs[i2].x);
   ysv.push_back(ys);
 }

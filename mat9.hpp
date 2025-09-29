@@ -76,7 +76,9 @@ public:
    * @param col2 The second column of the matrix.
    * @param col3 The third column of the matrix.
    */
-  mat9(const vec3<T> &col1, const vec3<T> &col2, const vec3<T> &col3) { set(col1, col2, col3); }
+  mat9(const vec3<T> &col1, const vec3<T> &col2, const vec3<T> &col3) {
+    set(col1, col2, col3);
+  }
 
   /**
    * @brief Constructs a 3x3 matrix from an array.
@@ -131,7 +133,9 @@ public:
    *
    * @return A 3x3 zero matrix.
    */
-  static mat9 zero() { return mat9(0, 0, 0, 0, 0, 0, 0, 0, 0); }
+  static mat9 zero() {
+    return mat9(0, 0, 0, 0, 0, 0, 0, 0, 0);
+  }
 
   /**
    * @brief Returns a 3x3 identity matrix.
@@ -142,7 +146,9 @@ public:
    *
    * @return The 3x3 identity matrix.
    */
-  static mat9 unit() { return mat9(1, 0, 0, 0, 1, 0, 0, 0, 1); }
+  static mat9 unit() {
+    return mat9(1, 0, 0, 0, 1, 0, 0, 0, 1);
+  }
 
   /**
    * @brief Returns a 3x3 matrix with all elements set to one.
@@ -152,7 +158,9 @@ public:
    *
    * @return A 3x3 matrix with all elements set to one.
    */
-  static mat9 one() { return mat9(1, 1, 1, 1, 1, 1, 1, 1, 1); }
+  static mat9 one() {
+    return mat9(1, 1, 1, 1, 1, 1, 1, 1, 1);
+  }
 
   /**
    * Sets the elements of the matrix to the specified values.
@@ -212,7 +220,7 @@ public:
    * @param col The vector whose components are assigned to the column.
    */
   void set_col(int i, const vec3<T> &col) {
-    *(&xx + i) = col.x;
+    *(&xx + i)     = col.x;
     *(&xx + 3 + i) = col.y;
     *(&xx + 6 + i) = col.z;
   }
@@ -270,10 +278,18 @@ public:
    * @param i The index of the element to access (0-based).
    * @return The element at the specified index.
    */
-  T &operator[](int i) { return *(&xx + i); }
-  T &operator[](size_t i) { return *(&xx + i); }
-  const T &operator[](int i) const { return *(&xx + i); }
-  const T &operator[](size_t i) const { return *(&xx + i); }
+  T &operator[](int i) {
+    return *(&xx + i);
+  }
+  T &operator[](size_t i) {
+    return *(&xx + i);
+  }
+  const T &operator[](int i) const {
+    return *(&xx + i);
+  }
+  const T &operator[](size_t i) const {
+    return *(&xx + i);
+  }
 
   /**
    * @brief Accesses the element at the specified row and column.
@@ -285,8 +301,12 @@ public:
    * @param column The column of the element to access (0-based).
    * @return The element at the specified row and column.
    */
-  T &at(int line, int column) { return *(&xx + 3 * line + column); }
-  const T &at(int line, int column) const { return *(&xx + 3 * line + column); }
+  T &at(int line, int column) {
+    return *(&xx + 3 * line + column);
+  }
+  const T &at(int line, int column) const {
+    return *(&xx + 3 * line + column);
+  }
 
   /**
    * @brief Returns a pointer to the first element of the matrix.
@@ -297,7 +317,9 @@ public:
    *
    * @return A pointer to the first element of the matrix.
    */
-  T *c_mtx() { return &xx; }
+  T *c_mtx() {
+    return &xx;
+  }
 
   /**
    * @brief Adds two 3x3 matrices element-wise.
@@ -341,7 +363,9 @@ public:
    * @param a The matrix to be negated.
    * @return A new matrix resulting from the negation of matrix a.
    */
-  friend mat9 operator-(const mat9 &a) { return mat9(-a.xx, -a.xy, -a.xz, -a.yx, -a.yy, -a.yz, -a.zx, -a.zy, -a.zz); }
+  friend mat9 operator-(const mat9 &a) {
+    return mat9(-a.xx, -a.xy, -a.xz, -a.yx, -a.yy, -a.yz, -a.zx, -a.zy, -a.zz);
+  }
 
   /**
    * @brief Scales a 3x3 matrix by a scalar.
@@ -440,7 +464,9 @@ public:
    * @param a The input matrix.
    * @return A new matrix representing the deviatoric part of the input matrix.
    */
-  friend mat9 deviatoric(const mat9 &a) { return a - spheric(a); }
+  friend mat9 deviatoric(const mat9 &a) {
+    return a - spheric(a);
+  }
 
   /**
    * @brief Computes the product of a scalar and a 3x3 matrix.
@@ -486,8 +512,7 @@ public:
    */
   friend mat9 operator/(const mat9 &a, T K) {
     T k = 0.0;
-    if (K != 0.0)
-      k = 1.0 / K;
+    if (K != 0.0) k = 1.0 / K;
     return mat9(k * a.xx, k * a.xy, k * a.xz, k * a.yx, k * a.yy, k * a.yz, k * a.zx, k * a.zy, k * a.zz);
   }
 
@@ -562,9 +587,7 @@ public:
    */
   void operator/=(T K) {
     T k = 0.0;
-    if (K != 0.0) {
-      k = 1.0 / K;
-    }
+    if (K != 0.0) { k = 1.0 / K; }
     xx *= k;
     xy *= k;
     xz *= k;
@@ -582,7 +605,9 @@ public:
    * This function modifies the current matrix by setting each of its elements
    * to zero, effectively resetting it to a zero matrix.
    */
-  void setZero() { xx = xy = xz = yx = yy = yz = zx = zy = zz = 0.0; }
+  void setZero() {
+    xx = xy = xz = yx = yy = yz = zx = zy = zz = 0.0;
+  }
 
   /**
    * @brief Sets the matrix to the identity matrix.
@@ -632,7 +657,9 @@ public:
    *
    * @return The determinant of this matrix.
    */
-  T det() const { return (xx * (yy * zz - zy * yz) - yx * (xy * zz - zy * xz) + zx * (xy * yz - yy * xz)); }
+  T det() const {
+    return (xx * (yy * zz - zy * yz) - yx * (xy * zz - zy * xz) + zx * (xy * yz - yy * xz));
+  }
 
   /**
    * @brief Computes the trace of this matrix.
@@ -641,7 +668,9 @@ public:
    *
    * @return The trace of this matrix.
    */
-  T trace() const { return (xx + yy + zz); }
+  T trace() const {
+    return (xx + yy + zz);
+  }
 
   /**
    * @brief Computes the transpose of this matrix in-place.
@@ -664,28 +693,36 @@ public:
    *
    * @return The transpose of this matrix.
    */
-  mat9<T> transposed() const { return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz); }
+  mat9<T> transposed() const {
+    return mat9<T>(xx, yx, zx, xy, yy, zy, xz, yz, zz);
+  }
 
   /**
    * @brief Returns the x column of this matrix.
    *
    * @return The x column of this matrix as a vec3<T>.
    */
-  vec3<T> get_xcol() const { return vec3<T>(xx, yx, zx); }
+  vec3<T> get_xcol() const {
+    return vec3<T>(xx, yx, zx);
+  }
 
   /**
    * @brief Returns the y column of this matrix.
    *
    * @return The y column of this matrix as a vec3<T>.
    */
-  vec3<T> get_ycol() const { return vec3<T>(xy, yy, zy); }
+  vec3<T> get_ycol() const {
+    return vec3<T>(xy, yy, zy);
+  }
 
   /**
    * @brief Returns the z column of this matrix.
    *
    * @return The z column of this matrix as a vec3<T>.
    */
-  vec3<T> get_zcol() const { return vec3<T>(xz, yz, zz); }
+  vec3<T> get_zcol() const {
+    return vec3<T>(xz, yz, zz);
+  }
 
   /**
    * @brief Returns the i-th column of this matrix.
@@ -693,7 +730,9 @@ public:
    * @param i The column to return, with 0 being the x column, 1 the y column and 2 the z column.
    * @return The i-th column of this matrix as a vec3<T>.
    */
-  vec3<T> get_col(int i) const { return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i)); }
+  vec3<T> get_col(int i) const {
+    return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i));
+  }
 
   /**
    * @brief Returns the i-th column of this matrix.
@@ -701,7 +740,9 @@ public:
    * @param i The column to return, with 0 being the x column, 1 the y column and 2 the z column.
    * @return The i-th column of this matrix as a vec3<T>.
    */
-  vec3<T> get_col(size_t i) const { return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i)); }
+  vec3<T> get_col(size_t i) const {
+    return vec3<T>(*(&xx + i), *(&xx + 3 + i), *(&xx + 6 + i));
+  }
 
   /**
    * @brief Computes the inverse of this matrix.
@@ -754,18 +795,14 @@ public:
     // Set vectors to the identity matrix
     V.setIdentity();
     // Set B and D values to the diagonal of the input matrix
-    for (size_t i = 0; i < 3; i++) {
-      B[i] = D[i] = A[i * 3 + i];
-    }
+    for (size_t i = 0; i < 3; i++) { B[i] = D[i] = A[i * 3 + i]; }
 
     // Rotate until off-diagonal elements of input matrix are zero
     for (int sweep = 0; sweep++ < 50;) {
       double sum = fabs(A[0 * 3 + 1]) + fabs(A[0 * 3 + 2]) + fabs(A[1 * 3 + 2]);
       double thresh;
 
-      if (fabs(sum) < 1.0e-15) {
-        return rot;
-      }
+      if (fabs(sum) < 1.0e-15) { return rot; }
 
       thresh = (sweep < 4) ? sum * 0.2 / 9.0 : 0.0; // First three sweeps?
 
@@ -775,24 +812,21 @@ public:
 
           // After 4 sweeps, skip the rotation if the
           // off-diagonal element is small.
-          if ((sweep > 4) && (g < 1.0e-15))
-            A[p * 3 + q] = 0.0;
+          if ((sweep > 4) && (g < 1.0e-15)) A[p * 3 + q] = 0.0;
           else if (fabs(A[p * 3 + q]) > thresh) {
             double h = D[q] - D[p];
             double c, s, t; // cosine, sine, tangent of rotation angle
             double tau;
 
-            if (g < 1.0e-20)
-              t = A[p * 3 + q] / h;
+            if (g < 1.0e-20) t = A[p * 3 + q] / h;
             else {
               double theta = 0.5 * h / A[p * 3 + q];
-              t = 1.0 / (fabs(theta) + sqrt(1.0 + theta * theta));
-              if (theta < 0.0)
-                t = -t;
+              t            = 1.0 / (fabs(theta) + sqrt(1.0 + theta * theta));
+              if (theta < 0.0) t = -t;
             }
 
-            c = 1.0 / sqrt(1.0 + t * t); // cosine of rotation angle
-            s = t * c;                   // sine of rotation angle
+            c   = 1.0 / sqrt(1.0 + t * t); // cosine of rotation angle
+            s   = t * c;                   // sine of rotation angle
             tau = s / (1.0 + c);
 
             h = t * A[p * 3 + q];
@@ -804,32 +838,32 @@ public:
 
             // case of rotations 0 <= j < p-1
             for (int j = 0; j <= p - 1; j++) {
-              g = A[j * 3 + p];
-              h = A[j * 3 + q];
+              g            = A[j * 3 + p];
+              h            = A[j * 3 + q];
               A[j * 3 + p] = g - s * (h + g * tau);
               A[j * 3 + q] = h + s * (g - h * tau);
             }
 
             // case of rotations p < j < q
             for (int j = p + 1; j < q; j++) {
-              g = A[p * 3 + j];
-              h = A[j * 3 + q];
+              g            = A[p * 3 + j];
+              h            = A[j * 3 + q];
               A[p * 3 + j] = g - s * (h - g * tau);
               A[j * 3 + q] = h + s * (g - h * tau);
             }
 
             // case of rotations q < j < 3
             for (int j = q + 1; j < 3; j++) {
-              g = A[p * 3 + j];
-              h = A[q * 3 + j];
+              g            = A[p * 3 + j];
+              h            = A[q * 3 + j];
               A[p * 3 + j] = g - s * (h + g * tau);
               A[q * 3 + j] = h + s * (g - h * tau);
             }
 
             // Set the eigen vectors
             for (int j = 0; j < 3; j++) {
-              g = V[j * 3 + p];
-              h = V[j * 3 + q];
+              g            = V[j * 3 + p];
+              h            = V[j * 3 + q];
               V[j * 3 + p] = g - s * (h + g * tau);
               V[j * 3 + q] = h + s * (g - h * tau);
             }
@@ -895,7 +929,9 @@ public:
    * @param other The matrix to compare with this matrix.
    * @return true if any elements of the matrices are not equal, false otherwise.
    */
-  bool operator!=(const mat9<T> &other) const { return !(*this == other); }
+  bool operator!=(const mat9<T> &other) const {
+    return !(*this == other);
+  }
 
   friend std::ostream &operator<<(std::ostream &pStr, const mat9 &M) {
     return (pStr << M.xx << ' ' << M.xy << ' ' << M.xz << ' ' << M.yx << ' ' << M.yy << ' ' << M.yz << ' ' << M.zx

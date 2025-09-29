@@ -59,9 +59,13 @@ public:
     @brief Get the radius of a sphere that surrounds the AABB_2D,
            centered at the AABB_2D center
   */
-  double getRadius() const { return 0.25 * (max - min).length(); }
+  double getRadius() const {
+    return 0.25 * (max - min).length();
+  }
 
-  vec2r getCenter() const { return 0.5 * (min + max); }
+  vec2r getCenter() const {
+    return 0.5 * (min + max);
+  }
 
   /**
     @brief The AABB_2D is set to a single point
@@ -96,13 +100,13 @@ public:
     max.y += more;
   }
 
-/**
-  @brief Expands the AABB_2D by a specified amount in each direction.
+  /**
+    @brief Expands the AABB_2D by a specified amount in each direction.
 
-  @param more A vec2r object specifying the amount to expand the AABB_2D.
-              The min coordinates are decremented by the respective components of more,
-              and the max coordinates are incremented by the respective components of more.
-*/
+    @param more A vec2r object specifying the amount to expand the AABB_2D.
+                The min coordinates are decremented by the respective components of more,
+                and the max coordinates are incremented by the respective components of more.
+  */
   void enlarge(const vec2r &more) {
     min.x -= more.x;
     min.y -= more.y;
@@ -121,7 +125,7 @@ public:
     min = component_min(min, more.min);
     max = component_max(max, more.max);
   }
-  
+
   /**
     @brief Expands the AABB_2D to include the given AABB_2D.
 
@@ -155,8 +159,7 @@ public:
     @returns true if the AABB_2Ds intersect, false otherwise.
   */
   bool intersect(const AABB_2D &a) const {
-    if (max.x < a.min.x || a.max.x < min.x || max.y < a.min.y || a.max.y < min.y)
-      return false;
+    if (max.x < a.min.x || a.max.x < min.x || max.y < a.min.y || a.max.y < min.y) return false;
     return true;
   }
 
@@ -170,8 +173,7 @@ public:
     @returns true if the AABB_2D intersects with the point, false otherwise.
   */
   bool intersect(const vec2r &a) const {
-    if (max.x < a.x || a.x < min.x || max.y < a.y || a.y < min.y)
-      return false;
+    if (max.x < a.x || a.x < min.x || max.y < a.y || a.y < min.y) return false;
     return true;
   }
 
@@ -179,8 +181,7 @@ public:
     @brief Check intersection only in the X direction
   */
   bool intersectX(const AABB_2D &a) const {
-    if (max.x < a.min.x || a.max.x < min.x)
-      return false;
+    if (max.x < a.min.x || a.max.x < min.x) return false;
     return true;
   }
 
@@ -188,8 +189,7 @@ public:
     @brief Check intersection only in the Y direction
   */
   bool intersectY(const AABB_2D &a) const {
-    if (max.y < a.min.y || a.max.y < min.y)
-      return false;
+    if (max.y < a.min.y || a.max.y < min.y) return false;
     return true;
   }
 };

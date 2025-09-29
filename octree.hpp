@@ -31,14 +31,14 @@ struct ot_Point {
 
 struct ot_Shape {
   virtual ~ot_Shape() {}
-  virtual bool contains(ot_Point &p) = 0;
+  virtual bool contains(ot_Point &p)                      = 0;
   virtual void translate(double Tx, double Ty, double Tz) = 0;
-  virtual double Xmin() = 0;
-  virtual double Xmax() = 0;
-  virtual double Ymin() = 0;
-  virtual double Ymax() = 0;
-  virtual double Zmin() = 0;
-  virtual double Zmax() = 0;
+  virtual double Xmin()                                   = 0;
+  virtual double Xmax()                                   = 0;
+  virtual double Ymin()                                   = 0;
+  virtual double Ymax()                                   = 0;
+  virtual double Zmin()                                   = 0;
+  virtual double Zmax()                                   = 0;
 };
 
 struct ot_Sphere : public ot_Shape {
@@ -67,32 +67,44 @@ struct ot_Sphere : public ot_Shape {
    * Returns the minimum x-coordinate of the sphere.
    * @return The x-coordinate of the minimum point of the sphere.
    */
-  double Xmin() { return (x - r); }
+  double Xmin() {
+    return (x - r);
+  }
   /**
    * Returns the maximum x-coordinate of the sphere.
    * @return The x-coordinate of the maximum point of the sphere.
    */
-  double Xmax() { return (x + r); }
+  double Xmax() {
+    return (x + r);
+  }
   /**
    * Returns the minimum y-coordinate of the sphere.
    * @return The y-coordinate of the minimum point of the sphere.
    */
-  double Ymin() { return (y - r); }
+  double Ymin() {
+    return (y - r);
+  }
   /**
    * Returns the maximum y-coordinate of the sphere.
    * @return The y-coordinate of the maximum point of the sphere.
    */
-  double Ymax() { return (y + r); }
+  double Ymax() {
+    return (y + r);
+  }
   /**
    * Returns the minimum z-coordinate of the sphere.
    * @return The z-coordinate of the minimum point of the sphere.
    */
-  double Zmin() { return (z - r); }
+  double Zmin() {
+    return (z - r);
+  }
   /**
    * Returns the maximum z-coordinate of the sphere.
    * @return The z-coordinate of the maximum point of the sphere.
    */
-  double Zmax() { return (z + r); }
+  double Zmax() {
+    return (z + r);
+  }
 
   /**
    * Tests if the given point is within the sphere.
@@ -156,32 +168,44 @@ struct ot_Box : public ot_Shape {
    * Returns the minimum x-coordinate of the box.
    * @return The x-coordinate of the minimum point of the box.
    */
-  double Xmin() { return xmin; }
+  double Xmin() {
+    return xmin;
+  }
   /**
    * Returns the maximum x-coordinate of the box.
    * @return The x-coordinate of the maximum point of the box.
    */
-  double Xmax() { return xmax; }
+  double Xmax() {
+    return xmax;
+  }
   /**
    * Returns the minimum y-coordinate of the box.
    * @return The y-coordinate of the minimum point of the box.
    */
-  double Ymin() { return ymin; }
+  double Ymin() {
+    return ymin;
+  }
   /**
    * Returns the maximum y-coordinate of the box.
    * @return The y-coordinate of the maximum point of the box.
    */
-  double Ymax() { return ymax; }
+  double Ymax() {
+    return ymax;
+  }
   /**
    * Returns the minimum z-coordinate of the box.
    * @return The z-coordinate of the minimum point of the box.
    */
-  double Zmin() { return zmin; }
+  double Zmin() {
+    return zmin;
+  }
   /**
    * Returns the maximum z-coordinate of the box.
    * @return The z-coordinate of the maximum point of the box.
    */
-  double Zmax() { return zmax; }
+  double Zmax() {
+    return zmax;
+  }
 
   /**
    * Check if a point is contained within the box.
@@ -267,7 +291,7 @@ private:
     xmax_ymin_zmax = new OcTree(xmid, ymin, zmid, xmax, ymid, zmax, capacity);
     xmax_ymax_zmax = new OcTree(xmid, ymid, zmid, xmax, ymax, zmax, capacity);
     xmin_ymax_zmax = new OcTree(xmin, ymid, zmid, xmid, ymax, zmax, capacity);
-    divided = true;
+    divided        = true;
   }
 
 public:
@@ -286,8 +310,8 @@ public:
     boundary.xmax = 0.0;
     boundary.ymax = 0.0;
     boundary.zmax = 0.0;
-    capacity = 0;
-    divided = false;
+    capacity      = 0;
+    divided       = false;
   }
 
   /**
@@ -304,7 +328,7 @@ public:
   OcTree(ot_Box &boundary_, size_t capacity_) {
     boundary = boundary_;
     capacity = capacity_;
-    divided = false;
+    divided  = false;
   }
 
   /**
@@ -330,8 +354,8 @@ public:
     boundary.xmax = xmax_;
     boundary.ymax = ymax_;
     boundary.zmax = zmax_;
-    capacity = capacity_;
-    divided = false;
+    capacity      = capacity_;
+    divided       = false;
   }
 
   /**
@@ -348,17 +372,13 @@ public:
    * @return true if the point was inserted, false otherwise.
    */
   bool insert(ot_Point &point) {
-    if (!boundary.contains(point)) {
-      return false;
-    }
+    if (!boundary.contains(point)) { return false; }
 
     if (points.size() < capacity) {
       points.push_back(point);
       return true;
     } else {
-      if (!divided) {
-        subdivide();
-      }
+      if (!divided) { subdivide(); }
 
       if (xmin_ymin_zmin->insert(point)) {
         return true;
@@ -393,15 +413,10 @@ public:
    * @param indexMin The minimum index of points to consider.
    */
   template <typename T> void query(T &range, std::vector<ot_Point> &found, size_t indexMin = 0) {
-    if (!boundary.intersects(range)) {
-      return;
-    }
+    if (!boundary.intersects(range)) { return; }
     for (size_t i = 0; i < points.size(); i++) {
-      if (points[i].index < indexMin)
-        continue;
-      if (range.contains(points[i])) {
-        found.push_back(points[i]);
-      }
+      if (points[i].index < indexMin) continue;
+      if (range.contains(points[i])) { found.push_back(points[i]); }
     }
     if (divided) {
       xmin_ymin_zmin->query(range, found, indexMin);
@@ -428,27 +443,27 @@ public:
     double cpyX = 0.0;
     double cpyY = 0.0;
     double cpyZ = 0.0;
-    bool cut = false;
+    bool cut    = false;
     if (range.Xmax() > boundary.xmax && range.Xmin() < boundary.xmax) {
       cpyX = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.Xmin() < boundary.xmin && range.Xmax() > boundary.xmin) {
       cpyX = 1.0;
-      cut = true;
+      cut  = true;
     }
     if (range.Ymax() > boundary.ymax && range.Ymin() < boundary.ymax) {
       cpyY = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.Ymin() < boundary.ymin && range.Ymax() > boundary.ymin) {
       cpyY = 1.0;
-      cut = true;
+      cut  = true;
     }
     if (range.Zmax() > boundary.zmax && range.Zmin() < boundary.zmax) {
       cpyZ = -1.0;
-      cut = true;
+      cut  = true;
     } else if (range.Zmin() < boundary.zmin && range.Zmax() > boundary.zmin) {
       cpyZ = 1.0;
-      cut = true;
+      cut  = true;
     }
 
     query(range, found, indexMin);
@@ -459,12 +474,9 @@ public:
       double LZ = cpyZ * fabs(boundary.zmax - boundary.zmin);
 
       int nbZero = 0;
-      if (cpyX == 0.0)
-        nbZero++;
-      if (cpyY == 0.0)
-        nbZero++;
-      if (cpyZ == 0.0)
-        nbZero++;
+      if (cpyX == 0.0) nbZero++;
+      if (cpyY == 0.0) nbZero++;
+      if (cpyZ == 0.0) nbZero++;
 
       // one single copy (intersects a face)
       if (nbZero == 2) {

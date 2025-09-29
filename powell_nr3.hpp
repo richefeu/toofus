@@ -89,9 +89,9 @@ struct Bracketmethod {
     cx = bx + GOLD * (bx - ax);
     fc = func(cx);
     while (fb > fc) {
-      double r = (bx - ax) * (fb - fc);
-      double q = (bx - cx) * (fb - fa);
-      double u = bx - ((bx - cx) * q - (bx - ax) * r) / (2.0 * SIGN(MAX(abs(q - r), TINY), q - r));
+      double r    = (bx - ax) * (fb - fc);
+      double q    = (bx - cx) * (fb - fa);
+      double u    = bx - ((bx - cx) * q - (bx - ax) * r) / (2.0 * SIGN(MAX(abs(q - r), TINY), q - r));
       double ulim = bx + GLIMIT * (cx - bx);
       if ((bx - u) * (u - cx) > 0.0) {
         fu = func(u);
@@ -106,7 +106,7 @@ struct Bracketmethod {
           fc = fu;
           return;
         }
-        u = cx + GOLD * (cx - bx);
+        u  = cx + GOLD * (cx - bx);
         fu = func(u);
       } else if ((cx - u) * (u - ulim) > 0.0) {
         fu = func(u);
@@ -115,10 +115,10 @@ struct Bracketmethod {
           shft3(fb, fc, fu, func(u));
         }
       } else if ((u - ulim) * (ulim - cx) >= 0.0) {
-        u = ulim;
+        u  = ulim;
         fu = func(u);
       } else {
-        u = cx + GOLD * (cx - bx);
+        u  = cx + GOLD * (cx - bx);
         fu = func(u);
       }
       shft3(ax, bx, cx, u);
@@ -147,9 +147,9 @@ struct Brent : Bracketmethod {
   Brent(const double toll = 3.0e-8) : fmin(0.0), tol(toll) {}
   template <class T> double minimize(T &func) {
     using namespace std;
-    const int ITMAX = 100;
+    const int ITMAX    = 100;
     const double CGOLD = 0.3819660;
-    const double ZEPS = numeric_limits<double>::epsilon() * 1.0e-3;
+    const double ZEPS  = numeric_limits<double>::epsilon() * 1.0e-3;
     double a, b, d = 0.0, etemp, fu, fv, fw, fx;
     double p, q, r, tol1, tol2, u, v, w, x, xm;
     double e = 0.0;
@@ -159,10 +159,10 @@ struct Brent : Bracketmethod {
     x = w = v = bx;
     fw = fv = fx = func(x);
     for (int iter = 0; iter < ITMAX; iter++) {
-      xm = 0.5 * (a + b);
+      xm   = 0.5 * (a + b);
       tol2 = 2.0 * (tol1 = tol * abs(x) + ZEPS);
       if (abs(x - xm) <= (tol2 - 0.5 * (b - a))) {
-        fmin = fx;
+        fmin        = fx;
         return xmin = x;
       }
       if (abs(e) > tol1) {
@@ -170,43 +170,37 @@ struct Brent : Bracketmethod {
         q = (x - v) * (fx - fw);
         p = (x - v) * q - (x - w) * r;
         q = 2.0 * (q - r);
-        if (q > 0.0)
-          p = -p;
-        q = abs(q);
+        if (q > 0.0) p = -p;
+        q     = abs(q);
         etemp = e;
-        e = d;
+        e     = d;
         if (abs(p) >= abs(0.5 * q * etemp) || p <= q * (a - x) || p >= q * (b - x))
           d = CGOLD * (e = (x >= xm ? a - x : b - x));
         else {
           d = p / q;
           u = x + d;
-          if (u - a < tol2 || b - u < tol2)
-            d = SIGN(tol1, xm - x);
+          if (u - a < tol2 || b - u < tol2) d = SIGN(tol1, xm - x);
         }
       } else {
         d = CGOLD * (e = (x >= xm ? a - x : b - x));
       }
-      u = (abs(d) >= tol1 ? x + d : x + SIGN(tol1, d));
+      u  = (abs(d) >= tol1 ? x + d : x + SIGN(tol1, d));
       fu = func(u);
       if (fu <= fx) {
-        if (u >= x)
-          a = x;
-        else
-          b = x;
+        if (u >= x) a = x;
+        else b = x;
         shft3(v, w, x, u);
         shft3(fv, fw, fx, fu);
       } else {
-        if (u < x)
-          a = u;
-        else
-          b = u;
+        if (u < x) a = u;
+        else b = u;
         if (fu <= fw || w == x) {
-          v = w;
-          w = u;
+          v  = w;
+          w  = u;
           fv = fw;
           fw = fu;
         } else if (fu <= fv || v == x || v == w) {
-          v = u;
+          v  = u;
           fv = fu;
         }
       }
@@ -225,8 +219,7 @@ template <class T> struct F1dim {
   F1dim(std::vector<double> &pp, std::vector<double> &xii, T &funcc)
       : p(pp), xi(xii), n(pp.size()), func(funcc), xt(n) {}
   double operator()(const double x) {
-    for (int j = 0; j < n; j++)
-      xt[j] = p[j] + x * xi[j];
+    for (int j = 0; j < n; j++) xt[j] = p[j] + x * xi[j];
     return func(xt);
   }
 };
@@ -269,13 +262,10 @@ template <class T> struct Powell : Linemethod<T> {
     int n = pp.size();
     vector<vector<double>> ximat;
     ximat.resize(n);
+    for (int i = 0; i < n; i++) ximat[i].resize(n);
     for (int i = 0; i < n; i++)
-      ximat[i].resize(n);
-    for (int i = 0; i < n; i++)
-      for (int j = 0; j < n; j++)
-        ximat[i][j] = 0.0;
-    for (int i = 0; i < n; i++)
-      ximat[i][i] = 1.0;
+      for (int j = 0; j < n; j++) ximat[i][j] = 0.0;
+    for (int i = 0; i < n; i++) ximat[i][i] = 1.0;
     return minimize(pp, ximat);
   }
   // A version with possibility to initialize the diagonal of xi
@@ -284,50 +274,42 @@ template <class T> struct Powell : Linemethod<T> {
     int n = pp.size();
     vector<vector<double>> ximat;
     ximat.resize(n);
+    for (int i = 0; i < n; i++) ximat[i].resize(n);
     for (int i = 0; i < n; i++)
-      ximat[i].resize(n);
-    for (int i = 0; i < n; i++)
-      for (int j = 0; j < n; j++)
-        ximat[i][j] = 0.0;
-    for (int i = 0; i < n; i++)
-      ximat[i][i] = xivec[i];
+      for (int j = 0; j < n; j++) ximat[i][j] = 0.0;
+    for (int i = 0; i < n; i++) ximat[i][i] = xivec[i];
     return minimize(pp, ximat);
   }
   std::vector<double> minimize(std::vector<double> &pp, std::vector<std::vector<double>> &ximat) {
     using namespace std;
-    const int ITMAX = 200;
+    const int ITMAX   = 200;
     const double TINY = 1.0e-25;
     double fptt;
     int n = pp.size();
-    p = pp;
+    p     = pp;
     vector<double> pt(n), ptt(n);
     xi.resize(n);
     fret = func(p);
-    for (int j = 0; j < n; j++)
-      pt[j] = p[j];
+    for (int j = 0; j < n; j++) pt[j] = p[j];
     for (iter = 0;; ++iter) {
-      double fp = fret;
-      int ibig = 0;
+      double fp  = fret;
+      int ibig   = 0;
       double del = 0.0;
       for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++)
-          xi[j] = ximat[j][i];
+        for (int j = 0; j < n; j++) xi[j] = ximat[j][i];
         fptt = fret;
         fret = linmin();
         if (fptt - fret > del) {
-          del = fptt - fret;
+          del  = fptt - fret;
           ibig = i + 1;
         }
       }
-      if (2.0 * (fp - fret) <= ftol * (abs(fp) + abs(fret)) + TINY) {
-        return p;
-      }
-      if (iter == ITMAX)
-        cerr << "powell exceeding maximum iterations.\n";
+      if (2.0 * (fp - fret) <= ftol * (abs(fp) + abs(fret)) + TINY) { return p; }
+      if (iter == ITMAX) cerr << "powell exceeding maximum iterations.\n";
       for (int j = 0; j < n; j++) {
         ptt[j] = 2.0 * p[j] - pt[j];
-        xi[j] = p[j] - pt[j];
-        pt[j] = p[j];
+        xi[j]  = p[j] - pt[j];
+        pt[j]  = p[j];
       }
       fptt = func(ptt);
       if (fptt < fp) {
@@ -336,7 +318,7 @@ template <class T> struct Powell : Linemethod<T> {
           fret = linmin();
           for (int j = 0; j < n; j++) {
             ximat[j][ibig - 1] = ximat[j][n - 1];
-            ximat[j][n - 1] = xi[j];
+            ximat[j][n - 1]    = xi[j];
           }
         }
       }

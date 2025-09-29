@@ -44,7 +44,9 @@ template <class T> struct Tempo {
    @details Add a pointer to the list of targets to send the value to.
    @param[in] add pointer to a value of type T
    */
-  void plug(T *add) { addresses.push_back(add); }
+  void plug(T *add) {
+    addresses.push_back(add);
+  }
 
   /**
    @brief Send a value to all targets.
@@ -55,8 +57,7 @@ template <class T> struct Tempo {
   void send(T value) {
     for (size_t i = 0; i < addresses.size(); i++) {
       T *add = addresses[i];
-      if (add != nullptr)
-        *add = value;
+      if (add != nullptr) *add = value;
     }
   }
 

@@ -51,8 +51,12 @@ public:
     m_myIndex = myIndex;
   }
 
-  void setOutputVal(double val) { m_outputVal = val; }
-  double getOutputVal() const { return m_outputVal; }
+  void setOutputVal(double val) {
+    m_outputVal = val;
+  }
+  double getOutputVal() const {
+    return m_outputVal;
+  }
 
   /**
    * \brief Feed forward the output of the previous layer to calculate the current
@@ -83,7 +87,7 @@ public:
    */
   void calcOutputGradients(double targetVal) {
     double delta = targetVal - m_outputVal;
-    m_gradient = delta * Neuron::outputLayerActivationFunctionDerivative(m_outputVal);
+    m_gradient   = delta * Neuron::outputLayerActivationFunctionDerivative(m_outputVal);
   }
 
   /**
@@ -97,19 +101,19 @@ public:
     m_gradient = dow * Neuron::hiddenLayerActivationFunctionDerivative(m_outputVal);
   }
 
-/**
- * \brief Update the input weights of the neuron based on the gradients.
- *
- * This function adjusts the weights of the connections from the previous
- * layer to this neuron. It uses the gradient calculated during backpropagation
- * to determine how much to change each weight.
- *
- * \param[in,out] prevLayer The layer of neurons that provides input to this neuron.
- *                          The weights of these neurons will be updated.
- */
+  /**
+   * \brief Update the input weights of the neuron based on the gradients.
+   *
+   * This function adjusts the weights of the connections from the previous
+   * layer to this neuron. It uses the gradient calculated during backpropagation
+   * to determine how much to change each weight.
+   *
+   * \param[in,out] prevLayer The layer of neurons that provides input to this neuron.
+   *                          The weights of these neurons will be updated.
+   */
   void updateInputWeights(Layer &prevLayer) {
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
-      Neuron &neuron = prevLayer[n];
+      Neuron &neuron        = prevLayer[n];
       double oldDeltaWeight = neuron.m_outputWeights[m_myIndex].deltaWeight;
 
       double newDeltaWeight = eta * neuron.getOutputVal() * m_gradient + alpha * oldDeltaWeight;
@@ -148,13 +152,13 @@ public:
   */
   static void setHiddenLayerActivation(std::function<double(double)> func,
                                        std::function<double(double)> funcDerivative) {
-    hiddenLayerActivationFunction = func;
+    hiddenLayerActivationFunction           = func;
     hiddenLayerActivationFunctionDerivative = funcDerivative;
   }
 
   static void setOutputLayerActivation(std::function<double(double)> func,
                                        std::function<double(double)> funcDerivative) {
-    outputLayerActivationFunction = func;
+    outputLayerActivationFunction           = func;
     outputLayerActivationFunctionDerivative = funcDerivative;
   }
 
@@ -175,82 +179,74 @@ public:
     }
 
     if (activationName == "ReLU") {
-      Function = [](double x) -> double { return std::max(0.0, x); };
+      Function           = [](double x) -> double { return std::max(0.0, x); };
       FunctionDerivative = [](double x) -> double {
-        if (x < 0.0)
-          {return 0.0;}
+        if (x < 0.0) { return 0.0; }
         return 1.0;
       };
     } else if (activationName == "LReLU") {
-      Function = [](double x) -> double { return std::max(0.1 * x, x); };
+      Function           = [](double x) -> double { return std::max(0.1 * x, x); };
       FunctionDerivative = [](double x) -> double {
-        if (x < 0.0)
-          {return 0.1;}
+        if (x < 0.0) { return 0.1; }
         return 1.0;
       };
     } else if (activationName == "ELU") {
       assert(param != nullptr);
       Function = [param](double x) -> double {
-        if (x < 0.0)
-          {return *param * (exp(x) - 1.0);}
+        if (x < 0.0) { return *param * (exp(x) - 1.0); }
         return x;
       };
       FunctionDerivative = [param](double x) -> double {
-        if (x < 0.0)
-          return *param * exp(x);
+        if (x < 0.0) return *param * exp(x);
         return 1.0;
       };
     } else if (activationName == "softmax") {
       assert(outputLayer != nullptr);
       Function = [outputLayer](double x) -> double {
         double sum = 0.0;
-        for (unsigned i = 0; i < outputLayer->size() - 1; ++i) {
-          sum += exp((*outputLayer)[i].getOutputVal());
-        }
+        for (unsigned i = 0; i < outputLayer->size() - 1; ++i) { sum += exp((*outputLayer)[i].getOutputVal()); }
         return x / sum;
       };
       FunctionDerivative = [outputLayer](double x) -> double {
         double sum = 0.0;
-        for (unsigned i = 0; i < outputLayer->size() - 1; ++i) {
-          sum += exp((*outputLayer)[i].getOutputVal());
-        }
+        for (unsigned i = 0; i < outputLayer->size() - 1; ++i) { sum += exp((*outputLayer)[i].getOutputVal()); }
         return 1.0 / sum;
       };
     } else if (activationName == "tanh") {
-      Function = [](double x) -> double { return tanh(x); };
+      Function           = [](double x) -> double { return tanh(x); };
       FunctionDerivative = [](double x) -> double { return 1.0 - tanh(x) * tanh(x); };
     } else if (activationName == "sigmoid") {
-      Function = [](double x) -> double { return 1.0 / (1.0 + exp(-x)); };
+      Function           = [](double x) -> double { return 1.0 / (1.0 + exp(-x)); };
       FunctionDerivative = [](double x) -> double {
         double sig = 1.0 / (1.0 + exp(-x));
         return sig * (1.0 - sig);
       };
     } else if (activationName == "none") {
-      Function = [](double x) -> double { return x; };
+      Function           = [](double x) -> double { return x; };
       FunctionDerivative = [](double x) -> double { return 1.0; };
     }
 
     if (hiddenOrOutput == HIDDEN_LAYERS) {
-      Neuron::hiddenLayerActivationFunction = Function;
+      Neuron::hiddenLayerActivationFunction           = Function;
       Neuron::hiddenLayerActivationFunctionDerivative = FunctionDerivative;
     } else if (hiddenOrOutput == OUTPUT_LAYER) {
-      Neuron::outputLayerActivationFunction = Function;
+      Neuron::outputLayerActivationFunction           = Function;
       Neuron::outputLayerActivationFunctionDerivative = FunctionDerivative;
     }
   }
 
   static void setWeightinitialization(double range, double shift) {
     Neuron::weightInitMultiplier = range;
-    Neuron::weightInitShift = shift;
+    Neuron::weightInitShift      = shift;
   }
 
   static void setWeightinitialization(std::string model) {
     if (model == "unif[0..1]") {
       Neuron::weightInitMultiplier = 1.0;
-      Neuron::weightInitShift = 0.0;
+      Neuron::weightInitShift      = 0.0;
     } else if (model == "unif[-1..1]") {
       Neuron::weightInitMultiplier = 2.0;
-      Neuron::weightInitShift = 0.5;
+      Neuron::weightInitShift      = 0.5;
     }
   }
 
@@ -275,14 +271,14 @@ private:
 
   static double weightInitMultiplier;
   static double weightInitShift;
-  static double randomWeight(void) { return weightInitMultiplier * (rand() / double(RAND_MAX) - weightInitShift); }
+  static double randomWeight(void) {
+    return weightInitMultiplier * (rand() / double(RAND_MAX) - weightInitShift);
+  }
 
   double sumDOW(const Layer &nextLayer) const {
     double sum = 0.0;
 
-    for (unsigned n = 0; n < nextLayer.size() - 1; ++n) {
-      sum += m_outputWeights[n].weight * nextLayer[n].m_gradient;
-    }
+    for (unsigned n = 0; n < nextLayer.size() - 1; ++n) { sum += m_outputWeights[n].weight * nextLayer[n].m_gradient; }
 
     return sum;
   }
@@ -300,17 +296,17 @@ std::function<double(double)> Neuron::hiddenLayerActivationFunction = [](double 
 std::function<double(double)> Neuron::hiddenLayerActivationFunctionDerivative = [](double x) -> double {
   return 1.0 - x * x;
 };
-std::function<double(double)> Neuron::outputLayerActivationFunction = [](double x) -> double { return x; };
+std::function<double(double)> Neuron::outputLayerActivationFunction           = [](double x) -> double { return x; };
 std::function<double(double)> Neuron::outputLayerActivationFunctionDerivative = [](double x) -> double { return 1.0; };
 
-double Neuron::eta = 0.1;
+double Neuron::eta   = 0.1;
 double Neuron::alpha = 0.5;
 
 double Neuron::hiddenLayerActivationFunctionParameter = 0.0;
 double Neuron::outputLayerActivationFunctionParameter = 0.0;
 
 double Neuron::weightInitMultiplier = 1.0;
-double Neuron::weightInitShift = 0.0;
+double Neuron::weightInitShift      = 0.0;
 
 // ***********************************************************
 // ********* DANN = DEEP ARTIFICIAL NEURAL NETWORK ***********
@@ -334,9 +330,7 @@ public:
   void feedForward(const std::vector<double> &inputVals) {
     assert(inputVals.size() == m_layers[0].size() - 1);
 
-    for (unsigned i = 0; i < inputVals.size(); ++i) {
-      m_layers[0][i].setOutputVal(inputVals[i]);
-    }
+    for (unsigned i = 0; i < inputVals.size(); ++i) { m_layers[0][i].setOutputVal(inputVals[i]); }
 
     for (unsigned layerNum = 1; layerNum < m_layers.size(); ++layerNum) {
       Layer &prevLayer = m_layers[layerNum - 1];
@@ -349,7 +343,7 @@ public:
 
   void backProp(const std::vector<double> &targetVals) {
     Layer &outputLayer = m_layers.back();
-    m_error = 0.0;
+    m_error            = 0.0;
 
     for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
       double delta = targetVals[n] - outputLayer[n].getOutputVal();
@@ -361,26 +355,20 @@ public:
     m_recentAverageError =
         (m_recentAverageError * m_recentAverageSmoothingFactor + m_error) / (m_recentAverageSmoothingFactor + 1.0);
 
-    for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
-      outputLayer[n].calcOutputGradients(targetVals[n]);
-    }
+    for (unsigned n = 0; n < outputLayer.size() - 1; ++n) { outputLayer[n].calcOutputGradients(targetVals[n]); }
 
     for (unsigned layerNum = m_layers.size() - 2; layerNum > 0; --layerNum) {
       Layer &hiddenLayer = m_layers[layerNum];
-      Layer &nextLayer = m_layers[layerNum + 1];
+      Layer &nextLayer   = m_layers[layerNum + 1];
 
-      for (unsigned n = 0; n < hiddenLayer.size(); ++n) {
-        hiddenLayer[n].calcHiddenGradients(nextLayer);
-      }
+      for (unsigned n = 0; n < hiddenLayer.size(); ++n) { hiddenLayer[n].calcHiddenGradients(nextLayer); }
     }
 
     for (unsigned layerNum = m_layers.size() - 1; layerNum > 0; --layerNum) {
-      Layer &layer = m_layers[layerNum];
+      Layer &layer     = m_layers[layerNum];
       Layer &prevLayer = m_layers[layerNum - 1];
 
-      for (unsigned n = 0; n < layer.size() - 1; ++n) {
-        layer[n].updateInputWeights(prevLayer);
-      }
+      for (unsigned n = 0; n < layer.size() - 1; ++n) { layer[n].updateInputWeights(prevLayer); }
     }
   }
 
@@ -391,16 +379,24 @@ public:
       resultVals.push_back(m_layers.back()[n].getOutputVal());
     }
   }
-  
-  Layer* getLastLayer() {
+
+  Layer *getLastLayer() {
     return &(m_layers.back());
   }
 
-  double getRecentAverageError() const { return m_recentAverageError; }
-  double getCurrentError() const { return m_error; }
+  double getRecentAverageError() const {
+    return m_recentAverageError;
+  }
+  double getCurrentError() const {
+    return m_error;
+  }
 
-  static void setAverageSmoothingFactor(double factor) { DANN::m_recentAverageSmoothingFactor = factor; }
-  static void setBias(double value) { DANN::m_biasValue = value; }
+  static void setAverageSmoothingFactor(double factor) {
+    DANN::m_recentAverageSmoothingFactor = factor;
+  }
+  static void setBias(double value) {
+    DANN::m_biasValue = value;
+  }
 
 private:
   std::vector<Layer> m_layers; // m_layers[layerNum][neuronNum]
@@ -411,7 +407,7 @@ private:
 };
 
 double DANN::m_recentAverageSmoothingFactor = 100.0;
-double DANN::m_biasValue = 1.0;
+double DANN::m_biasValue                    = 1.0;
 
 // ****************************************************
 

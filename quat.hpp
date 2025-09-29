@@ -35,7 +35,9 @@ public:
 
   quat(const quat &Q) : v(Q.v), s(Q.s) {} // copy Ctor
 
-  static quat identity() { return quat(0.0, 0.0, 0.0, 1.0); }
+  static quat identity() {
+    return quat(0.0, 0.0, 0.0, 1.0);
+  }
 
   quat &operator=(const quat &Q) {
     v = Q.v;
@@ -89,7 +91,7 @@ public:
     // nVidia SDK implementation,
     // this is cool!!
     vec3r qvec(v.x, v.y, v.z);
-    vec3r uv = cross(qvec, V);
+    vec3r uv  = cross(qvec, V);
     vec3r uuv = cross(qvec, uv);
 
     uv *= (2.0 * s);
@@ -115,9 +117,13 @@ public:
   }
 
   /// @brief Change the quaternion to its conjugate
-  void conjugate() { v = -v; }
+  void conjugate() {
+    v = -v;
+  }
 
-  quat get_conjugated() const { return quat(-v.x, -v.y, -v.z, s); }
+  quat get_conjugated() const {
+    return quat(-v.x, -v.y, -v.z, s);
+  }
 
   /// @brief Reset the rotation to a zero rotation
   void reset() {
@@ -130,8 +136,8 @@ public:
   /// @param[in] angle  Angle of rotation (radian)
   void set_axis_angle(const vec3r &V, double angle) {
     double half_angle = 0.5 * angle;
-    s = cos(half_angle);
-    v = sin(half_angle) * V;
+    s                 = cos(half_angle);
+    v                 = sin(half_angle) * V;
   }
 
   /// @brief Set the four components of the quaternion (Be carreful! It is different from set_axis_angle)
@@ -141,16 +147,24 @@ public:
   }
 
   /// @brief Return the rotation angle
-  double get_angle() const { return (2.0 * acos(s)); }
+  double get_angle() const {
+    return (2.0 * acos(s));
+  }
 
   /// @brief Return Pitch angle (with respect to axis x)
-  double get_Pitch() const { return atan2(2.0 * (v.y * v.z + s * v.x), s * s - v.x * v.x - v.y * v.y + v.z * v.z); }
+  double get_Pitch() const {
+    return atan2(2.0 * (v.y * v.z + s * v.x), s * s - v.x * v.x - v.y * v.y + v.z * v.z);
+  }
 
   /// @brief Return Yaw angle (with respect to axis y)
-  double get_Yaw() const { return asin(-2.0 * (v.x * v.z - s * v.y)); }
+  double get_Yaw() const {
+    return asin(-2.0 * (v.x * v.z - s * v.y));
+  }
 
   /// @brief Return Roll angle (with respect to axis z)
-  double get_Roll() const { return atan2(2.0 * (v.x * v.y + s * v.z), s * s + v.x * v.x - v.y * v.y - v.z * v.z); }
+  double get_Roll() const {
+    return atan2(2.0 * (v.x * v.y + s * v.z), s * s + v.x * v.x - v.y * v.y - v.z * v.z);
+  }
 
   /// @brief Return the rotation axis
   vec3r get_axis() const {
@@ -158,7 +172,7 @@ public:
     double scale = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     if (scale > 0.0) {
       scale = 1.0 / scale;
-      Axis = scale * v;
+      Axis  = scale * v;
     }
     return Axis;
   }
@@ -199,9 +213,9 @@ public:
 
     if (cos_05t != 0.0) {
       crossT = cross(V1, bisector);
-      v.x = crossT.x;
-      v.y = crossT.y;
-      v.z = crossT.z;
+      v.x    = crossT.x;
+      v.y    = crossT.y;
+      v.z    = crossT.z;
     } else {
       double invLen;
       if (fabs(V1.x) >= fabs(V1.y)) {
@@ -264,7 +278,7 @@ public:
       engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
     double sum = 0.0;
-    s = distrib(engine);
+    s          = distrib(engine);
     sum += s * s;
     v.x = sqrt(1.0 - sum) * distrib(engine);
     sum += v.x * v.x;
@@ -280,7 +294,7 @@ public:
     engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
     static std::uniform_real_distribution<double> distrib(-1.0, 1.0);
     double sum = 0.0;
-    s = distrib(engine);
+    s          = distrib(engine);
     sum += s * s;
     v.x = sqrt(1 - sum) * distrib(engine);
     sum += v.x * v.x;
@@ -293,9 +307,9 @@ public:
   /// @warning The quaternion must be normalized before calling this function.
   /// @param[out] M The rotation matrix in row-major order.
   void get_rot_matrix(double M[]) const { // OP: 12*, 6+, 6-
-    double Tx = 2.0 * v.x;
-    double Ty = 2.0 * v.y;
-    double Tz = 2.0 * v.z;
+    double Tx  = 2.0 * v.x;
+    double Ty  = 2.0 * v.y;
+    double Tz  = 2.0 * v.z;
     double Twx = Tx * s;
     double Twy = Ty * s;
     double Twz = Tz * s;
@@ -324,9 +338,9 @@ public:
    * The resulting mat9r M is stored in row-major order.
    */
   void get_rot_matrix(mat9r &M) const { // OP: 12*, 6+, 6-
-    double Tx = 2.0 * v.x;
-    double Ty = 2.0 * v.y;
-    double Tz = 2.0 * v.z;
+    double Tx  = 2.0 * v.x;
+    double Ty  = 2.0 * v.y;
+    double Tz  = 2.0 * v.z;
     double Twx = Tx * s;
     double Twy = Ty * s;
     double Twz = Tz * s;
@@ -372,31 +386,31 @@ public:
 
     if (tr > 0) {
       double S = 2.0 * sqrt(tr + 1.0); // S = 4 * qw
-      s = 0.25 * S;
-      v.x = (m[7] - m[5]) / S;
-      v.y = (m[2] - m[6]) / S;
-      v.z = (m[3] - m[1]) / S;
+      s        = 0.25 * S;
+      v.x      = (m[7] - m[5]) / S;
+      v.y      = (m[2] - m[6]) / S;
+      v.z      = (m[3] - m[1]) / S;
       return 1;
     } else if ((m[0] > m[4]) & (m[0] > m[8])) {
       double S = sqrt(1.0 + m[0] - m[4] - m[8]) * 2.0; // S = 4 * qx
-      s = (m[5] - m[7]) / S;
-      v.x = 0.25 * S;
-      v.y = (m[1] + m[3]) / S;
-      v.z = (m[2] + m[6]) / S;
+      s        = (m[5] - m[7]) / S;
+      v.x      = 0.25 * S;
+      v.y      = (m[1] + m[3]) / S;
+      v.z      = (m[2] + m[6]) / S;
       return 2;
     } else if (m[4] > m[8]) {
       double S = sqrt(1.0 + m[4] - m[0] - m[8]) * 2.0; // S = 4 * qy
-      s = (m[2] - m[6]) / S;
-      v.x = (m[1] + m[3]) / S;
-      v.y = 0.25 * S;
-      v.z = (m[5] + m[7]) / S;
+      s        = (m[2] - m[6]) / S;
+      v.x      = (m[1] + m[3]) / S;
+      v.y      = 0.25 * S;
+      v.z      = (m[5] + m[7]) / S;
       return 3;
     } else {
       double S = sqrt(1.0 + m[8] - m[0] - m[4]) * 2.0; // S = 4 * qz
-      s = (m[3] - m[1]) / S;
-      v.x = (m[2] + m[6]) / S;
-      v.y = (m[5] + m[7]) / S;
-      v.z = 0.25 * S;
+      s        = (m[3] - m[1]) / S;
+      v.x      = (m[2] + m[6]) / S;
+      v.y      = (m[5] + m[7]) / S;
+      v.z      = 0.25 * S;
       return 4;
     }
     return 0;
@@ -419,9 +433,9 @@ public:
     Res.xx = P[0] * P[0] * u.x + P[3] * P[3] * u.y + P[6] * P[6] * u.z;
     Res.xy = Res.yx = P[0] * P[1] * u.x + P[3] * P[4] * u.y + P[6] * P[7] * u.z;
     Res.xz = Res.zx = P[0] * P[2] * u.x + P[3] * P[5] * u.y + P[6] * P[8] * u.z;
-    Res.yy = P[1] * P[1] * u.x + P[4] * P[4] * u.y + P[7] * P[7] * u.z;
+    Res.yy          = P[1] * P[1] * u.x + P[4] * P[4] * u.y + P[7] * P[7] * u.z;
     Res.yz = Res.zy = P[1] * P[2] * u.x + P[4] * P[5] * u.y + P[7] * P[8] * u.z;
-    Res.zz = P[2] * P[2] * u.x + P[5] * P[5] * u.y + P[8] * P[8] * u.z;
+    Res.zz          = P[2] * P[2] * u.x + P[5] * P[5] * u.y + P[8] * P[8] * u.z;
 
     return (Res);
   }
@@ -456,9 +470,13 @@ public:
     return uv;
   }
 
-  bool operator==(const quat &other) const { return (this->s == other.s && this->v == other.v); }
+  bool operator==(const quat &other) const {
+    return (this->s == other.s && this->v == other.v);
+  }
 
-  bool operator!=(const quat &other) const { return !(*this == other); }
+  bool operator!=(const quat &other) const {
+    return !(*this == other);
+  }
 
   // --- input/output ---
   friend std::ostream &operator<<(std::ostream &pStr, const quat &Q) {
@@ -492,8 +510,7 @@ namespace {
  */
 template <typename floatType> void quat2GLMatrix(quat &q, floatType *pMatrix) {
   // Make sure the matrix has allocated memory to store the rotation data
-  if (!pMatrix)
-    return;
+  if (!pMatrix) return;
 
   // First row
   pMatrix[0] = 1.0f - 2.0f * (q.v.y * q.v.y + q.v.z * q.v.z);
@@ -508,8 +525,8 @@ template <typename floatType> void quat2GLMatrix(quat &q, floatType *pMatrix) {
   pMatrix[7] = 0.0f;
 
   // Third row
-  pMatrix[8] = 2.0f * (q.v.x * q.v.z + q.v.y * q.s);
-  pMatrix[9] = 2.0f * (q.v.y * q.v.z - q.v.x * q.s);
+  pMatrix[8]  = 2.0f * (q.v.x * q.v.z + q.v.y * q.s);
+  pMatrix[9]  = 2.0f * (q.v.y * q.v.z - q.v.x * q.s);
   pMatrix[10] = 1.0f - 2.0f * (q.v.x * q.v.x + q.v.y * q.v.y);
   pMatrix[11] = 0.0f;
 

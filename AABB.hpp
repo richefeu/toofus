@@ -166,9 +166,13 @@ public:
     @brief Get the radius of a sphere that surrounds the AABB,
           centered at the AABB center
   */
-  double getRadius() const { return 0.25 * (max - min).length(); }
+  double getRadius() const {
+    return 0.25 * (max - min).length();
+  }
 
-  vec3r getCenter() const { return 0.5 * (min + max); }
+  vec3r getCenter() const {
+    return 0.5 * (min + max);
+  }
 
   /**
     @brief The AABB is set to a single point
@@ -283,8 +287,7 @@ public:
     @returns true if the AABB intersects with the point, false otherwise.
   */
   bool intersect(const vec3r &a) const {
-    if (max.x < a.x || a.x < min.x || max.y < a.y || a.y < min.y || max.z < a.z || a.z < min.z)
-      return false;
+    if (max.x < a.x || a.x < min.x || max.y < a.y || a.y < min.y || max.z < a.z || a.z < min.z) return false;
     return true;
   }
 
@@ -292,8 +295,7 @@ public:
     @brief Check intersection only in the X direction
   */
   bool intersectX(const AABB &a) const {
-    if (max.x < a.min.x || a.max.x < min.x)
-      return false;
+    if (max.x < a.min.x || a.max.x < min.x) return false;
     return true;
   }
 
@@ -301,8 +303,7 @@ public:
     @brief Check intersection only in the Y direction
   */
   bool intersectY(const AABB &a) const {
-    if (max.y < a.min.y || a.max.y < min.y)
-      return false;
+    if (max.y < a.min.y || a.max.y < min.y) return false;
     return true;
   }
 
@@ -310,8 +311,7 @@ public:
     @brief Check intersection only in the Z direction
   */
   bool intersectZ(const AABB &a) const {
-    if (max.z < a.min.z || a.max.z < min.z)
-      return false;
+    if (max.z < a.min.z || a.max.z < min.z) return false;
     return true;
   }
 };

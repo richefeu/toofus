@@ -38,16 +38,14 @@ public:
 
     // Derivative term (finite difference)
     double derivative = (error - m_previous_error) / dt;
-    double Dcorr = m_Kd * derivative;
+    double Dcorr      = m_Kd * derivative;
 
     // Calculate total correction
     double total_corr = Pcorr + Icorr + Dcorr;
 
     // Restrict the correction to max/min
-    if (total_corr > max)
-      total_corr = max;
-    else if (total_corr < min)
-      total_corr = min;
+    if (total_corr > max) total_corr = max;
+    else if (total_corr < min) total_corr = min;
 
     // Save error to previous error
     m_previous_error = error;

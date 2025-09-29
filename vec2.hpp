@@ -154,12 +154,22 @@ public:
     return (*this);
   }
 
-  static vec2 unit_x() { return vec2(1, 0); }
-  static vec2 unit_y() { return vec2(0, 1); }
-  static vec2 one() { return vec2(1, 1); }
-  static vec2 zero() { return vec2(0, 0); }
+  static vec2 unit_x() {
+    return vec2(1, 0);
+  }
+  static vec2 unit_y() {
+    return vec2(0, 1);
+  }
+  static vec2 one() {
+    return vec2(1, 1);
+  }
+  static vec2 zero() {
+    return vec2(0, 0);
+  }
 
-  void reset() { x = y = 0; }
+  void reset() {
+    x = y = 0;
+  }
 
   /// @brief Set the components of the vector.
   ///
@@ -173,7 +183,9 @@ public:
   /// @brief Set both components of the vector to the given value.
   ///
   /// @param val The value to which both the x and y components are set.
-  void set(T val) { x = y = val; }
+  void set(T val) {
+    x = y = val;
+  }
 
   /// @brief Check if the vector is null.
   ///
@@ -181,28 +193,44 @@ public:
   /// the given tolerance.
   ///
   /// @param tol The tolerance value. The default value is 1e-20.
-  bool isnull(const T tol = 1e-20) const { return (fabs(x) < tol && fabs(y) < tol); }
+  bool isnull(const T tol = 1e-20) const {
+    return (fabs(x) < tol && fabs(y) < tol);
+  }
 
   /// @brief Direct access to the vector data.
   ///
   /// This method is very low level and is not recommended for direct use.
-  T *c_vec() { return &x; }
+  T *c_vec() {
+    return &x;
+  }
 
   /// @brief Direct access to the vector data.
   ///
   /// This method is very low level and is not recommended for direct use.
-  T &operator[](int i) { return *(&x + i); }
-  T &operator[](size_t i) { return *(&x + i); }
+  T &operator[](int i) {
+    return *(&x + i);
+  }
+  T &operator[](size_t i) {
+    return *(&x + i);
+  }
 
   /// @brief Direct access to the vector data.
   ///
   /// This method is very low level and is not recommended for direct use.
-  const T &operator[](int i) const { return *(&x + i); }
-  const T &operator[](size_t i) const { return *(&x + i); }
+  const T &operator[](int i) const {
+    return *(&x + i);
+  }
+  const T &operator[](size_t i) const {
+    return *(&x + i);
+  }
 
   // For local frames, the notation n,t and s is more appropriate than x and y
-  const T n() const { return x; }
-  const T t() const { return y; }
+  const T n() const {
+    return x;
+  }
+  const T t() const {
+    return y;
+  }
 
   // Arithmetic operations
   vec2 &operator+=(const vec2 &a) {
@@ -229,25 +257,41 @@ public:
     return *this;
   }
 
-  friend vec2 operator+(const vec2 &a, const vec2 &b) { return vec2(a.x + b.x, a.y + b.y); }
+  friend vec2 operator+(const vec2 &a, const vec2 &b) {
+    return vec2(a.x + b.x, a.y + b.y);
+  }
 
-  friend vec2 operator-(const vec2 &a, const vec2 &b) { return vec2(a.x - b.x, a.y - b.y); }
+  friend vec2 operator-(const vec2 &a, const vec2 &b) {
+    return vec2(a.x - b.x, a.y - b.y);
+  }
 
-  friend vec2 operator-(const vec2 &a) { return vec2(-a.x, -a.y); }
+  friend vec2 operator-(const vec2 &a) {
+    return vec2(-a.x, -a.y);
+  }
 
-  friend vec2 operator*(const vec2 &a, T k) { return vec2(a.x * k, a.y * k); }
+  friend vec2 operator*(const vec2 &a, T k) {
+    return vec2(a.x * k, a.y * k);
+  }
 
-  friend vec2 operator*(T k, const vec2 &a) { return vec2(a.x * k, a.y * k); }
+  friend vec2 operator*(T k, const vec2 &a) {
+    return vec2(a.x * k, a.y * k);
+  }
 
-  friend vec2 operator/(const vec2 &a, T k) { return vec2(a.x / k, a.y / k); }
+  friend vec2 operator/(const vec2 &a, T k) {
+    return vec2(a.x / k, a.y / k);
+  }
 
   // --- Specific external operations ---
 
   /// Dot product
-  friend T operator*(const vec2 &a, const vec2 &b) { return (a.x * b.x + a.y * b.y); }
+  friend T operator*(const vec2 &a, const vec2 &b) {
+    return (a.x * b.x + a.y * b.y);
+  }
 
   /// Multiply each component one another
-  friend vec2<T> component_product(const vec2<T> &a, const vec2<T> &b) { return vec2<T>(a.x * b.x, a.y * b.y); }
+  friend vec2<T> component_product(const vec2<T> &a, const vec2<T> &b) {
+    return vec2<T>(a.x * b.x, a.y * b.y);
+  }
 
   /// Find the smallest components
   friend vec2<T> component_min(const vec2<T> &a, const vec2<T> &b) {
@@ -260,7 +304,9 @@ public:
   }
 
   /// Absolut value of the components
-  friend vec2<T> component_abs(const vec2<T> &a) { return vec2<T>(fabs(a.x), fabs(a.y)); }
+  friend vec2<T> component_abs(const vec2<T> &a) {
+    return vec2<T>(fabs(a.x), fabs(a.y));
+  }
 
   /// Anti-clockwise angle between 2 vectors (from a to b; result in [-pi pi])
   friend T angleBetweenVectors(const vec2<T> &a, const vec2<T> &b) {
@@ -268,7 +314,9 @@ public:
   }
 
   /// Inclination with respect to x (result in [-pi pi])
-  friend T inclinationX(const vec2<T> &v) { return atan2(v.y, v.x); }
+  friend T inclinationX(const vec2<T> &v) {
+    return atan2(v.y, v.x);
+  }
 
   /// angle of vector V with respect to vector Vref (result in [-pi pi])
   /*
@@ -280,26 +328,37 @@ public:
   */
 
   /// Cross product
-  friend T cross(const vec2<T> &a, const vec2<T> &b) { return (a.x * b.y - a.y * b.x); }
+  friend T cross(const vec2<T> &a, const vec2<T> &b) {
+    return (a.x * b.y - a.y * b.x);
+  }
 
   /// Linear interpolation
-  friend vec2<T> lerp(double t, const vec2<T> &a, const vec2<T> &b) { return (1.0f - t) * a + t * b; }
+  friend vec2<T> lerp(double t, const vec2<T> &a, const vec2<T> &b) {
+    return (1.0f - t) * a + t * b;
+  }
 
   /// Squared length of the vector
-  friend T norm2(const vec2 &a) { return a * a; }
+  friend T norm2(const vec2 &a) {
+    return a * a;
+  }
 
   /// Length of the vector
-  friend T norm(const vec2 &a) { return sqrt(a * a); }
+  friend T norm(const vec2 &a) {
+    return sqrt(a * a);
+  }
 
-  T normSup() const { return std::max(std::abs(x), std::abs(y)); }
+  T normSup() const {
+    return std::max(std::abs(x), std::abs(y));
+  }
 
-  T length() const { return norm(*this); }
+  T length() const {
+    return norm(*this);
+  }
 
   /// Normalize and return length (before being normalized)
   T normalize() {
     T N = norm(*this);
-    if (N > 0.0)
-      *this *= (1.0f / N);
+    if (N > 0.0) *this *= (1.0f / N);
     return N;
   }
 
@@ -322,23 +381,37 @@ public:
   }
 
   /// get a 90-degree clockwise rotated vector
-  vec2 quarterRightTurned() const { return vec2(y, -x); }
+  vec2 quarterRightTurned() const {
+    return vec2(y, -x);
+  }
 
   /// get a 90-degree anti-clockwise rotated vector
-  vec2 quarterLeftTurned() const { return vec2(-y, x); }
+  vec2 quarterLeftTurned() const {
+    return vec2(-y, x);
+  }
 
   /// Determinant
-  friend T determinant(const vec2<T> a, const vec2<T> b) { return (a.x * b.y - b.x * a.y); }
+  friend T determinant(const vec2<T> a, const vec2<T> b) {
+    return (a.x * b.y - b.x * a.y);
+  }
 
   // Comparisons
-  bool operator==(const vec2<T> &other) const { return (this->x == other.x && this->y == other.y); }
+  bool operator==(const vec2<T> &other) const {
+    return (this->x == other.x && this->y == other.y);
+  }
 
-  bool operator!=(const vec2<T> &other) const { return !(*this == other); }
+  bool operator!=(const vec2<T> &other) const {
+    return !(*this == other);
+  }
 
   // input/output
-  friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV) { return (pStr << pV.x << ' ' << pV.y); }
+  friend std::ostream &operator<<(std::ostream &pStr, const vec2 &pV) {
+    return (pStr << pV.x << ' ' << pV.y);
+  }
 
-  friend std::istream &operator>>(std::istream &pStr, vec2 &pV) { return (pStr >> pV.x >> pV.y); }
+  friend std::istream &operator>>(std::istream &pStr, vec2 &pV) {
+    return (pStr >> pV.x >> pV.y);
+  }
 };
 
 typedef vec2<double> vec2r;
@@ -349,10 +422,8 @@ typedef vec2<bool> vec2b;
 namespace std {
 template <class T> struct less<vec2<T>> {
   bool operator()(const vec2<T> &lhs, const vec2<T> &rhs) const {
-    if (lhs.x < rhs.x)
-      return true;
-    else if (lhs.x == rhs.x && lhs.y < rhs.y)
-      return true;
+    if (lhs.x < rhs.x) return true;
+    else if (lhs.x == rhs.x && lhs.y < rhs.y) return true;
     return false;
   }
 };

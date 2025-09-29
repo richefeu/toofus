@@ -41,7 +41,7 @@ T subdivide_icosahedron_sphere(std::vector<vec3<T>> &points, T R, int num_subdiv
   // Subdivise chaque triangle en quatre triangles plus petits
   for (int i = 0; i < num_subdivisions; i++) {
     std::vector<std::vector<int>> new_faces;
-    size_t faces_initial_size = icosahedron_faces.size();
+    size_t faces_initial_size  = icosahedron_faces.size();
     size_t points_initial_size = points.size();
     for (size_t j = 0; j < faces_initial_size; j++) {
       int v1 = icosahedron_faces[j][0];
@@ -79,9 +79,7 @@ T subdivide_icosahedron_sphere(std::vector<vec3<T>> &points, T R, int num_subdiv
     }
   }
 
-  if (faces != nullptr) {
-    *faces = icosahedron_faces;
-  }
+  if (faces != nullptr) { *faces = icosahedron_faces; }
 
   return norm(points[icosahedron_faces[0][0]] - points[icosahedron_faces[0][1]]);
 }

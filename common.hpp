@@ -36,30 +36,21 @@ public:
   }
 
   void set_precision(int p) {
-    if (p <= 0)
-      precision = std::numeric_limits<double>::digits10 + 1;
-    else
-      precision = p;
+    if (p <= 0) precision = std::numeric_limits<double>::digits10 + 1;
+    else precision = p;
   }
 
   void sepFromKeyword(std::string &kw) {
-    if (kw == "tab")
-      sep = '\t';
-    else if (kw == "semicolon")
-      sep = ';';
-    else if (kw == "space")
-      sep = ' ';
-    else
-      sep = ' ';
+    if (kw == "tab") sep = '\t';
+    else if (kw == "semicolon") sep = ';';
+    else if (kw == "space") sep = ' ';
+    else sep = ' ';
   }
 
   std::string keywordFromSep() {
-    if (sep == ' ')
-      return std::string("space");
-    if (sep == '\t')
-      return std::string("tab");
-    if (sep == ';')
-      return std::string("semicolon");
+    if (sep == ' ') return std::string("space");
+    if (sep == '\t') return std::string("tab");
+    if (sep == ';') return std::string("semicolon");
     return std::string("space");
   }
 

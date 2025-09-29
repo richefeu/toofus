@@ -26,12 +26,10 @@
 
 // Tsallis q-exponetial
 double eq(double q, double x) {
-  if (q == 1.0)
-    return exp(x);
+  if (q == 1.0) return exp(x);
   double minus = 1.0 - q;
-  double n = 1.0 + minus * x;
-  if (n <= 0.0)
-    return 0.0;
+  double n     = 1.0 + minus * x;
+  if (n <= 0.0) return 0.0;
   return pow(n, 1.0 / minus);
 }
 
@@ -39,7 +37,7 @@ double eq(double q, double x) {
 double C(double q) {
   const double sqrtPi = sqrt(M_PI);
   if (q < 1.0) {
-    double onemq = 1.0 - q;
+    double onemq   = 1.0 - q;
     double threemq = 3.0 - q;
     return 2.0 * sqrtPi * tgamma(1.0 / onemq) / (threemq * sqrt(onemq) * tgamma(threemq / (2.0 * onemq)));
   } else if (q == 1.0) {
@@ -51,7 +49,9 @@ double C(double q) {
   return 0.0;
 }
 
-double qgauss(double beta, double Cq, double q, double x) { return (sqrt(beta) / Cq) * eq(q, -beta * x * x); }
+double qgauss(double beta, double Cq, double q, double x) {
+  return (sqrt(beta) / Cq) * eq(q, -beta * x * x);
+}
 
 // Function to evalute the value of integral from -infty to x
 // n is the number of divisions between -10 and x
@@ -69,8 +69,7 @@ double qgauss_cdf(double beta, double Cq, double q, double x, double n) {
   // in above formula
   double s = qgauss(beta, Cq, q, a) + qgauss(beta, Cq, q, x);
   // Adding middle terms in above formula
-  for (int i = 1; i < n; i++)
-    s += 2 * qgauss(beta, Cq, q, a + i * h);
+  for (int i = 1; i < n; i++) s += 2 * qgauss(beta, Cq, q, a + i * h);
   // h/2 indicates (b-a)/2n. Multiplying h/2 with s.
   return (h / 2) * s;
 }
@@ -86,8 +85,7 @@ struct KS_Optim {
     double D = 0.0;
     for (size_t i = 0; i < nb; i++) {
       double Dtest = fabs(func(p, X_[i]) - Y_[i]);
-      if (Dtest > D)
-        D = Dtest;
+      if (Dtest > D) D = Dtest;
     }
     return D;
   }
@@ -112,17 +110,14 @@ void fit_cdf(std::vector<T> &data, std::vector<T> &Params, const char *cdf_func_
   std::vector<double> X(data);
   std::sort(X.begin(), X.end());
   std::vector<double> Y(data.size());
-  for (size_t i = 0; i < data.size(); i++) {
-    Y[i] = (double)i / (double)(data.size() - 1);
-  }
+  for (size_t i = 0; i < data.size(); i++) { Y[i] = (double)i / (double)(data.size() - 1); }
 
   KS_Optim KS;
   KS.plugData(X, Y);
   std::string opt(cdf_func_name);
   if (opt == "gaussian") {
     KS.func = [](std::vector<double> &p, double x) -> double {
-      if (p[1] == 0.0)
-        return 1.0e20;
+      if (p[1] == 0.0) return 1.0e20;
       double f = (x - p[0]) / (1.414213562373095 * p[1]);
       return 0.5 * (1.0 + erf(f));
     };
@@ -133,12 +128,10 @@ void fit_cdf(std::vector<T> &data, std::vector<T> &Params, const char *cdf_func_
   } else if (opt == "q-gaussian") { // SEEMS NOT A GOOD IDEA (TOO LONG!!!!)
     KS.func = [](std::vector<double> &p, double x) -> double {
       double q = p[0];
-      if (q >= 3.0)
-        p[0] = q = 2.9;
-      if (q <= 1.0)
-        p[0] = q = 1.01;
+      if (q >= 3.0) p[0] = q = 2.9;
+      if (q <= 1.0) p[0] = q = 1.01;
       double beta = p[1];
-      double Cq = C(q);
+      double Cq   = C(q);
       return qgauss_cdf(beta, Cq, q, x, 100);
     };
     KS.params.resize(2);
@@ -148,10 +141,8 @@ void fit_cdf(std::vector<T> &data, std::vector<T> &Params, const char *cdf_func_
   } else { // "uniform" is default
     KS.func = [](std::vector<double> &p, double x) -> double {
       double f = p[0] * x + p[1];
-      if (f < 0.0)
-        f = 0.0;
-      if (f > 1.0)
-        f = 1.0;
+      if (f < 0.0) f = 0.0;
+      if (f > 1.0) f = 1.0;
       return f;
     };
     KS.params.resize(2);
@@ -162,9 +153,7 @@ void fit_cdf(std::vector<T> &data, std::vector<T> &Params, const char *cdf_func_
 
   Powell<KS_Optim> powell(KS);
   KS.params = powell.minimize(KS.params);
-  for (size_t i = 0; i < KS.params.size(); i++) {
-    Params[i] = KS.params[i];
-  }
+  for (size_t i = 0; i < KS.params.size(); i++) { Params[i] = KS.params[i]; }
 
   KSONE<double>(data, KS.params, KS.func, D, PROB);
 

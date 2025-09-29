@@ -43,8 +43,7 @@ public:
   BaseClass *Create(Key key) {
     // find name in the registry and call factory method.
     auto it = factoryFunctionRegistry.find(key);
-    if (it != factoryFunctionRegistry.end())
-      return it->second();
+    if (it != factoryFunctionRegistry.end()) return it->second();
     return nullptr;
   }
 

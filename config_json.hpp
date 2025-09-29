@@ -193,29 +193,27 @@ public:
     using variant::variant;
 
     JsonValue &operator[](const std::string &key) {
-      if (!std::holds_alternative<JsonMap>(*this)) {
-        *this = JsonMap{};
-      }
+      if (!std::holds_alternative<JsonMap>(*this)) { *this = JsonMap{}; }
       auto &map = std::get<JsonMap>(*this);
       return map[key];
     }
   };
 
   ConfigJson() {}
-  ConfigJson(const std::string &filepath) { parseJson(filepath); }
+  ConfigJson(const std::string &filepath) {
+    parseJson(filepath);
+  }
 
   void parseJson(const std::string &filepath) {
     std::ifstream file(filepath);
-    if (!file.is_open()) {
-      std::cout << "Could not open file: " << filepath << std::endl;
-    }
+    if (!file.is_open()) { std::cout << "Could not open file: " << filepath << std::endl; }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string content = buffer.str();
 
     size_t pos = 0;
-    jsonData = parseObject(content, pos);
+    jsonData   = parseObject(content, pos);
   }
 
   JsonMap parseObject(const std::string &content, size_t &pos) {
@@ -247,12 +245,10 @@ public:
 
       pos++;
       JsonValue value = parseValue(content, pos);
-      object[key] = value;
+      object[key]     = value;
       skipWhitespace(content, pos);
 
-      if (pos < content.size() && content[pos] == ',') {
-        pos++;
-      }
+      if (pos < content.size() && content[pos] == ',') { pos++; }
     }
 
     std::cout << "Expected '}' at end of JSON object." << std::endl;
@@ -261,29 +257,25 @@ public:
 
   void save(const std::string &filepath) {
     std::ofstream file(filepath);
-    if (!file.is_open()) {
-      std::cout << "Could not open file for writing: " << filepath << std::endl;
-    }
+    if (!file.is_open()) { std::cout << "Could not open file for writing: " << filepath << std::endl; }
     file << toString(jsonData);
     file.close();
   }
 
-  JsonValue &operator[](const std::string &key) { return jsonData[key]; }
+  JsonValue &operator[](const std::string &key) {
+    return jsonData[key];
+  }
 
   const JsonValue &operator[](const std::string &key) const {
     static const JsonValue defaultValue = std::string("");
-    auto it = jsonData.find(key);
-    if (it != jsonData.end()) {
-      return it->second;
-    }
+    auto it                             = jsonData.find(key);
+    if (it != jsonData.end()) { return it->second; }
     return defaultValue;
   }
 
   template <typename T> T get(const std::string &key, const T defaultReturn = T{0}) {
     auto it = jsonData.find(key);
-    if (it != jsonData.end()) {
-      return std::get<T>(it->second);
-    }
+    if (it != jsonData.end()) { return std::get<T>(it->second); }
     return defaultReturn; // Default value if key is missing
   }
 
@@ -291,10 +283,8 @@ public:
     auto it1 = jsonData.find(key1);
     if (it1 != jsonData.end()) {
       auto &innerMap = std::get<JsonMap>(it1->second);
-      auto it2 = innerMap.find(key2);
-      if (it2 != innerMap.end()) {
-        return std::get<T>(it2->second);
-      } 
+      auto it2       = innerMap.find(key2);
+      if (it2 != innerMap.end()) { return std::get<T>(it2->second); }
     }
     return defaultReturn; // Default value if either key is missing
   }
@@ -304,27 +294,19 @@ private:
 
   std::string parseString(const std::string &content, size_t &pos) {
     skipWhitespace(content, pos);
-    if (pos >= content.size() || content[pos] != '"') {
-      std::cout << "Expected '\"' at start of string." << std::endl;
-    }
+    if (pos >= content.size() || content[pos] != '"') { std::cout << "Expected '\"' at start of string." << std::endl; }
     pos++;
 
     std::string str;
-    while (pos < content.size() && content[pos] != '"') {
-      str += content[pos++];
-    }
-    if (pos >= content.size()) {
-      std::cout << "Expected '\"' at end of string." << std::endl;
-    }
+    while (pos < content.size() && content[pos] != '"') { str += content[pos++]; }
+    if (pos >= content.size()) { std::cout << "Expected '\"' at end of string." << std::endl; }
     pos++;
     return str;
   }
 
   JsonValue parseValue(const std::string &content, size_t &pos) {
     skipWhitespace(content, pos);
-    if (pos >= content.size()) {
-      std::cout << "Unexpected end of input while parsing value." << std::endl;
-    }
+    if (pos >= content.size()) { std::cout << "Unexpected end of input while parsing value." << std::endl; }
 
     if (content[pos] == '"') {
       return parseString(content, pos);
@@ -335,14 +317,12 @@ private:
       bool isDouble = false;
       while (endPos < content.size() &&
              (isdigit(content[endPos]) || content[endPos] == '.' || content[endPos] == '-')) {
-        if (content[endPos] == '.') {
-          isDouble = true;
-        }
+        if (content[endPos] == '.') { isDouble = true; }
         endPos++;
       }
 
       std::string valueStr = content.substr(pos, endPos - pos);
-      pos = endPos;
+      pos                  = endPos;
 
       if (isDouble) {
         return jsonNumber(std::stod(valueStr));
@@ -353,9 +333,7 @@ private:
   }
 
   void skipWhitespace(const std::string &content, size_t &pos) {
-    while (pos < content.size() && isspace(content[pos])) {
-      pos++;
-    }
+    while (pos < content.size() && isspace(content[pos])) { pos++; }
   }
 
   std::string toString(const JsonMap &jsonMap, int indent = 1) {
@@ -364,9 +342,7 @@ private:
 
     jsonString += "{\n";
     for (auto it = jsonMap.begin(); it != jsonMap.end(); ++it) {
-      if (it != jsonMap.begin()) {
-        jsonString += ",\n";
-      }
+      if (it != jsonMap.begin()) { jsonString += ",\n"; }
       jsonString += indentStr + "\"" + it->first + "\": " + valueToString(it->second, indent);
     }
     jsonString += "\n" + std::string((indent - 1) * 2, ' ') + "}";

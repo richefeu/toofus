@@ -12,7 +12,9 @@ public:
   OBB_2D_quadtree(const OBB_2D &bounds, int maxCapacity = 4, int maxDepth = 10)
       : MAX_CAPACITY(maxCapacity), MAX_DEPTH(maxDepth), root(std::make_unique<TreeNode>(bounds)) {}
 
-  void insert(const OBB_2D &object, size_t objectId) { insert(object, objectId, root, 0); }
+  void insert(const OBB_2D &object, size_t objectId) {
+    insert(object, objectId, root, 0);
+  }
 
   std::vector<OBB_2D> query(const OBB_2D &range) const {
     std::vector<OBB_2D> result;
@@ -41,7 +43,7 @@ public:
 
     return result;
   }
-	
+
   std::vector<size_t> queryIDsFrom(size_t objectId) const {
     std::vector<size_t> result;
 
@@ -54,12 +56,18 @@ public:
   }
 
   // Setting maximum capacity and maximum depth is a matter of optimisation
-  void setMaxCapacity(int maxCapacity) { MAX_CAPACITY = maxCapacity; }
-  void setMaxDepth(int maxDepth) { MAX_DEPTH = maxDepth; }
+  void setMaxCapacity(int maxCapacity) {
+    MAX_CAPACITY = maxCapacity;
+  }
+  void setMaxDepth(int maxDepth) {
+    MAX_DEPTH = maxDepth;
+  }
 
   // Set the size of the objectInfo vector
   // It is better to set this size before feeling the quadTree when this size is known
-  void setObjectInfoSize(size_t size) { objectInfo.resize(size); }
+  void setObjectInfoSize(size_t size) {
+    objectInfo.resize(size);
+  }
 
 private:
   int MAX_CAPACITY;
@@ -87,36 +95,29 @@ private:
   std::vector<objPos> objectInfo;
 
   void insert(const OBB_2D &object, size_t objectId, std::unique_ptr<TreeNode> &node, int depth) {
-    if (depth >= MAX_DEPTH || !node->bounds.contains(object))
-      return;
+    if (depth >= MAX_DEPTH || !node->bounds.contains(object)) return;
 
     if (node->objects.size() < MAX_CAPACITY) {
       node->objects.push_back(object);
       node->objectIds.push_back(objectId);
-      if (objectId >= objectInfo.size()) {
-        objectInfo.resize(objectId + 1);
-      }
+      if (objectId >= objectInfo.size()) { objectInfo.resize(objectId + 1); }
       objectInfo[objectId] = objPos(node.get(), node->objects.size() - 1);
       return;
     }
 
-    if (node->children[0] == nullptr) {
-      splitNode(node);
-    }
+    if (node->children[0] == nullptr) { splitNode(node); }
 
-    for (auto &child : node->children) {
-      insert(object, objectId, child, depth + 1);
-    }
+    for (auto &child : node->children) { insert(object, objectId, child, depth + 1); }
   }
 
   void splitNode(std::unique_ptr<TreeNode> &node) {
 
-    const double subWidth = node->bounds.width / 2.0;
-    const double subHeight = node->bounds.height / 2.0;
-    const double halfSubWidth = subWidth / 2.0;
-    const double halfSubHeight = subHeight / 2.0;
-    const double xMid = node->bounds.position.x;
-    const double yMid = node->bounds.position.y;
+    const double subWidth       = node->bounds.width / 2.0;
+    const double subHeight      = node->bounds.height / 2.0;
+    const double halfSubWidth   = subWidth / 2.0;
+    const double halfSubHeight  = subHeight / 2.0;
+    const double xMid           = node->bounds.position.x;
+    const double yMid           = node->bounds.position.y;
     const double parentRotation = node->bounds.rotation;
 
     const double c = cos(parentRotation);
@@ -138,11 +139,9 @@ private:
     node->children[3] = std::make_unique<TreeNode>(std::move(childBounds[3]));
 
     for (size_t i = 0; i < node->objects.size(); ++i) {
-      const auto &obj = node->objects[i];
+      const auto &obj       = node->objects[i];
       const size_t objectId = node->objectIds[i];
-      for (auto &child : node->children) {
-        insert(obj, objectId, child, 0);
-      }
+      for (auto &child : node->children) { insert(obj, objectId, child, 0); }
     }
 
     node->objects.clear();
@@ -151,16 +150,13 @@ private:
 
   void query(const OBB_2D &range, const std::unique_ptr<TreeNode> &node, std::vector<OBB_2D> &result,
              int fromId = -1) const {
-    if (!node || !node->bounds.intersects(range))
-      return;
+    if (!node || !node->bounds.intersects(range)) return;
 
     if (fromId < 0) {
 
       for (size_t i = 0; i < node->objects.size(); ++i) {
         const auto &obj = node->objects[i];
-        if (obj.intersects(range)) {
-          result.push_back(obj);
-        }
+        if (obj.intersects(range)) { result.push_back(obj); }
       }
 
     } else {
@@ -168,56 +164,42 @@ private:
       size_t Id = static_cast<size_t>(std::abs(fromId));
 
       for (size_t i = 0; i < node->objects.size(); ++i) {
-        const auto &obj = node->objects[i];
+        const auto &obj       = node->objects[i];
         const size_t objectId = node->objectIds[i];
 
-        if (objectId > Id && obj.intersects(range)) {
-          result.push_back(obj);
-        }
+        if (objectId > Id && obj.intersects(range)) { result.push_back(obj); }
       }
     }
 
-    for (const auto &child : node->children) {
-      query(range, child, result, fromId);
-    }
+    for (const auto &child : node->children) { query(range, child, result, fromId); }
   }
 
   void queryIDs(const OBB_2D &range, const std::unique_ptr<TreeNode> &node, std::vector<size_t> &result,
                 size_t theId) const {
-    if (!node || !node->bounds.intersects(range))
-      return;
+    if (!node || !node->bounds.intersects(range)) return;
 
     for (size_t i = 0; i < node->objects.size(); ++i) {
-      const auto &obj = node->objects[i];
+      const auto &obj       = node->objects[i];
       const size_t objectId = node->objectIds[i];
 
-      if (objectId != theId && obj.intersects(range)) {
-        result.push_back(objectId);
-      }
+      if (objectId != theId && obj.intersects(range)) { result.push_back(objectId); }
     }
 
-    for (const auto &child : node->children) {
-      queryIDs(range, child, result, theId);
-    }
+    for (const auto &child : node->children) { queryIDs(range, child, result, theId); }
   }
-	
+
   void queryIDsFrom(const OBB_2D &range, const std::unique_ptr<TreeNode> &node, std::vector<size_t> &result,
-                size_t fromId) const {
-    if (!node || !node->bounds.intersects(range))
-      return;
+                    size_t fromId) const {
+    if (!node || !node->bounds.intersects(range)) return;
 
     for (size_t i = 0; i < node->objects.size(); ++i) {
-      const auto &obj = node->objects[i];
+      const auto &obj       = node->objects[i];
       const size_t objectId = node->objectIds[i];
 
-      if (objectId > fromId && obj.intersects(range)) {
-        result.push_back(objectId);
-      }
+      if (objectId > fromId && obj.intersects(range)) { result.push_back(objectId); }
     }
 
-    for (const auto &child : node->children) {
-      queryIDsFrom(range, child, result, fromId);
-    }
+    for (const auto &child : node->children) { queryIDsFrom(range, child, result, fromId); }
   }
 };
 
@@ -255,9 +237,9 @@ void generateSVG(const char *fname, OBB_2D &obbBlue, const std::vector<OBB_2D> &
   // Draw the blue OBB
   double adjustedX, adjustedY;
   std::tie(adjustedX, adjustedY) = adjustCoordinates(obbBlue.position.x, obbBlue.position.y);
-  double adjustedWidth = obbBlue.width * scaleFactor;
-  double adjustedHeight = obbBlue.height * scaleFactor;
-  double adjustedAngle = obbBlue.rotation;
+  double adjustedWidth           = obbBlue.width * scaleFactor;
+  double adjustedHeight          = obbBlue.height * scaleFactor;
+  double adjustedAngle           = obbBlue.rotation;
   file << "<rect x=\"" << adjustedX - adjustedWidth / 2 << "\" y=\"" << adjustedY - adjustedHeight / 2 << "\" width=\""
        << adjustedWidth << "\" height=\"" << adjustedHeight << "\" transform=\"rotate(" << -adjustedAngle * 180.0 / M_PI
        << " " << adjustedX << " " << adjustedY << ")\" fill=\"blue\" stroke=\"blue\" />" << std::endl;
@@ -266,9 +248,9 @@ void generateSVG(const char *fname, OBB_2D &obbBlue, const std::vector<OBB_2D> &
   for (const OBB_2D &obb : obbsBlack) {
     double adjustedX, adjustedY;
     std::tie(adjustedX, adjustedY) = adjustCoordinates(obb.position.x, obb.position.y);
-    double adjustedWidth = obb.width * scaleFactor;
-    double adjustedHeight = obb.height * scaleFactor;
-    double adjustedAngle = obb.rotation;
+    double adjustedWidth           = obb.width * scaleFactor;
+    double adjustedHeight          = obb.height * scaleFactor;
+    double adjustedAngle           = obb.rotation;
 
     file << "<rect x=\"" << adjustedX - adjustedWidth / 2 << "\" y=\"" << adjustedY - adjustedHeight / 2
          << "\" width=\"" << adjustedWidth << "\" height=\"" << adjustedHeight << "\" transform=\"rotate("
@@ -280,9 +262,9 @@ void generateSVG(const char *fname, OBB_2D &obbBlue, const std::vector<OBB_2D> &
   for (const OBB_2D &obb : obbsRed) {
     double adjustedX, adjustedY;
     std::tie(adjustedX, adjustedY) = adjustCoordinates(obb.position.x, obb.position.y);
-    double adjustedWidth = obb.width * scaleFactor;
-    double adjustedHeight = obb.height * scaleFactor;
-    double adjustedAngle = obb.rotation;
+    double adjustedWidth           = obb.width * scaleFactor;
+    double adjustedHeight          = obb.height * scaleFactor;
+    double adjustedAngle           = obb.rotation;
 
     file << "<rect x=\"" << adjustedX - adjustedWidth / 2 << "\" y=\"" << adjustedY - adjustedHeight / 2
          << "\" width=\"" << adjustedWidth << "\" height=\"" << adjustedHeight << "\" transform=\"rotate("
@@ -305,11 +287,11 @@ int main() {
   std::vector<OBB_2D> obbs;
   for (double centerX = -16; centerX <= 16; centerX += 1.0) {
     for (double centerY = -16; centerY <= 16; centerY += 1.0) {
-      double width = Mth::random(0.8, 1.6);
+      double width  = Mth::random(0.8, 1.6);
       double height = Mth::random(0.8, 1.6);
-      double angle = Mth::random(0.0, M_PI);
-      double dx = Mth::random(-0.2, 0.2);
-      double dy = Mth::random(-0.2, 0.2);
+      double angle  = Mth::random(0.0, M_PI);
+      double dx     = Mth::random(-0.2, 0.2);
+      double dy     = Mth::random(-0.2, 0.2);
 
       OBB_2D obb(dx + centerX, dy + centerY, width, height, angle);
 
@@ -317,7 +299,7 @@ int main() {
     }
   }
   std::cout << "nb OBBs: " << obbs.size() << std::endl;
-  size_t objectId = 13;//obbs.size() / 2 + 130;
+  size_t objectId = 13; // obbs.size() / 2 + 130;
 
   // O(N^2) complexity
   std::vector<std::pair<size_t, size_t>> VerletListSlow;
@@ -327,8 +309,7 @@ int main() {
     for (size_t j = i + 1; j < obbs.size(); j++) {
       if (obbs[i].intersects(obbs[j])) {
         VerletListSlow.push_back(std::make_pair(i, j));
-        if (i == objectId)
-          intersOBBs1.push_back(obbs[j]);
+        if (i == objectId) intersOBBs1.push_back(obbs[j]);
       }
     }
   }
@@ -347,27 +328,23 @@ int main() {
   OBB_2D bounds(0, 0, 33, 33, 0);
   OBB_2D_quadtree quadTree(bounds, 10, 30);
   quadTree.setObjectInfoSize(obbs.size());
-  for (size_t i = 0; i < obbs.size(); i++) {
-    quadTree.insert(obbs[i], i);
-  }
+  for (size_t i = 0; i < obbs.size(); i++) { quadTree.insert(obbs[i], i); }
 
   std::vector<std::pair<size_t, size_t>> VerletListFast;
   std::vector<OBB_2D> intersectingOBBs;
   for (size_t i = 0; i < obbs.size(); i++) {
     std::vector<size_t> tmp = quadTree.queryIDs(i);
-		std::sort(tmp.begin(), tmp.end());
-    for (size_t k = 0; k < tmp.size(); k++) {
-      VerletListFast.push_back(std::make_pair(i, tmp[k]));
-    }
+    std::sort(tmp.begin(), tmp.end());
+    for (size_t k = 0; k < tmp.size(); k++) { VerletListFast.push_back(std::make_pair(i, tmp[k])); }
 
-		/*
-    if (i == objectId) {
-      intersectingOBBs = quadTree.query(objectId);
-      __SHOW(tmp.size());
-			__SHOW(obbs[tmp[tmp.size()-1]].position);
-			__SHOW(intersectingOBBs[tmp.size()-1].position);
-    }
-		*/
+    /*
+if (i == objectId) {
+  intersectingOBBs = quadTree.query(objectId);
+  __SHOW(tmp.size());
+        __SHOW(obbs[tmp[tmp.size()-1]].position);
+        __SHOW(intersectingOBBs[tmp.size()-1].position);
+}
+    */
   }
 
   end = std::chrono::steady_clock::now();
@@ -376,17 +353,16 @@ int main() {
 
   __SHOW(VerletListFast.size());
   __SHOW(intersectingOBBs.size());
-	
-	/*
-	for (size_t i = 0 ; i < 20; i++) {
-		__SHOW(VerletListSlow[i].first);
-		__SHOW(VerletListSlow[i].second);
-		__SHOW(VerletListFast[i].first);
-		__SHOW(VerletListFast[i].second);
-		std::cerr << std::endl;
-	}
-	*/
-	
+
+  /*
+  for (size_t i = 0 ; i < 20; i++) {
+      __SHOW(VerletListSlow[i].first);
+      __SHOW(VerletListSlow[i].second);
+      __SHOW(VerletListFast[i].first);
+      __SHOW(VerletListFast[i].second);
+      std::cerr << std::endl;
+  }
+  */
 
   // Generate SVG file with colored OBBs
   generateSVG("withQuadTree.svg", obbs[objectId], obbs, intersectingOBBs, -18, -18, 18, 18);
@@ -402,15 +378,13 @@ int main() {
     quadTree.setObjectInfoSize(obbs.size());
 
     // Insert the OBBs into the quadtree
-    for (size_t i = 0; i < obbs.size(); i++) {
-      quadTree.insert(obbs[i], i);
-    }
+    for (size_t i = 0; i < obbs.size(); i++) { quadTree.insert(obbs[i], i); }
 
     // Measure the execution time of a query
-    auto start = std::chrono::steady_clock::now();
+    auto start                      = std::chrono::steady_clock::now();
     std::vector<OBB_2D> queriedObbs = quadTree.query(objectId);
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    auto end                        = std::chrono::steady_clock::now();
+    auto duration                   = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
     // Print the result
     std::cout << MAX_CAPACITY << ' ' << queriedObbs.size() << ' ' << duration << std::endl;

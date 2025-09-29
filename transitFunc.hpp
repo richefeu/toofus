@@ -18,7 +18,9 @@
 
 class linearToPlateau {
 public:
-  linearToPlateau() { set(1.0, 0.05, 0.01); }
+  linearToPlateau() {
+    set(1.0, 0.05, 0.01);
+  }
 
   /**
    * Sets the parameters for the linear to plateau transition.
@@ -31,14 +33,14 @@ public:
    * Lfactor, C, and Cfactor based on the input parameters.
    */
   void set(double Plateau, double Transit, double Smoothness) {
-    plateau = Plateau;
-    transit = Transit;
+    plateau    = Plateau;
+    transit    = Transit;
     smoothness = Smoothness;
 
     abruptness = 1.0 / smoothness;
-    Lfactor = plateau / transit;
-    C = fabs(func(0));
-    Cfactor = 1.0 / (1.0 + C);
+    Lfactor    = plateau / transit;
+    C          = fabs(func(0));
+    Cfactor    = 1.0 / (1.0 + C);
   }
 
   /**
@@ -62,7 +64,7 @@ public:
    */
   double deriv(double x) {
     double expTransit = exp(transit * abruptness);
-    double dfdx = plateau * expTransit / (transit * (exp(x * abruptness) + expTransit));
+    double dfdx       = plateau * expTransit / (transit * (exp(x * abruptness) + expTransit));
     return dfdx * Cfactor;
   }
 
@@ -81,7 +83,9 @@ private:
 
 class plateauToPlateau {
 public:
-  plateauToPlateau() { set(0.0, 1.0, 0.5, 0.02); }
+  plateauToPlateau() {
+    set(0.0, 1.0, 0.5, 0.02);
+  }
 
   /**
    * Sets the parameters for the plateau to plateau transition.
@@ -97,11 +101,11 @@ public:
   void set(double Plateau_beg, double Plateau_end, double Transit, double Smoothness) {
     plateau_beg = Plateau_beg;
     plateau_end = Plateau_end;
-    transit = Transit;
-    smoothness = Smoothness;
+    transit     = Transit;
+    smoothness  = Smoothness;
 
     abruptness = 1.0 / smoothness;
-    Ampl = plateau_beg - plateau_end;
+    Ampl       = plateau_beg - plateau_end;
   }
 
   /**
@@ -125,7 +129,7 @@ public:
    *          the rate of change of the transition from the initial plateau to the final plateau.
    */
   double deriv(double x) {
-    double a = exp((x - transit) * abruptness);
+    double a  = exp((x - transit) * abruptness);
     double a1 = a + 1.0;
     return -Ampl * (exp(-transit * abruptness) + 1.0) * a / (smoothness * a1 * a1);
   }
