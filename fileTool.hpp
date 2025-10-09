@@ -39,7 +39,7 @@ public:
 #endif
   }
 
-  bool containsOnlyDigits(const char *str) {
+  static bool containsOnlyDigits(const char *str) {
     while (*str != '\0') {       // Iterate through each character in the string
       if (!std::isdigit(*str)) { // Check if the current character is not a digit
         return false;            // If any non-digit character is found, return false
