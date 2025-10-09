@@ -15,6 +15,7 @@
 #define FILETOOL_HPP
 
 #include <string>
+#include <cctype>
 
 #if defined(__WIN32) || defined(__WIN64) || defined(__WIN32__)
 #include <direct.h> // mkdir
