@@ -29,6 +29,7 @@
 
 class fileTool {
 public:
+  
   static char separator() {
 #if defined(__WIN32) || defined(__WIN64) || defined(__WIN32__)
     return 92; // Backslash: '\'
@@ -36,6 +37,18 @@ public:
     return 47; // Slash: '/'
 #endif
   }
+
+  bool containsOnlyDigits(const char *str) {
+    while (*str != '\0') {       // Iterate through each character in the string
+      if (!std::isdigit(*str)) { // Check if the current character is not a digit
+        return false;            // If any non-digit character is found, return false
+      }
+      str++; // Move to the next character
+    }
+    return true; // Return true if all characters are digits
+  }
+
+
 
   /// @brief Robust and portable function to test if a file exists.
   ///

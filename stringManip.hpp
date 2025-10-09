@@ -25,7 +25,7 @@
 #include <unordered_set>
 #include <vector>
 
-void inplaceTrim(std::string &line) {
+inline void inplaceTrim(std::string &line) {
   // trim from start (in place)
   line.erase(line.begin(), std::find_if(line.begin(), line.end(), [](unsigned char ch) { return !std::isspace(ch); }));
   // trim from end (in place)
@@ -33,7 +33,7 @@ void inplaceTrim(std::string &line) {
              line.end());
 }
 
-std::string readQuotedString(std::istream &is) {
+inline std::string readQuotedString(std::istream &is) {
   char currentChar;
   std::string result;
   bool inQuotes  = false;
@@ -66,7 +66,7 @@ std::string readQuotedString(std::istream &is) {
 }
 
 // Function to remove accents from a string
-std::string removeAccents(const std::string &str) {
+inline std::string removeAccents(const std::string &str) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
   std::u32string utf32 = converter.from_bytes(str);
 
@@ -80,7 +80,7 @@ std::string removeAccents(const std::string &str) {
 }
 
 // Function to normalize the string
-std::string normalizeString(const std::string &str) {
+inline std::string normalizeString(const std::string &str) {
   std::string normalized = removeAccents(str);
   std::transform(normalized.begin(), normalized.end(), normalized.begin(), ::tolower);
 
@@ -100,7 +100,7 @@ std::string normalizeString(const std::string &str) {
 }
 
 // Function to split a string into words
-std::unordered_set<std::string> tokenizeString(const std::string &str) {
+inline std::unordered_set<std::string> tokenizeString(const std::string &str) {
   std::unordered_set<std::string> words;
   std::istringstream iss(str);
   std::string word;
@@ -109,12 +109,12 @@ std::unordered_set<std::string> tokenizeString(const std::string &str) {
 }
 
 // Function to check if a word starts with a given prefix
-bool startsWith(const std::string &word, const std::string &prefix) {
+inline bool startsWith(const std::string &word, const std::string &prefix) {
   if (prefix.size() > word.size()) { return false; }
   return std::equal(prefix.begin(), prefix.end(), word.begin());
 }
 
-bool match(const std::string &s1, const std::string &s2, int &score) {
+inline bool match(const std::string &s1, const std::string &s2, int &score) {
   std::string normalized1 = normalizeString(s1);
   std::string normalized2 = normalizeString(s2);
 
