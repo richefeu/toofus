@@ -941,8 +941,81 @@ public:
   friend std::istream &operator>>(std::istream &pStr, mat9 &M) {
     return (pStr >> M.xx >> M.xy >> M.xz >> M.yx >> M.yy >> M.yz >> M.zx >> M.zy >> M.zz);
   }
+
+  // --- Style flags ---
+  static const int None;
+  static const int ColoredBrackets;
+  static const int WithSeparators;
+  static const int Compact;
+  static const int Scientific;
+
+  void fancyPrint(int opts = None, int precision = 3) const {
+    const std::string reset = "\033[0m";
+    const std::string blue  = "\033[34m";
+
+    bool coloredBrackets = (opts & ColoredBrackets);
+    bool withSeparators  = (opts & WithSeparators);
+    bool compact         = (opts & Compact);
+    bool scientific      = (opts & Scientific);
+
+    std::string sep = withSeparators ? (compact ? "|" : " | ") : (compact ? " " : "   ");
+
+    // --- Step 1: format all values as strings ---
+    auto fmt = [&](T v) {
+      std::ostringstream oss;
+      oss << std::setprecision(precision);
+      if (scientific) oss << std::scientific;
+      else oss << std::fixed;
+      oss << v;
+      return oss.str();
+    };
+
+    std::string s[3][3] = {{fmt(xx), fmt(xy), fmt(xz)}, {fmt(yx), fmt(yy), fmt(yz)}, {fmt(zx), fmt(zy), fmt(zz)}};
+
+    // --- Step 2: compute column widths ---
+    size_t width[3] = {0, 0, 0};
+    for (int j = 0; j < 3; ++j)
+      for (int i = 0; i < 3; ++i) width[j] = std::max(width[j], s[i][j].size());
+
+    // --- Step 3: big brackets ---
+    std::string topLeft = (compact ? "⎡" : "⎡ "), middleLeft = (compact ? "⎢" : "⎢ "),
+                bottomLeft = (compact ? "⎣" : "⎣ ");
+    std::string topRight = (compact ? "⎤" : " ⎤"), middleRight = (compact ? "⎥" : " ⎥"),
+                bottomRight = (compact ? "⎦" : " ⎦");
+
+    if (coloredBrackets) {
+      topLeft     = blue + topLeft + reset;
+      middleLeft  = blue + middleLeft + reset;
+      bottomLeft  = blue + bottomLeft + reset;
+      topRight    = blue + topRight + reset;
+      middleRight = blue + middleRight + reset;
+      bottomRight = blue + bottomRight + reset;
+    }
+
+    // --- Step 4: print each row ---
+    for (int i = 0; i < 3; ++i) {
+      std::ostringstream row;
+      for (int j = 0; j < 3; ++j) {
+        row << std::setw(static_cast<int>(width[j])) << s[i][j];
+        if (j < 2) row << sep;
+      }
+
+      std::string lbr = (i == 0) ? topLeft : (i == 2 ? bottomLeft : middleLeft);
+      std::string rbr = (i == 0) ? topRight : (i == 2 ? bottomRight : middleRight);
+
+      std::cout << lbr << row.str() << rbr << "\n";
+    }
+  }
 };
 
+// Define static consts (needed in C++ <17)
+template <typename T> const int mat9<T>::None            = 0;
+template <typename T> const int mat9<T>::ColoredBrackets = 1 << 0;
+template <typename T> const int mat9<T>::WithSeparators  = 1 << 1;
+template <typename T> const int mat9<T>::Compact         = 1 << 2;
+template <typename T> const int mat9<T>::Scientific      = 1 << 3;
+
+// predefined typedefs
 typedef mat9<double> mat9r;
 typedef mat9<float> mat9f;
 typedef mat9<int> mat9i;

@@ -1,0 +1,668 @@
+\documentclass[a4paper,onecolumn,11pt]{doofus}
+
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+
+
+\title{\texttt{ToOfUs}: \underline{\texttt{To}}ols \underline{\texttt{Of}}ten \underline{\texttt{Us}}ed}
+
+\doofustitle{Reference of \texttt{ToOfUs}}
+\doofussubtitle{ \underline{\texttt{To}}ols \underline{\texttt{Of}}ten \underline{\texttt{Us}}ed}
+\doofusauthor{Vincent Richefeu}
+\doofusdate{}
+\doofuslogo{../toofus_logo.png} % Optional, remove or leave empty
+
+
+
+\begin{document}
+
+%\maketitle
+\makedoofustitle
+
+\begin{abstract}
+\texttt{ToOfUs} brings together a collection of tools in the form of standalone header files that can be included in C++ sources without further complication.
+They are \underline{\textbf{To}}ols that I personnally \underline{\textbf{Of}}ten \underline{\textbf{Us}}ed in my various simulation codes.
+\end{abstract}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+%%%%%%%%%%%
+%%% SECTION %%%
+\section{Setting up}
+
+%\syntax{\return{double} \keyword{doSomething} (\type{vector double}\param{a})}
+
+
+Installation is simply a matter of copying the directory \texttt{toofus} (or a single \texttt{hpp} file) somewhere on your computer.
+A simple solution to get \texttt{toofus} in your home directory, is to copy-past the following command in a terminal (\texttt{git} needs to be installed)
+%
+\begin{lstlisting}
+cd ~ && git clone https://github.com/richefeu/toofus.git
+\end{lstlisting}
+
+%%%%%%%%%%%
+%%% SECTION %%%
+%\section{Mathematics}
+
+
+
+
+%%%%%%%%%%%
+%%% SECTION %%%
+\section{Geometric algebra}
+
+
+\subsection{\texttt{vec2.hpp}}
+
+The \texttt{vec2.hpp} header file defines the \texttt{vec2} template class, which represents a vector with 2 components of type \texttt{T}. The class has the following member variables and methods:
+
+\begin{itemize}
+\item \syntax{\type{T} \param{x}, \param{y}} The x and y components of the vector.
+
+\item \syntax{\keyword{vec2}()} Default constructor.
+
+\item \syntax{\keyword{vec2}(T X, T Y)} Constructs a vector with the given x and y components.
+
+\item \syntax{\keyword{vec2}(const vec2 \&v)} Copy constructor.
+
+\item \syntax{\keyword{vec2} \&operator=(const vec2 \&V)} Copy assignment operator.
+
+\item \syntax{static \return{vec2} \keyword{unit\_x}()} Returns a vector with x component set to 1 and y component set to 0.
+
+\item \syntax{static  \return{vec2} \keyword{unit\_y}()} Returns a vector with x component set to 0 and y component set to 1.
+
+\item \syntax{static  \return{vec2} one()} Returns a vector with both x and y components set to 1.
+
+\item \syntax{static  \return{vec2} zero()} Returns a vector with both x and y components set to 0.
+
+\item \syntax{void reset()} Sets both x and y components to 0.
+
+\item \syntax{void set(T X, T Y)} Sets the x and y components of the vector to the given values.
+
+\item \syntax{void set(T val)} Sets both x and y components of the vector to the given value.
+
+\item \syntax{bool isnull(const T tol = 1e-20) const} Returns true if both x and y components are within the given tolerance of zero.
+
+\item \syntax{T c\_vec()} Returns a pointer to the first component (\texttt{x}) of the vector.
+
+\item \syntax{T \&operator[](int i)}, \syntax{T \&operator[](size\_t i)},\\ 
+\syntax{const T \&operator[](int i) const},\\ 
+\syntax{const T \&operator[](size\_t i) const}\\ 
+Overloaded array subscript operators to access the x and y components of the vector.
+
+\item \syntax{const T n() const}, \syntax{const T t() const} Returns the x and y components of the vector, respectively, using the notation for local frames.
+
+\item \syntax{vec2 \&operator+=(const vec2 \&a)},\\ 
+\syntax{vec2 \&operator-=(const vec2 \&a)},\\ 
+\syntax{vec2 \&operator=(T k)},\\ 
+\syntax{vec2 \&operator/=(T k)}\\ 
+Overloaded arithmetic operators for vector addition, subtraction, scalar multiplication, and scalar division, respectively.
+
+\item \syntax{friend vec2 operator+(const vec2 \&a, const vec2 \&b)},\\
+\syntax{friend vec2 operator-(const vec2 \&a, const vec2 \&b)},\\ 
+\syntax{friend vec2 operator-(const vec2 \&a)},\\ 
+\syntax{friend vec2 operator*(const vec2 \&a, T k)},\\ 
+\syntax{friend vec2 operator*(T k, const vec2 \&a)},\\ 
+\syntax{friend vec2 operator/(const vec2 \&a, T k)}\\ 
+Overloaded arithmetic operators for vector addition, subtraction, negation, scalar multiplication, and scalar division, respectively.
+
+\item \syntax{friend T operator*(const vec2 \&a, const vec2 \&b)} Overloaded dot product operator.
+
+\item \syntax{friend vec2<T> component\_product(const vec2<T> \&a, const vec2<T> \&b)} Returns a vector with components obtained by multiplying the corresponding components of the input vectors.
+
+\item \syntax{friend vec2<T> component\_min(const vec2<T> \&a, const vec2<T> \&b)},\\\syntax{friend vec2<T> component\_max(const vec2<T> \&a, const vec2<T> \&b)},\\ \syntax{friend vec2<T> component\_abs(const vec2<T> \&a)}\\ Returns a vector with components obtained by taking the minimum, maximum, or absolute value of the corresponding components of the input vectors, respectively.
+
+\item \syntax{friend T angle(const vec2<T> \&a, const vec2<T> \&b)} Returns the clockwise angle between two vectors (from a to b).
+
+\item \syntax{friend T cross(const vec2<T> \&a, const vec2<T> \&b)} Returns the cross product of two vectors.
+
+\item \syntax{friend vec2<T> lerp(double t, const vec2<T> \&a, const vec2<T> \&b)} Returns a vector obtained by linearly interpolating between two vectors using the given interpolation parameter t.
+
+\item \syntax{friend T norm2(const vec2 \&a)}, \syntax{friend T norm(const vec2 \&a)} Returns the squared length and length of the vector, respectively.
+
+\item \syntax{T normSup() const} Returns the sup norm of the vector.
+
+\item \syntax{T length() const} Returns the length of the vector.
+
+\item \syntax{T normalize()} Normalizes the vector and returns the length (before being normalized).
+
+\item \syntax{vec2 normalized() const} Returns a normalized vector (without changing 'this' vector).
+
+\item \syntax{friend T determinant(const vec2<T> a, const vec2<T> b)} Returns the determinant of two vectors.
+
+\item \syntax{bool operator==(const vec2<T> \&other) const},\\ \syntax{bool operator!=(const vec2<T> \&other) const} Overloaded equality and inequality operators.
+
+\item \syntax{friend std::ostream \&operator<<(std::ostream \&pStr, const vec2 \&pV)},\\ 
+\syntax{friend std::istream \&operator>>(std::istream \&pStr, vec2 \&pV)}\\ 
+Overloaded input/output operators.
+\end{itemize}
+
+Additionally, the header file defines the following type aliases:
+
+\begin{itemize}
+\item \syntax{\type{vec2r}} for \syntax{\type{vec2<double>}}
+\item \syntax{type{vec2i}}  for \syntax{\type{vec2<int>}}
+\item \syntax{type{vec2ui}}  for \syntax{\type{vec2<unsigned int>}}
+\item \syntax{type{vec2b}}  for \syntax{\type{vec2<bool>}}
+\end{itemize}
+
+Finally, the header file defines a specialization of the \texttt{std::less} template for \texttt{vec2} objects, which allows them to be used as keys in associative containers like \texttt{std::map} and \texttt{std::set}.
+
+\subsection{\texttt{vec3.hpp}}
+
+The \texttt{vec3.hpp} header file defines the \texttt{vec3} class, which represents a vector with 3 components. The class has the following member variables and methods:
+
+\begin{itemize}
+\item \syntax{T x, y, z} The components of the vector.
+\item \syntax{vec3()} Default constructor.
+\item \syntax{vec3(T X, T Y, T Z)} Constructs a vector with the given components.
+\item \syntax{vec3(const vec3 \&v)} Copy constructor.
+\item \syntax{vec3 \&operator=(const vec3 \&V)} Copy assignment operator.
+\item \syntax{static vec3 zero()} Returns a vector with all components set to 0.
+\item \syntax{static vec3 unit\_x()} Returns a vector with the x component set to 1 and the other components set to 0.
+\item \syntax{static vec3 unit\_y()} Returns a vector with the y component set to 1 and the other components set to 0.
+\item \syntax{static vec3 unit\_z()} Returns a vector with the z component set to 1 and the other components set to 0.
+\item \syntax{static vec3 one()} Returns a vector with all components set to 1.
+\item \syntax{void reset()} Sets all components to 0.
+\item \syntax{void set(T X, T Y, T Z)} Sets the components of the vector to the given values.
+\item \syntax{void set(T val)} Sets all components to the given value.
+\item \syntax{void randomize\_direction(double val)} Randomizes the direction of the vector with a length of \syntax{val}.
+\item \syntax{void randomize\_direction\_xz(double val)} Randomizes the direction of the vector in the x-z plane with a length of \syntax{val}.
+\item \syntax{bool isnull(const T tol = 1e-20) const} Returns true if the vector is null (i.e., all components are within a tolerance of 0).
+\item \syntax{T *c\_vec()} Returns a pointer to the first component of the vector.
+\item \syntax{T \&operator[](int i)} Returns a reference to the i-th component of the vector.
+\item \syntax{T \&operator[](size\_t i)} Returns a reference to the i-th component of the vector.
+\item \syntax{const T \&operator[](int i) const} Returns a constant reference to the i-th component of the vector.
+\item \syntax{const T \&operator[](size\_t i) const} Returns a constant reference to the i-th component of the vector.
+\item \syntax{const T n() const} Returns the x component of the vector (alias for \syntax{x}).
+\item \syntax{const T t() const} Returns the y component of the vector (alias for \syntax{y}).
+\item \syntax{const T s() const} Returns the z component of the vector (alias for \syntax{z}).
+\item \syntax{vec3 \&operator+=(const vec3 \&a)} Adds \syntax{a} to the vector.
+\item \syntax{vec3 \&operator-=(const vec3 \&a)} Subtracts \syntax{a} from the vector.
+\item \syntax{vec3 \&operator*=(T k)} Multiplies the vector by the scalar \syntax{k}.
+\item \syntax{vec3 \&operator/=(T k)} Divides the vector by the scalar \syntax{k}.
+\item \syntax{friend vec3 operator+(const vec3 \&a, const vec3 \&b)} Returns the sum of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3 operator-(const vec3 \&a, const vec3 \&b)} Returns the difference of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3 operator-(const vec3 \&a)} Returns the negative of \syntax{a}.
+\item \syntax{friend vec3 operator*(const vec3 \&a, T k)} Returns the product of \syntax{a} and the scalar \syntax{k}.
+\item \syntax{friend vec3 operator*(T k, const vec3 \&a)} Returns the product of the scalar \syntax{k} and \syntax{a}.
+\item \syntax{friend vec3 operator/(const vec3 \&a, T k)} Returns the quotient of \syntax{a} and the scalar \syntax{k}.
+\item \syntax{friend T operator*(const vec3 \&a, const vec3 \&b)} Returns the dot product of \syntax{a} and \syntax{b}.
+\item \syntax{friend T dot(const vec3 \&a, const vec3 \&b)} Returns the dot product of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> component\_product(const vec3<T> \&a, const vec3<T> \&b)} Returns the component-wise product of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> component\_min(const vec3<T> \&a, const vec3<T> \&b)} Returns the component-wise minimum of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> component\_max(const vec3<T> \&a, const vec3<T> \&b)} Returns the component-wise maximum of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> component\_abs(const vec3<T> \&a)} Returns the component-wise absolute value of \syntax{a}.
+\item \syntax{friend vec3<T> operator\^(const vec3<T> \&a, const vec3<T> \&b)} Returns the cross product of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> cross(const vec3<T> \&a, const vec3<T> \&b)} Returns the cross product of \syntax{a} and \syntax{b}.
+\item \syntax{friend vec3<T> lerp(double t, const vec3<T> \&a, const vec3<T> \&b)} Returns the linear interpolation of \syntax{a} and \syntax{b} by \syntax{t}.
+\item \syntax{friend T norm2(const vec3 \&a)} Returns the squared length of \syntax{a}.
+\item \syntax{friend T norm(const vec3 \&a)} Returns the length of \syntax{a}.
+\item \syntax{T length() const} Returns the length of the vector.
+\item \syntax{T normSup() const} Returns the sup norm of the vector.
+\item \syntax{T normalize()} Normalizes the vector and returns the length of the original vector.
+\item \syntax{vec3 normalized() const} Returns a normalized copy of the vector.
+\item \syntax{friend T determinant(const vec3<T> a, const vec3<T> b, const vec3<T> c)} Returns the determinant of the matrix formed by \syntax{a}, \syntax{b}, and \syntax{c}.
+\item \syntax{friend std::ostream \&operator<<(std::ostream \&os, const vec3 \&v)} Outputs the vector to an output stream.
+\item \syntax{friend std::istream \&operator>>(std::istream \&is, vec3 \&v)} Inputs the vector from an input stream.
+\end{itemize}
+
+\subsection{\texttt{quat.hpp}}
+
+The \texttt{quat.hpp} header file defines the \texttt{quat} class, which represents a quaternion specialized for rotations. The class has the following member variables and methods:
+
+\begin{itemize}
+\item \syntax{vec3r v}, \syntax{double s} The vector and scalar parts of the quaternion, respectively.
+\item \syntax{quat()} Default constructor. Initializes a quaternion with no rotation (identity).
+\item \syntax{quat(double X, double Y, double Z, double S)} Constructs a quaternion with the given vector and scalar parts.
+\item \syntax{quat(const vec3r \&V, const double S)} Constructs a quaternion with the given vector and scalar parts. Note that this is not an axis with angle of rotation.
+\item \syntax{quat(const quat \&Q)} Copy constructor.
+\item \syntax{quat \&operator=(const quat \&Q)} Copy assignment operator.
+\item \syntax{quat \&operator+=(const quat \&a)}, \syntax{quat \&operator-=(const quat \&a)}, \syntax{quat \&operator*=(double k)}, \syntax{quat \&operator/=(double k)} Overloaded arithmetic operators for quaternion addition, subtraction, scalar multiplication, and scalar division, respectively.
+\item \syntax{friend quat operator*(const quat \&q1, const quat \&q2)} Overloaded quaternion multiplication operator.
+\item \syntax{vec3r operator*(const vec3r \&V) const} Overloaded operator to rotate a vector by a quaternion.
+\item \syntax{quat dot(const vec3r \&omega)} Returns the time derivative of the quaternion.
+\item \syntax{quat ddot(const vec3r \&omega, const vec3r \&domega)} Returns the time second-derivative of the quaternion.
+\item \syntax{void conjugate()} Changes the quaternion to its conjugate.
+\item \syntax{quat get\_conjugated() const} Returns the conjugate of the quaternion.
+\item \syntax{void reset()} Resets the rotation to a zero rotation.
+\item \syntax{void set\_axis\_angle(const vec3r \&V, double angle)} Sets the quaternion from a rotation around an axis.
+\item \syntax{void set(double X, double Y, double Z, double S)} Sets the four components of the quaternion.
+\item \syntax{double get\_angle() const} Returns the rotation angle.
+\item \syntax{double get\_Pitch() const}, \syntax{double get\_Yaw() const}, \syntax{double get\_Roll() const} Return the pitch, yaw, and roll angles, respectively.
+\item \syntax{vec3r get\_axis() const} Returns the rotation axis.
+\item \syntax{void set\_from\_to(const vec3r \&V1, const vec3r \&V2)} Sets the quaternion from two vectors representing the initial and final orientations.
+\item \syntax{void TwistSwingDecomp(const vec3r \&V1, quat \&twist, quat \&swing)},\\ \syntax{void SwingTwistDecomp(const vec3r \&V1, quat \&swing, quat \&twist)}\\ Decompose the quaternion into twist and swing components. Actually, it is not used in any of my code.
+\item \syntax{double normalize()} Normalizes the quaternion and returns its length (before normalization).
+\item \syntax{void randomize(bool seedTime = false)}, \syntax{void randomizeSeed()} Randomize the quaternion.
+\item \syntax{void get\_rot\_matrix(double M[])} Returns the rotation matrix corresponding to the quaternion.
+\item \syntax{int set\_rot\_matrix(double m[])} Sets the quaternion from a rotation matrix.
+\item \syntax{mat9<double> rotate\_diag\_mat(const vec3r \&u) const} Computes the product of the rotation matrix corresponding to the quaternion and a diagonal matrix with the given vector as its diagonal.
+\item \syntax{vec3r rotate(const vec3r \&u) const}, \syntax{vec3r unrotate(const vec3r \&u) const} Rotate and unrotate a vector by the quaternion, respectively.
+\item \syntax{bool operator==(const quat \&other) const}, \syntax{bool operator!=(const quat \&other) const} Overloaded equality and inequality operators.
+\item \syntax{friend std::ostream \&operator<<(std::ostream \&pStr, const quat \&Q)}, \syntax{friend std::istream \&operator>>(std::istream \&pStr, quat \&Q)} Overloaded input/output operators.
+\end{itemize}
+
+Additionally, the header file defines a namespace containing the following function template:
+
+\begin{itemize}
+\item \syntax{template <typename floatType> void quat2GLMatrix(quat \&q, floatType *pMatrix)} Converts a quaternion to an OpenGL matrix.
+\end{itemize}
+
+
+
+\subsection{\texttt{mat4.hpp}}
+
+The \texttt{mat4.hpp} header file defines the \texttt{mat4} template class, which represents a 2x2 matrix. The class has the following member variables and methods:
+
+\begin{itemize}
+\item \syntax{T xx, xy, yx, yy} The components of the matrix.
+\item \syntax{mat4()} Default constructor. Initializes a matrix with all components set to 0.
+\item \syntax{mat4(const T XX, const T XY, const T YX, const T YY)} Constructs a matrix with the given components.
+\item \syntax{mat4(const T M[])} Constructs a matrix from a given array of components.
+\item \syntax{mat4(const mat4 \&M)} Copy constructor.
+\item \syntax{mat4 \&operator=(const mat4 \&M)} Copy assignment operator.
+\item \syntax{static mat4 unit()} Returns a matrix with the identity matrix components.
+\item \syntax{static mat4 zero()} Returns a matrix with all components set to 0.
+\item \syntax{static mat4 one()} Returns a matrix with all components set to 1.
+\item \syntax{void reset()} Sets all components of the matrix to 0.
+\item \syntax{void reset(const double val)} Sets all components of the matrix to the given value.
+\item \syntax{void set\_diag(const double XX, const double YY)} Sets the diagonal components of the matrix to the given values.
+\item \syntax{T \&operator[](int i)}, \syntax{T \&operator[](size\_t i)}, \syntax{const T \&operator[](int i) const}, \syntax{const T \&operator[](size\_t i) const} Overloaded array subscript operators to access the components of the matrix.
+\item \syntax{T \&at(int line, int column)}, \syntax{const T \&at(int line, int column) const} Overloaded \syntax{at} method to access the components of the matrix using line and column indices.
+\item \syntax{T c\_mtx()} Returns a pointer to the first component of the matrix.
+\item \syntax{void setZero()} Sets all components of the matrix to 0.
+\item \syntax{void setIdentity()} Sets the matrix to the identity matrix.
+\item \syntax{mat4 transposed()} Returns the transpose of the matrix.
+\item \syntax{void transpose()} Transposes the matrix in place.
+\item \syntax{void eigenvalues(double \&v1, double \&v2, bool \&swapped) const} Computes the eigenvalues of the matrix (only for symmetric matrices).
+\item \syntax{void eigen(mat4 \&V, mat4 \&D)} Computes the eigenvalues and eigenvectors of the matrix.
+\item \syntax{int sym\_eigen(mat4 \&V, mat4 \&D) const} Computes the eigenvalues and eigenvectors of the matrix using the symmetric eigenvalue decomposition method.
+\item \syntax{bool inverse()} Computes the inverse of the matrix in place.
+\item \syntax{mat4 get\_inverse()} Returns the inverse of the matrix.
+\item \syntax{T normSup() const} Returns the sup norm of the matrix.
+\item \syntax{T det() const} Returns the determinant of the matrix.
+\item \syntax{void svd(mat4 \&U, mat4 \&S, mat4 \&V) const} Computes the singular value decomposition of the matrix.
+\item \syntax{bool square\_root(mat4 \&SqR) const} Computes the square root of the matrix.
+\item \syntax{mat4 \&operator+=(const mat4 \&a)}, \syntax{mat4 \&operator-=(const mat4 \&a)}, \syntax{mat4 \&operator=(double k)}, \syntax{mat4 \&operator/=(double k)} Overloaded arithmetic operators for matrix addition, subtraction, scalar multiplication, and scalar division, respectively.
+\item \syntax{friend mat4 operator+(const mat4 \&a, const mat4 \&b)}, \syntax{friend mat4 operator-(const mat4 \&a, const mat4 \&b)}, \syntax{friend mat4 operator-(const mat4 \&a)}, \syntax{friend mat4 operator*(const mat4 \&a, double k)}, \syntax{friend mat4 operator*(double k, const mat4 \&a)}, \syntax{friend mat4 operator/(const mat4 \&a, double k)} Overloaded arithmetic operators for matrix addition, subtraction, negation, scalar multiplication, and scalar division, respectively.
+\item \syntax{friend vec2r operator*(const mat4 \&a, const vec2r \&b)}, \syntax{friend vec2r operator*(const vec2r \&b, const mat4 \&a)} Overloaded multiplication operators for matrix-vector and vector-matrix multiplication, respectively.
+\item \syntax{friend mat4 operator*(const mat4 \&a, const mat4 \&b)} Overloaded multiplication operator for matrix-matrix multiplication.
+\item \syntax{friend std::ostream \&operator<<(std::ostream \&pStr, const mat4 \&pV)}, \syntax{friend std::istream \&operator>>(std::istream \&pStr, mat4 \&M)} Overloaded input/output operators.
+\end{itemize}
+
+Additionally, the header file defines the following type aliases:
+
+\begin{itemize}
+\item \syntax{mat4r} A \syntax{mat4} with \syntax{double} components.
+\item \syntax{mat4f} A \syntax{mat4} with \syntax{float} components.
+\item \syntax{mat4i} A \syntax{mat4} with \syntax{int} components.
+\item \syntax{mat4ui} A \syntax{mat4} with \syntax{unsigned int} components.
+\item \syntax{mat4b} A \syntax{mat4} with \syntax{bool} components.
+\end{itemize}
+
+
+
+%%%%%%%%%%%
+%%% SECTION %%%
+\section{Collision detection}
+
+\subsection{\texttt{AABB.hpp}}
+
+The \texttt{AABB.hpp} header file defines the \texttt{AABB} class, which represents an axis-aligned bounding box in 3D space. The class has the following member variables and methods:
+%
+\begin{itemize}
+\item \syntax{\type{vec3r} \param{min}, \param{max}} The minimum and maximum points of the bounding box.
+\item \syntax{\keyword{AABB}()} Default constructor.
+\item \syntax{explicit \keyword{AABB}(const \type{vec3r\&} \param{v})} Constructs a bounding box with a single point.
+\item \syntax{AABB(const vec3r \&v1, const vec3r \&v2)} Constructs a bounding box with two points.
+\item \syntax{AABB(const AABB \&aabb)} Copy constructor.
+\item \syntax{explicit AABB(const std::vector<vec3r> \&cloud)} Constructs a bounding box from a point cloud.
+\item \syntax{AABB \&operator=(const AABB \&aabb)} Copy assignment operator.
+\item \syntax{double getRadius() const} Returns the radius of a sphere that surrounds the bounding box, centered at the bounding box center.
+\item \syntax{vec3r getCenter() const} Returns the center of the bounding box.
+\item \syntax{void set\_single(const vec3r \&v)} Sets the bounding box to a single point.
+\item \syntax{void add(const vec3r \&v)} Adds a point to the bounding box.
+\item \syntax{void enlarge(double more)} Enlarges the bounding box by a scalar value.
+\item \syntax{void enlarge(const vec3r \&more)} Enlarges the bounding box by a vector value.
+\item \syntax{void merge(const AABB \&more)} Merges the bounding box with another bounding box.
+\item \syntax{void translate(const vec3r \&v)} Translates the bounding box by a vector value.
+\item \syntax{bool intersect(const AABB \&a) const} Tests for intersection with another bounding box.
+\item \syntax{bool intersect(const vec3r \&a) const} Tests for intersection with a point.
+\item \syntax{bool intersectX(const AABB \&a) const} Tests for intersection with another bounding box in the X direction only.
+\item \syntax{bool intersectY(const AABB \&a) const} Tests for intersection with another bounding box in the Y direction only.
+\item \syntax{bool intersectZ(const AABB \&a) const} Tests for intersection with another bounding box in the Z direction only.
+\end{itemize}
+
+\begin{figure}[htb]
+\begin{center}
+\tdplotsetmaincoords{70}{60}
+\begin{tikzpicture}[tdplot_main_coords, scale=2]
+
+% Coordinate system
+\coordinate (O) at (0,0,0);
+\draw[thick,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$x$};
+\draw[thick,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$y$};
+\draw[thick,->] (0,0,0) -- (0,0,1) node[anchor=south]{$z$};
+
+% AABB min and max vectors
+\coordinate (min) at (1,1,0.5);
+\coordinate (max) at (2,2,1.5);
+
+% AABB corners
+\coordinate (A) at (min);
+\coordinate (B) at ($(min)+(1,0,0)$);
+\coordinate (C) at ($(min)+(1,1,0)$);
+\coordinate (D) at ($(min)+(0,1,0)$);
+\coordinate (E) at ($(min)+(0,0,1)$);
+\coordinate (F) at ($(min)+(1,0,1)$);
+\coordinate (G) at ($(min)+(1,1,1)$);
+\coordinate (H) at ($(min)+(0,1,1)$);
+
+% AABB
+\draw[thick,orange] (A) -- (B) -- (C) -- (D) -- cycle;
+\draw[thick,orange] (A) -- (E) -- (F) -- (B);
+\draw[thick,orange] (D) -- (H) -- (G) -- (C);
+\draw[thick,orange] (E) -- (H);
+\draw[thick,orange] (F) -- (G);
+
+% Min and max vectors
+\draw[thick,->,blue] (O) -- (min) node[below]{$\bm{v}_{min}$};
+\draw[thick,->,blue] (O) -- (max) node[above]{$\bm{v}_{max}$};
+
+\end{tikzpicture}
+\end{center}
+\caption{Sketch of an \syntax{AABB}}
+\end{figure}
+
+
+
+\subsection{\texttt{obb.hpp}}
+
+The \texttt{obb.hpp} header file defines the \texttt{OBB} class, which represents an oriented bounding box. The class has the following member variables and methods:
+
+\begin{itemize}
+\item \syntax{vec3r center} The center of the bounding box.
+\item \syntax{vec3r e[3]} The three directions of the bounding box (normalized vectors).
+\item \syntax{vec3r extent} The three extents (half box-length in the three directions) of the bounding box.
+\item \syntax{OBB()} Default constructor. Initializes a bounding box with center at the origin, unit directions, and zero extents.
+\item \syntax{OBB(const OBB \&obb)} Copy constructor.
+\item \syntax{OBB \&operator=(const OBB \&obb)} Copy assignment operator.
+\item \syntax{void enlarge(double more)} Enlarges the bounding box by adding the given value to all extents.
+\item \syntax{void translate(const vec3r \&v)} Translates the bounding box by the given vector.
+\item \syntax{void rotate(const quat \&Q)} Rotates the bounding box by the given quaternion.
+\item \syntax{bool intersect(const OBB \&obb, double tol = FLT\_EPSILON) const} Tests whether the bounding box intersects with another bounding box.
+\item \syntax{bool intersect(const vec3r \&a) const} Tests whether a point lies inside the bounding box.
+\item \syntax{friend \return{std::ostream\&} \keyword{operator<<}(\type{std::ostream\&} pStr, const \type{OBB\&} pOBB)},\\ \syntax{friend \return{std::istream\&} \keyword{operator>>}(\type{std::istream\&} pStr, \type{OBB\&} pOBB)}\\ Overloaded input/output operators.
+\end{itemize}
+
+\begin{figure}[htb]
+\begin{center}
+\tdplotsetmaincoords{70}{110}
+\begin{tikzpicture}[tdplot_main_coords, scale=2]
+
+% Coordinate system
+\coordinate (O) at (0,0,0);
+\draw[thick,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$x$};
+\draw[thick,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$y$};
+\draw[thick,->] (0,0,0) -- (0,0,1) node[anchor=south]{$z$};
+
+% Box center
+\coordinate (P) at (2,3,1.5);
+\draw[thick,->] (O) -- (P) node[above left]{$C$};
+
+% Rotation angles
+\tdplotsetrotatedcoords{45}{25}{-10}
+
+% Box
+\begin{scope}[tdplot_rotated_coords, shift={(P)}]
+\coordinate (A) at (-0.8,-0.5,-0.35);
+\coordinate (B) at (0.8,-0.5,-0.35);
+\coordinate (C) at (0.8,0.5,-0.35);
+\coordinate (D) at (-0.8,0.5,-0.35);
+\coordinate (E) at (-0.8,-0.5,0.35);
+\coordinate (F) at (0.8,-0.5,0.35);
+\coordinate (G) at (0.8,0.5,0.35);
+\coordinate (H) at (-0.8,0.5,0.35);
+
+\draw[thick,orange] (A) -- (B) -- (C) -- (D) -- cycle;
+\draw[thick,orange] (A) -- (E) -- (F) -- (B);
+\draw[thick,orange] (D) -- (H) -- (G) -- (C);
+\draw[thick,orange] (E) -- (H);
+\draw[thick,orange] (F) -- (G);
+
+% Extent vectors
+\coordinate (ex) at (0.8,0,0);
+\coordinate (ey) at (0,0.5,0);
+\coordinate (ez) at (0,0,0.35);
+\draw[thick,->,blue] (P) -- ($(P)+(ex)$) node[below] {$X_1 \bm{e}_1$};
+\draw[thick,->,blue] (P) -- ($(P)+(ey)$) node[right] {$X_2 \bm{e}_2$};
+\draw[thick,->,blue] (P) -- ($(P)+(ez)$) node[above] {$X_3 \bm{e}_3$};
+
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+\caption{Sketch of an \texttt{OBB}}
+\end{figure}
+
+
+
+%%%%%%%%%%%
+%%% SECTION %%%
+\section{Graphic tools}
+
+\subsection{\texttt{ColorTable.hpp}}
+
+
+
+
+
+\begin{figure}[htb]
+\centering
+\subfigure[ALL\_BLACK]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_all_black.png}}
+\subfigure[VIS5D]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_vis5d.png}}
+\subfigure[MATLAB\_JET]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_jet.png}}
+\subfigure[SAMCET]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_samcet.png}}
+
+\subfigure[RAINBOW]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_rainbow.png}}
+\subfigure[EMC2000]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_emc2000.png}}
+\subfigure[BLUE\_RED\_YELLOW\_WHITE]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_blue_red_yellow_white.png}}
+\subfigure[MATLAB\_HOT]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_hot.png}}
+
+\subfigure[MATLAB\_PINK]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_pink.png}}
+\subfigure[GRAYSCALE]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_grayscale.png}}
+\subfigure[ALL\_WHITE]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_all_white.png}}
+\subfigure[MATLAB\_HSV]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_hsv.png}}
+
+\subfigure[SPECTRUM]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_spectrum.png}}
+\subfigure[MATLAB\_BONE]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_bone.png}}
+\subfigure[MATLAB\_SPRING]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_spring.png}}
+\subfigure[MATLAB\_SUMMER]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_summer.png}}
+
+\subfigure[MATLAB\_AUTUMN]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_autumn.png}}
+\subfigure[MATLAB\_WINTER]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_winter.png}}
+\subfigure[MATLAB\_COOL]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_cool.png}}
+\subfigure[MATLAB\_COPPER]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_matlab_copper.png}}
+
+\subfigure[RANDOM]{\includegraphics[width=0.24\textwidth]{colorTable/color_table_random.png}}
+\caption{Options for \texttt{ColorTable}}
+\end{figure}
+
+
+
+\subsubsection*{Public Methods}
+
+\begin{itemize}
+\item \syntax{\keyword{ColorTable}(\type{int} \param{tableID} = \keyword{MATLAB\_JET})}
+Constructs a color table object with the specified table ID. The default table ID is \syntax{MATLAB\_JET}
+
+\item \syntax{\return{void} \keyword{Rebuild}()}
+Rebuilds the color table based on the current settings.
+
+\item \syntax{\return{void} \keyword{rebuild\_interp\_rgba}(\type{std::vector<int>} \param{cpos}, \type{std::vector<std::vector<int>>} \param{cols})}
+Rebuilds the color table by interpolating RGBA colors at specified positions.
+
+
+\item \syntax{\return{void} \keyword{rebuild\_interp\_hsv}(\type{std::vector<int>} \param{cpos}, \type{std::vector<std::vector<int>>} \param{cols})}
+Rebuilds the color table by interpolating HSV colors at specified positions.
+%
+\begin{lstlisting}[style=cppstyle]
+std::vector<int> cpos = {0, 64, 128, 192, 255};
+std::vector<std::vector<int>> cols = {
+    {0.0, 1.0, 1.0},       // red
+    {0.1667, 1.0, 1.0}, // green
+    {0.3333, 1.0, 1.0}, // blue
+    {0.5, 1.0, 1.0},       // cyan
+    {0.6667, 1.0, 1.0}  // magenta
+};
+ct.rebuild_interp_hsv(cpos, cols);
+\end{lstlisting}
+
+\item \syntax{\return{void} \keyword{savePpm}(const \type{char*} name)}
+Saves the color table to a PPM image file with the specified name.
+
+\item \syntax{void setTableID(int id)}
+Sets the color table ID.
+
+\item \syntax{void setSwap (bool s)}
+Sets whether to swap the red and blue channels in the color table.
+
+\item \syntax{void setInvert(bool i)}
+Sets whether to invert the colors in the color table.
+
+\item\syntax{void setMinMax(float Min, float Max)}
+Sets the minimum and maximum values for the color table.
+
+\item \syntax{void setSize(int Size)}
+Sets the size of the color table.
+
+\item \syntax{void setBias(float Bias)}
+Sets the bias for the color table.
+
+\item \syntax{void setCurvature(float Curv)}
+Sets the curvature for the color table.
+
+\item \syntax{void setRotation(int Rot)}
+Sets the rotation for the color table.
+
+\item \syntax{void getRGB(float value, colorRGBA *col)}
+Retrieves the RGB color for the specified value from the color table.
+
+\item \syntax{void getColor4ub(float value, color4ub *col)}
+Retrieves the 8-bit RGBA color for the specified value from the color table.
+
+\item \syntax{void getColor4f(float value, color4f *col)}
+Retrieves the floating-point RGBA color for the specified value from the color table.
+
+\item \syntax{void getRandomRGB8(colorRGBA *col)}
+Retrieves a random RGB color from the color table.
+
+\item \syntax{void getCyclicRGB8(colorRGBA *col)}
+Retrieves a cyclic RGB color from the color table.
+
+\item \syntax{void \textbf{Print} ()}
+Prints the current color table to the console.
+\end{itemize}
+
+\subsubsection*{Example}
+
+Here is an example of how to use the \texttt{ColorTable} class:
+
+% 
+\begin{lstlisting}[style=cppstyle]
+ColorTable ct(MATLAB_JET);
+ct.setSize(256);
+ct.setMinMax(0.0, 1.0);
+ct.setBias(0.5);
+ct.setCurvature(0.25);
+ct.setRotation(90);
+ct.Rebuild();
+
+colorRGBA col;
+ct.getRGB(0.5, &col);
+std::cout << "R: " << col.r << " G: " << col.g << " B: " << col.b << std::endl;
+
+ct.savePpm("color_table.ppm");
+\end{lstlisting}
+
+This code creates a \textbf{ColorTable} object with the MATLAB\_JET color table, sets the size to 256, sets the minimum and maximum values to 0.0 and 1.0, respectively, sets the bias to 0.5, sets the curvature to 0.25, and sets the rotation to 90 degrees. It then rebuilds the color table and retrieves the RGB color for the value 0.5. Finally, it saves the color table to a PPM image file.
+
+
+%%%%%%%%%%%
+%%% SECTION %%%
+\section{Miscellaneous tools}
+
+
+\subsection{\texttt{Mth.hpp}}
+
+The \texttt{Mth.hpp} file contains various mathematical functions and constants.
+
+\subsubsection*{Constants}
+
+The following mathematical constants are defined in the \texttt{Mth} namespace:
+\begin{itemize}
+\item \syntax{pi} The value of $\pi$.
+\item \syntax{invPi} The reciprocal of $\pi$, $1/\pi$.
+\item \syntax{piSqr} The square of $\pi$, $\pi^2$.
+\item \syntax{pi\_2} Half the value of $\pi$, $\pi/2$.
+\item \syntax{pi\_4} A quarter of the value of $\pi$, $\pi/4$.
+\item \syntax{\_2pi} Twice the value of $\pi$, $2\pi$.
+\item \syntax{\_1\_3} One third ($1/3$).
+\item \syntax{\_4\_3} Four thirds ($4/3$).
+\item \syntax{e} The base of the natural logarithm $e$.
+\item \syntax{deg2rad} Conversion factor from degrees to radians.
+\item \syntax{rad2deg} Conversion factor from radians to degrees.
+\item \syntax{randFactor} A factor used to scale random numbers generated by the \syntax{rand()} function.
+\end{itemize}
+
+\subsubsection*{Functions}
+
+The following mathematical functions are defined in the \texttt{Mth} namespace:
+%
+\begin{itemize}
+\item \syntax{\return{double} \keyword{DiamondAngle}(\type{double} \param{x}, \type{double} \param{y})} Returns an angle between 0 and 4 for the given (x, y) coordinates.
+\item \syntax{keepPositive(value)} Returns the absolute value of the given number if it is positive and zero otherwise.
+\item \syntax{sign(value)} Returns the sign of the given number (1 for positive, -1 for negative).
+\item \syntax{sqr(value)} Returns the square of the given number.
+\item \syntax{map(value, minA, maxA, minB, maxB)} Maps the given value from the range [minA, maxA] to the range [minB, maxB].
+\item \syntax{lerp(min, max, amount)} Linearly interpolates between the given minimum and maximum values based on the given amount.
+\item \syntax{norm(num, min, max)} Normalizes the given number to the range [0, 1] based on the given minimum and maximum values.
+\item \syntax{constrain(num, min, max)} Constrains the given number to the range [min, max].
+\item \syntax{floor0(value)} Returns the floor of the given number towards 0.
+\item \syntax{round(value)} Rounds the given number to the nearest integer.
+\item \syntax{random(value = 1)} Returns a random number between 0 and the given value.
+\item \syntax{random(min, max)} Returns a random number between the given minimum and maximum values.
+\item \syntax{random(data)} Returns a random element from the given vector of data.
+\item \syntax{sobolSequence(n, x)} Generates a Sobol sequence of length n and stores it in the given vector x.
+\item \syntax{dist(x1, x2)}, \syntax{dist(x1, y1, x2, y2)}, \syntax{dist(x1, y1, z1, x2, y2, z2)} Calculates the distance between two points in 1D, 2D, or 3D space.
+\item \syntax{Q\_rsqrt(number)}, \syntax{Q\_accurate\_rsqrt(number)} Calculates the fast inverse square root of the given number using the Quake III algorithm.
+\item \syntax{MeanAndVariance(data, mean, var)} Calculates the mean and variance of the given vector of data.
+\item \syntax{RSD(data)} Calculates the relative standard deviation (RSD) of the given vector of data.
+\end{itemize}
+
+
+\subsection{\texttt{fileTool.hpp}}
+
+The \texttt{fileTool.hpp} header file provides functionalities for file manipulation and directory handling. Key features include:
+%
+\begin{itemize}
+\item \syntax{fileExists} A robust and portable function to test if a file exists.
+\item \syntax{GetFileExt}, \syntax{GetFilePath}, \syntax{GetFileName} Functions to extract file extension, directory path, and file name from a given file path.
+\item \syntax{create\_folder} Method to create a folder if it doesn't exist.
+\item Static methods for file existence check, file extension retrieval, file path extraction, and folder creation.
+\item Conditional compilation for Windows and Unix-based systems.
+\item Type aliases for convenience and portability.
+\end{itemize}
+
+Additionally, the header file includes necessary system headers for file and directory manipulation, along with comments documenting the purpose and usage of each function.
+
+
+
+
+%\begin{thebibliography}{9}
+%\bibitem{ref1} Author, A. and Author, B., "Title of the paper," Journal Name, vol. 1, no. 1, pp. 1-10, Year.
+%\end{thebibliography}
+
+\end{document}

@@ -462,8 +462,79 @@ public:
   friend std::istream &operator>>(std::istream &pStr, mat4 &M) {
     return (pStr >> M.xx >> M.xy >> M.yx >> M.yy);
   }
+
+  // --- Style flags ---
+  static const int None;
+  static const int ColoredBrackets;
+  static const int WithSeparators;
+  static const int Compact;
+  static const int Scientific;
+
+  void fancyPrint(int opts = None, int precision = 3) const {
+    const std::string reset = "\033[0m";
+    const std::string blue  = "\033[34m";
+
+    bool coloredBrackets = (opts & ColoredBrackets);
+    bool withSeparators  = (opts & WithSeparators);
+    bool compact         = (opts & Compact);
+    bool scientific      = (opts & Scientific);
+
+    std::string sep = withSeparators ? (compact ? "|" : " | ") : (compact ? " " : "   ");
+
+    // --- Step 1: format all values as strings ---
+    auto fmt = [&](double v) {
+      std::ostringstream oss;
+      oss << std::setprecision(precision);
+      if (scientific) oss << std::scientific;
+      else oss << std::fixed;
+      oss << v;
+      return oss.str();
+    };
+
+    std::string s_xx = fmt(xx);
+    std::string s_xy = fmt(xy);
+    std::string s_yx = fmt(yx);
+    std::string s_yy = fmt(yy);
+
+    // --- Step 2: compute column widths ---
+    size_t width_col1 = std::max(s_xx.size(), s_yx.size());
+    size_t width_col2 = std::max(s_xy.size(), s_yy.size());
+
+    // --- Step 3: select big brackets ---
+    std::string topLeft     = "⎡";
+    std::string bottomLeft  = "⎣";
+    std::string topRight    = "⎤";
+    std::string bottomRight = "⎦";
+
+    if (coloredBrackets) {
+      topLeft     = blue + topLeft + reset;
+      bottomLeft  = blue + bottomLeft + reset;
+      topRight    = blue + topRight + reset;
+      bottomRight = blue + bottomRight + reset;
+    }
+
+    // --- Step 4: print rows aligned with one big bracket ---
+    std::cout << std::fixed << std::setprecision(precision);
+
+    std::ostringstream row1, row2;
+    row1 << " " << std::setw(static_cast<int>(width_col1)) << s_xx << sep << std::setw(static_cast<int>(width_col2))
+         << s_xy << " ";
+    row2 << " " << std::setw(static_cast<int>(width_col1)) << s_yx << sep << std::setw(static_cast<int>(width_col2))
+         << s_yy << " ";
+
+    std::cout << topLeft << row1.str() << topRight << "\n";
+    std::cout << bottomLeft << row2.str() << bottomRight << "\n";
+  }
 };
 
+// Define static consts (needed in C++ <17)
+template <typename T> const int mat4<T>::None            = 0;
+template <typename T> const int mat4<T>::ColoredBrackets = 1 << 0;
+template <typename T> const int mat4<T>::WithSeparators  = 1 << 1;
+template <typename T> const int mat4<T>::Compact         = 1 << 2;
+template <typename T> const int mat4<T>::Scientific      = 1 << 3;
+
+// predefined typedefs
 typedef mat4<double> mat4r;
 typedef mat4<float> mat4f;
 typedef mat4<int> mat4i;
