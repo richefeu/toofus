@@ -16,6 +16,10 @@ public:
     getMemberInfo()[name] = MemberInfo{typeid(T), offset};
   }
 
+  static bool hasRegistered(const std::string &name) {
+    return !(getMemberInfo().count(name) == 0);
+  }
+
   // Get the offset of a member by name
   static size_t getOffset(const std::string &name) {
     if (getMemberInfo().count(name) == 0) {
@@ -78,7 +82,7 @@ private:
 
 #endif
 
-#if 1
+#if 0
 
 #include <iostream>
 #include <vector>
@@ -105,13 +109,10 @@ int main() {
   // Get the offset of 'friction'
   size_t frictionOffset = MemberAccessor<Particle>::getOffset("friction");
 
-  // Set 'friction' for all particles
   for (auto &particle : particles) { MemberAccessor<Particle>::setAtOffset<double>(frictionOffset, particle, 0.5); }
 
-  // Set 'friction' for a single particle
   MemberAccessor<Particle>::setAtOffset<double>(frictionOffset, p, 0.75);
 
-  // Get 'friction' for a single particle
   double friction = MemberAccessor<Particle>::getAtOffset<double>(frictionOffset, p);
   std::cout << "Friction: " << friction << std::endl;
 
@@ -135,6 +136,11 @@ int main() {
   } else if (theType == typeid(int)) {
     std::cout << "?? " << MemberAccessor<Particle>::get<int>(who, p) << std::endl;
   }
+
+  std::cout << "Particle has registered 'friction' -> " << MemberAccessor<Particle>::hasRegistered("friction")
+            << std::endl;
+  std::cout << "Particle has registered 'FrIcTiOn' -> " << MemberAccessor<Particle>::hasRegistered("FrIcTiOn")
+            << std::endl;
 
   return 0;
 }
