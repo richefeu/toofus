@@ -21,6 +21,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+#include <limits>
 
 class TermMenu {
 private:
@@ -128,7 +129,7 @@ public:
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
-    return selected + 1;
+    return selected;
   }
 };
 

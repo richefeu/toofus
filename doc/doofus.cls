@@ -12,8 +12,8 @@
 %% Page geometry
 %%======================================================
 \RequirePackage[
-  left=3cm,
-  right=3cm,
+  left=2cm,
+  right=2cm,
   top=2.5cm,
   bottom=3cm,
   includehead,

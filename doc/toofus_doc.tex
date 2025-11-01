@@ -27,6 +27,25 @@ They are \underline{\textbf{To}}ols that I personnally \underline{\textbf{Of}}te
 \setcounter{tocdepth}{2}
 \tableofcontents
 
+\newpage
+\section{Forewords}
+
+
+\texttt{toofus} is not a full-fledged application or framework, it's simply a collection of C++ code snippets, mostly implemented as standalone header files. Some of these files are entirely my own work, while others reuse or adapt ideas and implementations from existing open-source sources.
+
+The main goal behind \texttt{toofus} is practicality: I wanted something lightweight, easy to use, and quick to integrate into small projects or experiments. This is why everything is contained in header-only files. You can just drop them into your project and start working right away.
+
+I'm fully aware that this approach isn't considered best practice in software engineering, but that's perfectly fine with me. Programming is not my primary job, and \texttt{toofus} was never meant to follow industrial standards. Instead, it's designed to be a convenient toolbox for rapid prototyping in C++, where efficiency and simplicity matter more than structure or scalability.
+
+You may also notice that naming conventions across the codebase are not entirely consistent. This inconsistency comes from the way \texttt{toofus} has evolved over time, with bits of code written at different moments, sometimes for different contexts, or borrowed from other projects. I'm aware of these differences, but I intentionally avoid enforcing full uniformity. Changing names or interfaces could easily break existing uses, and I prefer to keep functional, proven code as it is, rather than rework everything just for the sake of aesthetic or stylistic harmony.
+
+
+Finally, \texttt{toofus} also includes copies of several header-only libraries that I personally like to use (\textit{e.g.}, \texttt{tclap}, \texttt{nlohmann/json} or \texttt{fmt}). This is again part of the same philosophy: the goal is to develop quickly without constantly managing dependencies or versions. By including selected versions of these libraries directly within \texttt{toofus}, it becomes easier to use them consistently and \textbf{immediately}, providing a simple gateway to reliable, ready-to-use tools for rapid C++ experimentation.
+
+
+
+
+
 %%%%%%%%%%%
 %%% SECTION %%%
 \section{Setting up}
@@ -43,10 +62,23 @@ cd ~ && git clone https://github.com/richefeu/toofus.git
 
 %%%%%%%%%%%
 %%% SECTION %%%
-%\section{Mathematics}
+\section{Access to external header-only libraries}
+
+As mentioned earlier, \texttt{toofus} bundles copies of various header-only libraries that I frequently use. You can easily access them by including the relevant files from the \texttt{toofus/gate/} directory.
+We give here some usage details.
 
 
+\subsection{\texttt{CppConsoleTable}}
 
+\subsection{\texttt{fmt}}
+
+\subsection{\texttt{nlohmann-json}}
+
+\subsection{\texttt{tclap}}
+
+\subsection{\texttt{CImg}}
+
+\subsection{\texttt{exprtk}}
 
 %%%%%%%%%%%
 %%% SECTION %%%

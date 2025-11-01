@@ -7,6 +7,17 @@
 They are **TO**ols **OF**ten **US**ed in my various simulation codes.
 
 
+`toofus` is not a full-fledged application or framework, it’s simply a collection of C++ code snippets, mostly implemented as **standalone header files**. Some are entirely my own work, while others reuse or adapt ideas and implementations from open-source projects.
+
+The main goal behind `toofus` is **practicality**: something lightweight, easy to use, and quick to integrate into small projects or experiments. Everything is header-only, just drop a file into your project and start coding.
+
+I know this approach isn’t standard practice in software engineering, but that's fine. Programming isn't my main job. `toofus` is not about industrial design; it's a **personal toolbox for rapid prototyping in C++**, where efficiency and simplicity matter more than structure or scalability.
+
+Naming conventions are not always consistent. `toofus` has evolved over time, and I prefer to keep **working, proven code** as it is rather than break compatibility for the sake of style.
+
+Finally, `toofus` also includes copies of several header-only libraries I like to use (e.g. [`tclap`](https://tclap.github.io/tclap/), [`nlohmann/json`](https://github.com/nlohmann/json), [`fmt`](https://fmt.dev/)). This helps me **develop quickly** without dependency management; `toofus` simply provides a convenient gateway to stable, ready-to-use versions.
+
+
 # Setting up
 
 
