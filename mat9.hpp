@@ -20,6 +20,9 @@
 /// Lab 3SR, Grenoble University
 
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 #include "vec3.hpp"
 

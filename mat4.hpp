@@ -15,6 +15,9 @@
 #define MAT4_HPP
 
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 #include "vec2.hpp"
 
