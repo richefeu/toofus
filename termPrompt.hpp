@@ -11,8 +11,6 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
-// !!!! c++11 is required !!!!
-
 #ifndef TERMPROMPT_CPP
 #define TERMPROMPT_CPP
 
