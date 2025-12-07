@@ -466,12 +466,12 @@ public:
     return (pStr >> M.xx >> M.xy >> M.yx >> M.yy);
   }
 
-  // --- Style flags ---
-  static const int None;
-  static const int ColoredBrackets;
-  static const int WithSeparators;
-  static const int Compact;
-  static const int Scientific;
+  // --- Style flags ---  
+  static const int None{0};
+  static const int ColoredBrackets{1 << 0};
+  static const int WithSeparators{1 << 1};
+  static const int Compact{1 << 2};
+  static const int Scientific{1 << 3};
 
   void fancyPrint(int opts = None, int precision = 3) const {
     const std::string reset = "\033[0m";
@@ -529,13 +529,6 @@ public:
     std::cout << bottomLeft << row2.str() << bottomRight << "\n";
   }
 };
-
-// Define static consts (needed in C++ <17)
-template <typename T> const int mat4<T>::None            = 0;
-template <typename T> const int mat4<T>::ColoredBrackets = 1 << 0;
-template <typename T> const int mat4<T>::WithSeparators  = 1 << 1;
-template <typename T> const int mat4<T>::Compact         = 1 << 2;
-template <typename T> const int mat4<T>::Scientific      = 1 << 3;
 
 // predefined typedefs
 typedef mat4<double> mat4r;

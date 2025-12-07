@@ -20,9 +20,9 @@
 /// Lab 3SR, Grenoble University
 
 #include <algorithm>
-#include <string>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 #include "vec3.hpp"
 
@@ -946,11 +946,11 @@ public:
   }
 
   // --- Style flags ---
-  static const int None;
-  static const int ColoredBrackets;
-  static const int WithSeparators;
-  static const int Compact;
-  static const int Scientific;
+  static const int None{0};
+  static const int ColoredBrackets{1 << 0};
+  static const int WithSeparators{1 << 1};
+  static const int Compact{1 << 2};
+  static const int Scientific{1 << 3};
 
   void fancyPrint(int opts = None, int precision = 3) const {
     const std::string reset = "\033[0m";
@@ -1011,12 +1011,12 @@ public:
   }
 };
 
-// Define static consts (needed in C++ <17)
-template <typename T> const int mat9<T>::None            = 0;
-template <typename T> const int mat9<T>::ColoredBrackets = 1 << 0;
-template <typename T> const int mat9<T>::WithSeparators  = 1 << 1;
-template <typename T> const int mat9<T>::Compact         = 1 << 2;
-template <typename T> const int mat9<T>::Scientific      = 1 << 3;
+// for type int but actually for any type
+// const int mat9<int>::None            = 0;
+// const int mat9<int>::ColoredBrackets = 1 << 0;
+// const int mat9<int>::WithSeparators  = 1 << 1;
+// const int mat9<int>::Compact         = 1 << 2;
+// const int mat9<int>::Scientific      = 1 << 3;
 
 // predefined typedefs
 typedef mat9<double> mat9r;
