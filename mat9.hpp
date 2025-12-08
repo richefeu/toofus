@@ -946,13 +946,13 @@ public:
   }
 
   // --- Style flags ---
-  static const int None{0};
+  static const int NoOption{0};
   static const int ColoredBrackets{1 << 0};
   static const int WithSeparators{1 << 1};
   static const int Compact{1 << 2};
   static const int Scientific{1 << 3};
 
-  void fancyPrint(int opts = None, int precision = 3) const {
+  void fancyPrint(int opts = NoOption, int precision = 3) const {
     const std::string reset = "\033[0m";
     const std::string blue  = "\033[34m";
 
@@ -1010,13 +1010,6 @@ public:
     }
   }
 };
-
-// for type int but actually for any type
-// const int mat9<int>::None            = 0;
-// const int mat9<int>::ColoredBrackets = 1 << 0;
-// const int mat9<int>::WithSeparators  = 1 << 1;
-// const int mat9<int>::Compact         = 1 << 2;
-// const int mat9<int>::Scientific      = 1 << 3;
 
 // predefined typedefs
 typedef mat9<double> mat9r;
