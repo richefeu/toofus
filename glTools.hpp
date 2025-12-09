@@ -441,6 +441,13 @@ protected:
     glVertex2i(*width, h);
     glVertex2i(0, h);
     glEnd();
+    
+    glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+    glVertex2i(0, h);
+    glVertex2i(*width, h);
+    glEnd();
   }
 
 public:
