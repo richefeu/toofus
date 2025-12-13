@@ -262,6 +262,15 @@ public:
     max += v;
   }
 
+  double volume() const {
+    vec3r lengths = max - min;
+    return lengths.x * lengths.y * lengths.z;
+  }
+
+  bool contains(const vec3r &v) const {
+    return (v.x >= min.x && v.x <= max.x) && (v.y >= min.y && v.y <= max.y) && (v.z >= min.z && v.z <= max.z);
+  }
+
   /**
     @brief Checks if the current AABB intersects with another AABB.
 

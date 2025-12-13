@@ -120,9 +120,6 @@ public:
     return n;
   }
 
-  T getLeftValue() const {
-    return vmin;
-  }
   /**
    * @brief Returns the leftmost value of the range.
    *
@@ -131,6 +128,9 @@ public:
    *
    * @return The leftmost value of the range.
    */
+  T getLeftValue() const {
+    return vmin;
+  }
 
   /**
    * @brief Returns the rightmost value of the range.

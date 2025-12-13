@@ -37,7 +37,7 @@ public:
     int hash = row * n + col; // Create a unique hash for each position (row, col)
 
     // Check if this hash already exists in the set
-    if (hashes.contains(hash)) {
+    if (hashes.count(hash)) { // contains is c++20, so we use count
       // If the hash exists, we need to find the index where the (row, col) is stored
       for (int i = row_ptrs[row]; i < row_ptrs[row + 1]; ++i) {
         if (col_indices[i] == col) {
