@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Werror -I./doctest -I..
+CXXFLAGS = -std=c++17 -Wall -Werror -I./doctest -I..
 
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
