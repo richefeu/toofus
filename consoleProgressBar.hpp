@@ -105,12 +105,12 @@ public:
   void update(size_t x, std::ostream &os = std::cerr) {
     if ((x != nmax) && (x % (nmax / 100 + 1) != 0)) return;
 
-    float ratio = (float)x / (float)nmax;
-    size_t c    = (size_t)std::floor(ratio) * width;
+    float ratio = (float)x / (float)(nmax);
+    size_t c    = (size_t)std::floor(ratio * width);
 
     os << title << std::setw(3) << (size_t)(ratio * 100) << "% " << openChar;
-    for (size_t i = 0; i < c; i++) { os << progressChar; }
-    for (size_t i = c; i < width; i++) { os << voidChar; }
+    for (size_t i = 0; i <= c; i++) { os << progressChar; }
+    for (size_t i = c + 1; i < width; i++) { os << voidChar; }
     os << closeChar << '\r' << std::flush;
   }
 };

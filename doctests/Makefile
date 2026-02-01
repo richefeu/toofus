@@ -14,5 +14,8 @@ $(TEST_EXEC): $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+run: $(TEST_EXEC)
+	./$(TEST_EXEC) -s 
+
 clean:
 	rm -f $(OBJS) $(TEST_EXEC)

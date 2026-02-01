@@ -286,6 +286,22 @@ public:
     sum += v.y * v.y;
     v.z = sqrt(1.0 - sum) * (distrib(engine) < 0.0 ? -1.0 : 1.0);
   }
+  
+  void unif_randomize(bool seedTime = false) {
+      static std::default_random_engine engine;
+      if (seedTime)
+          engine.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
+
+      std::uniform_real_distribution<double> uniform01(0.0, 1.0);
+      double u1 = uniform01(engine);
+      double u2 = uniform01(engine);
+      double u3 = uniform01(engine);
+
+      s = sqrt(1 - u1) * sin(2 * M_PI * u2);
+      v.x = sqrt(1 - u1) * cos(2 * M_PI * u2);
+      v.y = sqrt(u1) * sin(2 * M_PI * u3);
+      v.z = sqrt(u1) * cos(2 * M_PI * u3);
+  }
 
   /// @brief (DEPRECATED!!) Seeds the random number engine used for randomizing quaternions.
   /// @see randomize(true)

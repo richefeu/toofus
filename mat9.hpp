@@ -404,6 +404,29 @@ public:
                 a.zx * b.xz + a.zy * b.yz + a.zz * b.zz);
   }
 
+ /**
+  * @brief Returns the matrix exponential of this matrix. Mukesh Singh Bisht Added it.
+  *
+  * Uses a truncated Taylor series expansion:
+  *     exp(A) = I + A + A^2/2! + A^3/3! + ... + A^n/n!
+  * @param nTerms Number of terms in the Taylor series (default: 12)
+  * @return mat9 The exponential of this matrix
+  */
+ mat9 exp(int nTerms = 12) const {
+     mat9 A = *this;
+     mat9 result = mat9::unit();
+     mat9 term = mat9::unit();
+
+     double factorial = 1.0;
+     for (int k = 1; k <= nTerms; ++k) {
+         term = term * A;  // multiply by A
+         factorial *= double(k);
+         result += term / factorial;
+     }
+     return result;
+ }
+
+
   /**
    * @brief Computes the inner product between two 3x3 matrices.
    *
