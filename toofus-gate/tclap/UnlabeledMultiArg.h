@@ -24,8 +24,8 @@
 #ifndef TCLAP_UNLABELED_MULTI_ARG_H
 #define TCLAP_UNLABELED_MULTI_ARG_H
 
-#include <tclap/MultiArg.h>
-#include <tclap/OptionalUnlabeledTracker.h>
+#include "MultiArg.h"
+#include "OptionalUnlabeledTracker.h"
 
 #include <list>
 #include <string>

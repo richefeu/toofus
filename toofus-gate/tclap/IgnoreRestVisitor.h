@@ -24,8 +24,8 @@
 #ifndef TCLAP_IGNORE_REST_VISITOR_H
 #define TCLAP_IGNORE_REST_VISITOR_H
 
-#include <tclap/CmdLineInterface.h>
-#include <tclap/Visitor.h>
+#include "CmdLineInterface.h"
+#include "Visitor.h"
 
 namespace TCLAP {
 

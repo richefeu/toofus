@@ -24,8 +24,8 @@
 #ifndef TCLAP_VALUES_CONSTRAINT_H
 #define TCLAP_VALUES_CONSTRAINT_H
 
-#include <tclap/Constraint.h>
-#include <tclap/sstream.h>
+#include "Constraint.h"
+#include "sstream.h"
 
 #include <string>
 #include <vector>

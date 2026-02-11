@@ -25,8 +25,8 @@
 #ifndef TCLAP_MULTI_ARG_H
 #define TCLAP_MULTI_ARG_H
 
-#include <tclap/Arg.h>
-#include <tclap/Constraint.h>
+#include "Arg.h"
+#include "Constraint.h"
 
 #include <string>
 #include <vector>

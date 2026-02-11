@@ -24,10 +24,10 @@
 #ifndef TCLAP_STD_OUTPUT_H
 #define TCLAP_STD_OUTPUT_H
 
-#include <tclap/Arg.h>
-#include <tclap/ArgGroup.h>
-#include <tclap/CmdLineInterface.h>
-#include <tclap/CmdLineOutput.h>
+#include "Arg.h"
+#include "ArgGroup.h"
+#include "CmdLineInterface.h"
+#include "CmdLineOutput.h"
 
 #include <algorithm>
 #include <cctype>

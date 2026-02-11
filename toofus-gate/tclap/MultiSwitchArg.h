@@ -26,7 +26,7 @@
 #ifndef TCLAP_MULTI_SWITCH_ARG_H
 #define TCLAP_MULTI_SWITCH_ARG_H
 
-#include <tclap/SwitchArg.h>
+#include "SwitchArg.h"
 
 #include <string>
 #include <vector>

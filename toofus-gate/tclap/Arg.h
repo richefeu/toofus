@@ -26,15 +26,15 @@
 #define TCLAP_ARG_H
 
 #ifdef HAVE_TCLAP_CONFIG_H
-#include <tclap/TCLAPConfig.h>
+#include "TCLAPConfig.h"
 #endif
 
-#include <tclap/ArgException.h>
-#include <tclap/ArgTraits.h>
-#include <tclap/CmdLineInterface.h>
-#include <tclap/StandardTraits.h>
-#include <tclap/Visitor.h>
-#include <tclap/sstream.h>
+#include "ArgException.h"
+#include "ArgTraits.h"
+#include "CmdLineInterface.h"
+#include "StandardTraits.h"
+#include "Visitor.h"
+#include "sstream.h"
 
 #include <cstdio>
 #include <iomanip>

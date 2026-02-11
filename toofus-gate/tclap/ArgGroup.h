@@ -23,9 +23,9 @@
 #ifndef TCLAP_ARG_GROUP_H
 #define TCLAP_ARG_GROUP_H
 
-#include <tclap/Arg.h>
-#include <tclap/ArgContainer.h>
-#include <tclap/CmdLineInterface.h>
+#include "Arg.h"
+#include "ArgContainer.h"
+#include "CmdLineInterface.h"
 
 #include <list>
 #include <string>

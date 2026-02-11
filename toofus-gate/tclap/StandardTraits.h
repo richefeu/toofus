@@ -27,7 +27,7 @@
 #ifndef TCLAP_STANDARD_TRAITS_H
 #define TCLAP_STANDARD_TRAITS_H
 
-#include <tclap/ArgTraits.h>
+#include "ArgTraits.h"
 
 #include <string>
 

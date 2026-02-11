@@ -25,7 +25,7 @@
 #ifndef TCLAP_CMD_LINE_INTERFACE_H
 #define TCLAP_CMD_LINE_INTERFACE_H
 
-#include <tclap/ArgContainer.h>
+#include "ArgContainer.h"
 
 #include <algorithm>
 #include <iostream>

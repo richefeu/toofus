@@ -24,9 +24,9 @@
 #ifndef TCLAP_DOC_BOOK_OUTPUT_H
 #define TCLAP_DOC_BOOK_OUTPUT_H
 
-#include <tclap/Arg.h>
-#include <tclap/CmdLineInterface.h>
-#include <tclap/CmdLineOutput.h>
+#include "Arg.h"
+#include "CmdLineInterface.h"
+#include "CmdLineOutput.h"
 
 #include <algorithm>
 #include <iostream>
