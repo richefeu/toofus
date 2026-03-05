@@ -37,20 +37,6 @@ public:
   double GRID_LY;
   double GRID_TOL;
 
-  // TODO: use less variables
-  /*
-  double X0;
-  double Y0;
-  double X1;
-  double Y1;
-  double LX;
-  double LY;
-  double TOL;
-  double P1;
-  double P2;
-  double P3;
-  */
-
   std::function<void(T *)> actionForNone;
   std::function<void(T *, size_t id)> actionForId;
   std::function<size_t(T *)> ContainerSize;
@@ -101,8 +87,11 @@ public:
 
   friend std::istream &operator>>(std::istream &is, ElementSelector &ES) {
     is >> ES.inputOption;
-    if (ES.inputOption == "NONE" || ES.inputOption == "ALL") {
-    } else if (ES.inputOption == "ID") {
+    /*if (ES.inputOption == "NONE" || ES.inputOption == "ALL") {
+      
+    } else*/
+     
+    if (ES.inputOption == "ID") {
       is >> ES.ID;
     } else if (ES.inputOption == "LIST") {
       size_t nb = 0;

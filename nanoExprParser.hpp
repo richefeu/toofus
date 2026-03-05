@@ -309,7 +309,9 @@ int main() {
   nanoExprParser<double> parser;
   double x = 3.0;
   parser.addVariable("x", &x);
-  std::string expr = "2.1 + pow(x,2) + cos(pi)";
+  parser.addConstant("kn", 100.0);
+  //std::string expr = "2.1 + pow(x,2) + cos(pi)";
+  std::string expr = "sqrt(kn) * 3";
   //std::string expr = "pi";
   double result;
   if (parser.parse(expr, result)) {
