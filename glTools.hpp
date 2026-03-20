@@ -292,7 +292,6 @@ public:
 
   // DO NOT FORGET TO INIT BEFORE BEING ABLE TO PRINT
   static void init() {
-    glShadeModel(GL_FLAT);
     makeRasterFont();
   }
 
