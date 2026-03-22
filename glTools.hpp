@@ -440,7 +440,7 @@ protected:
     glVertex2i(*width, h);
     glVertex2i(0, h);
     glEnd();
-    
+
     glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
     glLineWidth(1.0f);
     glBegin(GL_LINES);
@@ -509,10 +509,12 @@ protected:
   char title[128];
   std::vector<int> label_index_pos;
   std::vector<std::string> labels;
+  bool locked;
 
 public:
   glColorBar() : xpos(10), ypos(24), wbox(25), hbox(200) {
     snprintf(title, 128, "notitle");
+    locked = false;
   }
 
   void addLabel(int i, std::string &lab, ColorTable &ct) {
@@ -520,6 +522,14 @@ public:
       label_index_pos.push_back(i);
       labels.push_back(lab);
     }
+  }
+
+  bool isLocked() const {
+    return locked;
+  }
+
+  void setLock(bool lck) {
+    locked = lck;
   }
 
   void setPos(int x, int y) {
@@ -586,6 +596,24 @@ public:
     }
 
     glText::print(xpos, H - ypos + 6, title);
+
+    if (locked) {
+      glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+      glBegin(GL_QUADS);
+      glVertex2i(xpos + 0.25 * wbox, H - (ypos + hbox + wbox));
+      glVertex2i(xpos + 0.75 * wbox, H - (ypos + hbox + wbox));
+      glVertex2i(xpos + 0.75 * wbox, H - (ypos + hbox + 0.5 * wbox));
+      glVertex2i(xpos + 0.25 * wbox, H - (ypos + hbox + 0.5 * wbox));
+      glEnd();
+
+      float xc = xpos + 0.5 * wbox;
+      float yc = H - (ypos + hbox + 0.5 * wbox);
+      float r  = 0.17 * wbox;
+      glLineWidth(1.5f);
+      glBegin(GL_LINE_LOOP);
+      for (float a = 0.0f; a < 2.0 * M_PI; a += M_PI * 0.1) { glVertex2i(xc + r * cos(a), yc + r * sin(a)); }
+      glEnd();
+    }
 
     switch2D::back();
   }
