@@ -75,6 +75,7 @@ public:
   }
 };
 
+#ifndef GLTOOLS_NO_IMPLEMENTATION
 #define X 0.525731112119133606f
 #define Z 0.850650808352039932f
 GLfloat facetSphere::vdata[12][3] = {{-X, 0.0f, Z}, {X, 0.0f, Z},  {-X, 0.0f, -Z}, {X, 0.0f, -Z},
@@ -87,6 +88,7 @@ GLuint facetSphere::tindices[20][3] = {{0, 4, 1},  {0, 9, 4},  {9, 5, 4},  {4, 5
                                        {8, 10, 1}, {8, 3, 10}, {5, 3, 8},  {5, 2, 3},  {2, 7, 3},
                                        {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6},
                                        {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5},  {7, 2, 11}};
+#endif
 
 class glShape {
 public:
@@ -192,10 +194,10 @@ public:
     glShape::arrow(pos, lz * vec3r::unit_z(), arrowSize);
   }
 
-  static void obb(OBB &obb) {
+  static void obb(OBB &obb, GLfloat LW = 1.0f) {
     glDisable(GL_LIGHTING);
 
-    glLineWidth(1.0f);
+    glLineWidth(LW);
 
     vec3r orig = obb.center;
     vec3r e0   = obb.extent[0] * obb.e[0];
@@ -324,6 +326,7 @@ public:
   }
 };
 
+#ifndef GLTOOLS_NO_IMPLEMENTATION
 GLubyte glText::rasters[95][13] = {{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
                                    {0x00, 0x00, 0x18, 0x18, 0x00, 0x00, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18},
                                    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x36, 0x36, 0x36},
@@ -421,6 +424,7 @@ GLubyte glText::rasters[95][13] = {{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x
                                    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x8f, 0xf1, 0x60, 0x00, 0x00, 0x00}};
 
 GLuint glText::fontOffset = 0;
+#endif
 
 class glTextZone {
 #define NB_LINE_MAX 40

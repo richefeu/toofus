@@ -442,7 +442,7 @@ public:
     int r{0}, g{0}, b{0}, a{0};
 
     if (!table.empty()) { table.clear(); }
-    table.reserve(size);
+    table.resize(size);
 
     srand(seed); // so that random color order are actually not random
     for (int i = 0; i < size; i++) {
