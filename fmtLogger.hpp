@@ -42,7 +42,8 @@ int main(int argc, char const *argv[]) {
 #define LOGGER_HPP
 
 #define FMT_HEADER_ONLY
-#include <fmt/core.h>
+//#include <fmt/core.h>
+#include "toofus-gate/fmt/include/fmt/core.h"
 #include <iostream>
 
 enum class LogLevel { trace, debug, info, warn, error, critical, off };
