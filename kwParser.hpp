@@ -26,10 +26,10 @@
 class kwParser {
 public:
   kwParser() : warn(true) {
-    breakStr = "EOF";
+    //breakStr = "EOF";
   }
   kwParser(bool Warn) : warn(Warn) {
-    breakStr = "EOF";
+    //breakStr = "EOF";
   }
 
   // This function is actually not very usefull
@@ -67,8 +67,11 @@ public:
   void parseString(const char *chain) {
     std::stringstream ss;
     ss.str(chain);
-    if (ss) parse(ss);
-    else std::cerr << "@kwParser::parseString, stream cannot be created" << std::endl;
+    if (ss) {
+      parse(ss);
+    } else {
+      std::cout << "@kwParser::parseString, stream cannot be created" << std::endl;
+    }
   }
 
   /**
@@ -92,11 +95,15 @@ public:
         getline(is, token); // ignore the rest of the current line
         is >> token;        // next token
         continue;
-      } else if (token == breakStr) break;
-      else {
+      } else if (token == breakStr) {
+        break; // I way to stop reading the parsed file before the end
+      } else {
         auto it = kwMap.find(token);
-        if (it != kwMap.end()) it->second(is);
-        else if (warn) { std::cerr << "@kwParser::parse, unknown token: " << token << std::endl; }
+        if (it != kwMap.end()) {
+          it->second(is); // execute the associated action
+        } else if (warn) {
+          std::cout << "@kwParser::parse, unknown token: " << token << std::endl;
+        }
       }
 
       is >> token;
@@ -104,8 +111,8 @@ public:
   }
 
   std::map<std::string, std::function<void(std::istream &)>> kwMap;
-  std::string breakStr;
-  bool warn;
+  std::string breakStr{"EOF"};
+  bool warn{true};
 };
 
 // EXAMPLE OF USAGE
