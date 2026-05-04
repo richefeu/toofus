@@ -29,9 +29,9 @@
 /// Matrix 3x3
 template <typename T> class mat9 {
 public:
-  T xx, xy, xz;
-  T yx, yy, yz;
-  T zx, zy, zz;
+  T xx{0}, xy{0}, xz{0};
+  T yx{0}, yy{0}, yz{0};
+  T zx{0}, zy{0}, zz{0};
 
   /**
    * @brief Default constructor for a 3x3 matrix.
@@ -1121,7 +1121,7 @@ int main (int argc, char const *argv[])
   M.at(0,0) = 12;
   std::cout << M[0] << '\n';
   std::cout << M << '\n';
-  
+
   return 0;
 }
 

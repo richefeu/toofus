@@ -142,7 +142,7 @@
 /// @brief Vector with 2 components
 template <typename T> class vec2 {
 public:
-  T x, y;
+  T x{0}, y{0};
 
   vec2() : x(0), y(0) {}
   vec2(T X, T Y) : x(X), y(Y) {}
@@ -439,12 +439,12 @@ int main(int argc, char const *argv[]) {
   std::cout << v << '\n';
 
   //vec2r v2(2., -1.);
-  
+
   //vec2r v2 = v.quarterLeftTurned();
-  
+
   vec2r v2=v;
   v2.quarterRightTurn();
-  
+
   std::cout << v2 << '\n';
   std::cout << cw_angle(v, v2) * 180./M_PI << '\n';
 

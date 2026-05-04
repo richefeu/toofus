@@ -23,14 +23,11 @@
 
 #define __DO__(IS) [&](std::istream & IS)
 #define __GET__(IS, WHAT) [&](std::istream &IS) { IS >> (WHAT); }
+
 class kwParser {
 public:
-  kwParser() : warn(true) {
-    //breakStr = "EOF";
-  }
-  kwParser(bool Warn) : warn(Warn) {
-    //breakStr = "EOF";
-  }
+  kwParser() : warn(true) {}
+  kwParser(bool Warn) : warn(Warn) {}
 
   // This function is actually not very usefull
   // instead do:
@@ -150,10 +147,10 @@ int main ()
         std::cout << "myClass.value = " << mc.value << std::endl;
         std::cout << "myClass.value2 = " << mc.value2 << std::endl;
         std::cout << "myClass.str = " << mc.str << std::endl;
-        
+
         parser.parseString("myClass.str toto");
         std::cout << "myClass.str = " << mc.str << std::endl;
-        
+
         parser.parseString("myClass.value2 6.1 myClass.value 13.6");
         std::cout << "myClass.value = " << mc.value << std::endl;
         std::cout << "myClass.value2 = " << mc.value2 << std::endl;

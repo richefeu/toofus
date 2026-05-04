@@ -24,8 +24,8 @@
 template <typename T> class mat4 {
 
 public:
-  T xx, xy;
-  T yx, yy;
+  T xx{0}, xy{0};
+  T yx{0}, yy{0};
 
   mat4() : xx(0), xy(0), yx(0), yy(0) {}
   // mat4(mat4sym & m): xx(m.xx), xy(m.xy), yx(m.xy), yy(m.yy) { }
@@ -466,7 +466,7 @@ public:
     return (pStr >> M.xx >> M.xy >> M.yx >> M.yy);
   }
 
-  // --- Style flags ---  
+  // --- Style flags ---
   static const int NoOption{0};
   static const int ColoredBrackets{1 << 0};
   static const int WithSeparators{1 << 1};

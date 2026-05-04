@@ -26,7 +26,7 @@ typedef unsigned long int ulint;
 // typedef unsigned int ulint;
 
 struct Point2D {
-  double x, y;
+  double x{0.0}, y{0.0};
   Point2D() : x(0.0), y(0.0) {}
   Point2D(double X, double Y) : x(X), y(Y) {}
 };

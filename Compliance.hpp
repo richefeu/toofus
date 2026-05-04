@@ -25,7 +25,7 @@
  */
 class Compliance {
 public:
-  double Cinv1, Cinv2, Cinv3;
+  double Cinv1{0.0}, Cinv2{0.0}, Cinv3{0.0};
 
   // Cinv1 Cinv2 Cinv2  0     0     0
   // Cinv2 Cinv1 Cinv2  0     0     0
@@ -94,12 +94,12 @@ int main(int argc, char const *argv[]) {
   mat9r eps(0.1, 0.01, 0, 0.01, 0.12, 0, 0, 0, -0.01);
 	mat9r Sig = C.getStress(eps);
 	mat9r dfds(0.1, 0.2, 0.1, 0.6, 0.3, 0.2, 0.1, 0.4, 0.1);
-	
+
 	std::cout << Sig << '\n';
 	std::cout << C.bigDenum(dfds, Sig) << '\n';
-	
+
 	std::cout << eps << '\n';
-	std::cout << Cinv.getStrain(Sig) << '\n'; 
+	std::cout << Cinv.getStrain(Sig) << '\n';
   return 0;
 }
 

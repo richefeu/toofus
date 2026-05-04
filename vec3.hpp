@@ -144,7 +144,7 @@
 /// @brief Vector with 3 components
 template <typename T> class vec3 {
 public:
-  T x, y, z;
+  T x{0}, y{0}, z{0};
 
   vec3() : x(0), y(0), z(0) {}
   vec3(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
@@ -548,8 +548,8 @@ int main (int argc, char const *argv[])
 {
   vec3r v(1.,2., 3.);
   std::cout << v << '\n';
-  
-  
+
+
   return 0;
 }
 
