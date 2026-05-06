@@ -11,6 +11,9 @@
 // People can read the code, but they have no legal right to use it.
 // To use the code, you must contact the author directly and ask permission.
 
+// **** deprecated ****
+
+
 #ifndef NANO_EXPR_PARSE_HPP
 #define NANO_EXPR_PARSE_HPP
 
@@ -27,10 +30,7 @@ public:
    *
    * This constructor reserves space in the constants vector to prevent
    * reallocation, which could invalidate pointers stored in the variables map.
-   * It also initializes the parser with three mathematical constants:
-   * - pi: 3.14159265358979323846
-   * - e: 2.71828182845904523536
-   * - phi: 1.61803398874989484820
+   * It also initializes the parser with some mathematical constants.
    */
   nanoExprParser() {
     constants.reserve(5); // so that the address T* in the map 'variables' will not change
@@ -51,7 +51,8 @@ public:
     skip_whitespace();
     pos    = 0;
     result = parse_expression();
-    return pos == (expr.size() - 1);
+    //return pos == (expr.size() - 1);
+    return pos >= expr.size();
   }
 
   /**
@@ -310,9 +311,10 @@ int main() {
   double x = 3.0;
   parser.addVariable("x", &x);
   parser.addConstant("kn", 100.0);
+  parser.addConstant("TwoPi", 2*M_PI);
   //std::string expr = "2.1 + pow(x,2) + cos(pi)";
-  std::string expr = "sqrt(kn) * 3";
-  //std::string expr = "pi";
+  std::string expr = "3 * sqrt(kn)";
+  //std::string expr = "TwoPi";
   double result;
   if (parser.parse(expr, result)) {
     std::cout << expr << " = " << result << std::endl;
