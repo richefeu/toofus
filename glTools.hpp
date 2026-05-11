@@ -97,42 +97,83 @@ public:
   }
 
   static void arrow(const vec3r &orig, const vec3r &arrow, double arrowSize = -1.0, double arrowAngle = 0.7) {
+    // ── 1. Basic geometry ────────────────────────────────────────────────
     vec3r dest = orig + arrow;
 
+    vec3r v    = arrow;
+    double len = v.normalize(); // len = ||arrow||
+    if (len == 0.0) return;     // degenerate: nothing to draw
+
+    if (arrowSize <= 0.0) arrowSize = 0.04 * len;
+
+    // Clamp so the head never exceeds the shaft length
+    arrowSize = std::min(arrowSize, len);
+
+    // Base-circle radius and the point where the cone base sits
+    double r   = arrowSize * std::tan(0.5 * arrowAngle);
+    vec3r head = dest - arrowSize * v;
+
+    // ── 2. Build an orthonormal frame (v, a, b) ──────────────────────────
+    // Pick a helper vector that is NOT parallel to v
+    vec3r a;
+    if (std::abs(v.x) <= std::abs(v.y) && std::abs(v.x) <= std::abs(v.z)) a.set(0.0, -v.z, v.y); // cross(v, X)
+    else if (std::abs(v.y) <= std::abs(v.z)) a.set(-v.z, 0.0, v.x); // cross(v, Y)  (fixed sign)
+    else a.set(v.y, -v.x, 0.0);                                     // cross(v, Z)
+    a.normalize();
+    vec3r b = cross(v, a); // already unit length
+
+    // ── 3. Save & set GL state ───────────────────────────────────────────
+    glPushAttrib(GL_LINE_BIT | GL_LIGHTING_BIT);
     glLineWidth(2.0f);
+
+    // ── 4. Draw shaft ────────────────────────────────────────────────────
     glBegin(GL_LINES);
     glVertex3d(orig.x, orig.y, orig.z);
     glVertex3d(dest.x, dest.y, dest.z);
     glEnd();
 
-    vec3r v    = arrow;
-    double len = v.normalize();
-    if (arrowSize <= 0.0) { arrowSize = 0.04 * len; }
-    vec3r vmz(v.x, v.y, v.z - 1.0); // v - z
+    // ── 5. Cone lateral surface (tip → base ring) ────────────────────────
+    // Correct cone normal: blend outward (c) and axial (v) components.
+    // For a cone of half-angle α: n = cos(α)·c_hat + sin(α)·v
+    double cosA = std::cos(0.5 * arrowAngle);
+    double sinA = std::sin(0.5 * arrowAngle);
 
-    vec3r a;
-    if (norm2(vmz) > 0.1) {
-      a.set(v.y, -v.x, 0.0);
-    } else {
-      a.set(-v.z, 0.0, v.x);
-    }
-    a.normalize();
-    vec3r b = cross(v, a);
+    const int N       = 32;
+    const double step = 2.0 * M_PI / N;
 
-    vec3r head = dest - arrowSize * v;
-    vec3r c;
-    double r = arrowSize * tan(0.5 * arrowAngle);
     glBegin(GL_TRIANGLE_FAN);
-    glVertex3d(dest.x, dest.y, dest.z);
-    for (double angle = 0.0; angle <= 2.0 * M_PI; angle += 0.2 * M_PI) {
-      c = cos(angle) * a + sin(angle) * b;
-      glNormal3d(c.x, c.y, c.z); // Pas tout à fait juste (!)
-      c = head + r * c;
+    glNormal3d(v.x, v.y, v.z);          // tip normal ≈ axis
+    glVertex3d(dest.x, dest.y, dest.z); // apex
+
+    for (int i = 0; i <= N; ++i) { // i==N repeats i==0 → closes fan
+      double angle = i * step;
+      vec3r chat   = std::cos(angle) * a + std::sin(angle) * b; // unit outward
+      // Correct lateral normal
+      vec3r n = cosA * chat + sinA * v;
+      glNormal3d(n.x, n.y, n.z);
+      vec3r c = head + r * chat;
       glVertex3d(c.x, c.y, c.z);
     }
     glEnd();
+
+    // ── 6. Cone base cap (so it looks solid from behind) ─────────────────
+    glBegin(GL_TRIANGLE_FAN);
+    glNormal3d(-v.x, -v.y, -v.z);       // base faces backward
+    glVertex3d(head.x, head.y, head.z); // center of base
+
+    for (int i = N; i >= 0; --i) { // reverse winding for back face
+      double angle = i * step;
+      vec3r chat   = std::cos(angle) * a + std::sin(angle) * b;
+      vec3r c      = head + r * chat;
+      glVertex3d(c.x, c.y, c.z);
+    }
+    glEnd();
+
+    // ── 7. Restore GL state ──────────────────────────────────────────────
+    glPopAttrib();
   }
 
+  /*
   static void tube(vec3r &orig, vec3r &arrow, double diam) {
     vec3r dest = orig + arrow;
     vec3r v    = arrow;
@@ -164,6 +205,74 @@ public:
       glVertex3d(c2.x, c2.y, c2.z);
     }
     glEnd();
+  }
+  */
+  static void tube(const vec3r &orig, const vec3r &arrow, double diam) {
+    // ── 1. Basic geometry ────────────────────────────────────────────────
+    if (diam <= 0.0) return;
+
+    vec3r v    = arrow;
+    double len = v.normalize();
+    if (len == 0.0) return; // degenerate tube
+
+    vec3r dest = orig + arrow;
+    double r   = 0.5 * diam;
+
+    // ── 2. Build an orthonormal frame (v, a, b) ──────────────────────────
+    // Pick the global axis least aligned with v to avoid near-zero cross products
+    vec3r a;
+    if (std::abs(v.x) <= std::abs(v.y) && std::abs(v.x) <= std::abs(v.z)) a.set(0.0, -v.z, v.y); // cross(v, X)
+    else if (std::abs(v.y) <= std::abs(v.z)) a.set(-v.z, 0.0, v.x);                              // cross(v, Y)
+    else a.set(v.y, -v.x, 0.0);                                                                  // cross(v, Z)
+    a.normalize();
+    vec3r b = cross(v, a); // unit & orthogonal to both v and a
+
+    // ── 3. Save GL state ─────────────────────────────────────────────────
+    glPushAttrib(GL_LIGHTING_BIT);
+
+    // ── 4. Lateral surface ───────────────────────────────────────────────
+    // Integer loop guarantees the strip closes exactly (i == N repeats i == 0)
+    const int N       = 64;
+    const double step = 2.0 * M_PI / N;
+
+    glBegin(GL_TRIANGLE_STRIP);
+    for (int i = 0; i <= N; ++i) { // i == N closes the strip
+      double angle = i * step;
+      vec3r n      = std::cos(angle) * a + std::sin(angle) * b; // unit outward normal
+      glNormal3d(n.x, n.y, n.z);
+      vec3r offset = r * n;
+      vec3r c1     = orig + offset;
+      vec3r c2     = dest + offset;
+      glVertex3d(c1.x, c1.y, c1.z);
+      glVertex3d(c2.x, c2.y, c2.z);
+    }
+    glEnd();
+
+    // ── 5. End caps (solid discs) ────────────────────────────────────────
+    // Origin cap — normal points backward (−v)
+    glBegin(GL_TRIANGLE_FAN);
+    glNormal3d(-v.x, -v.y, -v.z);
+    glVertex3d(orig.x, orig.y, orig.z); // center
+    for (int i = 0; i <= N; ++i) {      // forward winding → back-facing
+      double angle = i * step;
+      vec3r c      = orig + r * (std::cos(angle) * a + std::sin(angle) * b);
+      glVertex3d(c.x, c.y, c.z);
+    }
+    glEnd();
+
+    // Destination cap — normal points forward (+v)
+    glBegin(GL_TRIANGLE_FAN);
+    glNormal3d(v.x, v.y, v.z);
+    glVertex3d(dest.x, dest.y, dest.z); // center
+    for (int i = N; i >= 0; --i) {      // reversed winding → front-facing
+      double angle = i * step;
+      vec3r c      = dest + r * (std::cos(angle) * a + std::sin(angle) * b);
+      glVertex3d(c.x, c.y, c.z);
+    }
+    glEnd();
+
+    // ── 6. Restore GL state ──────────────────────────────────────────────
+    glPopAttrib();
   }
 
   // Attention : jamais testé !!!!!

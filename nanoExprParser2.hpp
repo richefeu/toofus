@@ -263,3 +263,28 @@ private:
     return 0;
   }
 };
+
+#if 0
+
+#include <iostream>
+
+int main() {
+  nanoExprParser<double> parser;
+  double x = 3.0;
+  parser.addVariable("x", &x);
+  parser.addConstant("kn", 100.0);
+  parser.addConstant("TwoPi", 2*M_PI);
+  //std::string expr = "2.19785 + pow(x,2) + cos(pi)";
+  //std::string expr = " sqrt(kn)  *3.21.  ";
+  std::string expr = "TwoPi + x";
+  double result;
+  if (parser.parse(expr, result)) {
+    std::cout << expr << " = " << result << std::endl;
+  } else {
+    std::cout << "Error parsing expression: " << expr << std::endl;
+    std::cout << expr << " = " << result << std::endl;
+  }
+  return 0;
+}
+
+#endif
