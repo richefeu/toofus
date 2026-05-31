@@ -79,10 +79,19 @@
 //
 // TABLEAU DE SORTIE
 //   Colonnes : calls | total (s) | average (s) | stddev (s)
+//   - calls   : nombre d'appels
 //   - total   : temps cumulé de tous les appels
 //   - average : total / calls
 //   - stddev  : écart-type inter-appels (algorithme de Welford, stable)
 //   Les enfants sont triés par durée décroissante à chaque niveau.
+//
+//   Chaque colonne affiche une barre en fond coloré proportionnelle à la
+//   valeur rapportée au maximum observé sur l'ensemble des nœuds :
+//     vert   < 33 %   du maximum de la colonne
+//     jaune  33–67 %
+//     rouge  > 67 %
+//   Les couleurs ANSI sont désactivées automatiquement quand la sortie
+//   n'est pas un terminal (redirection fichier, pipe, etc.).
 //
 // =============================================================================
 
@@ -90,18 +99,20 @@
 #define PROFILER_SERIE_HPP
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unistd.h>
 #include <vector>
 
 namespace profiler_detail {
 
 static const size_t nColumns             = 4;
-static const size_t cWidths[nColumns]    = {9, 14, 14, 14}; // calls, total, average, stddev
+static const size_t cWidths[nColumns]    = {9, 14, 14, 14}; // calls, total, mean, std
 static const std::string cName[nColumns] = {"calls", "total", "average", "stddev"};
 
 // Always produces a fixed-width 10-char string: "X.XXXXe+YY"
@@ -154,7 +165,6 @@ public:
     std::cout << " ┌";
     printReplicate(2, tw - 1, "─");
     std::cout << "┐\n";
-    // " │    name" = 10 visible columns
     std::cout << " │    name";
     printReplicate(10, shift, " ");
     for (size_t i = 0; i < nColumns; i++) {
@@ -177,7 +187,7 @@ public:
     std::cout << "┘\n";
   }
 
-  void print(size_t shift) {
+  void print(size_t shift, const std::array<double, nColumns> &maxVals) {
     size_t realShift    = shift;
     size_t currentShift = 3;
     std::cout << " │ ";
@@ -196,14 +206,30 @@ public:
     double n       = double(m_iteration);
     double total   = m_duration.count();
     double mean    = total / n;
-    double std_dev = std::sqrt(m_welford_M2 / n); // M2 >= 0 par construction (Welford)
+    double std_dev = std::sqrt(m_welford_M2 / n);
 
-    std::string cValue[nColumns] = {std::to_string(m_iteration), fmtTime(total), fmtTime(mean), fmtTime(std_dev)};
+    bool use_color = isatty(STDOUT_FILENO);
+
+    const double rawVals[nColumns] = {double(m_iteration), total, mean, std_dev};
+    std::string cValue[nColumns]   = {std::to_string(m_iteration), fmtTime(total), fmtTime(mean), fmtTime(std_dev)};
+
     for (size_t i = 0; i < nColumns; i++) {
+      double ratio   = (maxVals[i] > 0.0) ? std::min(rawVals[i] / maxVals[i], 1.0) : 0.0;
+      size_t valLen  = cValue[i].size();
+      size_t leftPad = cWidths[i] - valLen - 1;
       std::cout << "│";
-      size_t size = cValue[i].size();
-      printReplicate(0, cWidths[i] - size - 1, " ");
-      std::cout << cValue[i] << " ";
+      if (use_color) {
+        const char *bg;
+        if (ratio >= 0.67) bg = "\033[41m";
+        else if (ratio >= 0.33) bg = "\033[43m";
+        else bg = "\033[42m";
+        size_t filled       = static_cast<size_t>(ratio * cWidths[i] + 0.5);
+        std::string content = std::string(leftPad, ' ') + cValue[i] + " ";
+        std::cout << bg << content.substr(0, filled) << "\033[0m" << content.substr(filled);
+      } else {
+        printReplicate(0, leftPad, " ");
+        std::cout << cValue[i] << " ";
+      }
     }
     std::cout << "│\n";
   }
@@ -272,7 +298,6 @@ public:
   }
 
   void printTimeTable() {
-    auto myPrint   = [](Node *a_ptr, size_t a_shift) { a_ptr->print(a_shift); };
     auto sortComp  = [](Node *a_ptr, Node *b_ptr) { return a_ptr->m_duration.count() > b_ptr->m_duration.count(); };
     auto maxLength = [](Node *a_ptr, size_t &a_count, size_t &) {
       size_t length = a_ptr->m_level * 3 + a_ptr->m_name.size() + 2;
@@ -283,6 +308,19 @@ public:
     size_t count(0), nbElem(0);
     recursiveCall(maxLength, root, count, nbElem);
     count += 6;
+
+    std::array<double, nColumns> maxVals = {};
+    auto computeMax                      = [](Node *a_ptr, std::array<double, nColumns> &mx) {
+      double n = double(a_ptr->m_iteration);
+      mx[0]    = std::max(mx[0], double(a_ptr->m_iteration));
+      mx[1]    = std::max(mx[1], a_ptr->m_duration.count());
+      mx[2]    = std::max(mx[2], a_ptr->m_duration.count() / n);
+      mx[3]    = std::max(mx[3], std::sqrt(a_ptr->m_welford_M2 / n));
+    };
+    recursiveCall(computeMax, root, maxVals);
+
+    auto myPrint = [&maxVals](Node *a_ptr, size_t a_shift) { a_ptr->print(a_shift, maxVals); };
+
     root->printBanner(count);
     recursiveSortedCall(myPrint, sortComp, root, count);
     root->printEnding(count);
