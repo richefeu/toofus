@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -16,7 +18,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
+#include <vector>
 
 // Credit:
 // FROM: http://daviddeley.com/random/code.htm (This comes actually from numerical recipes)

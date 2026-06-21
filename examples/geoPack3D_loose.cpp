@@ -36,6 +36,9 @@ int main(int argc, char const *argv[]) {
 
   // c'est là qu'on pack en périodique (xmin, xmax...)
   GP.execPeriodic();
+
+  double contactGap = 1.0e-4 * GP.rmax;
+
   std::cout << "Cell volume: " << (GP.xmax - GP.xmin) * (GP.ymax - GP.ymin) * (GP.zmax - GP.zmin) << '\n';
   std::cout << "Overall solid fraction (by assuming there is no overlap): " << GP.getSolidFraction() << '\n';
 
@@ -46,6 +49,14 @@ int main(int argc, char const *argv[]) {
   // touche i pour afficher les particules ghost
   // touche l pour afficher la cellule périodique
   // touche k pour afficher les connections entre particules
+
+  // Vue en perspective cavaliere pour verification rapide.
+  GeoPack3D::SvgOptions svg;
+  svg.drawParticles   = false;
+  svg.drawConnections = true;       // reseau de contacts
+  svg.drawGhosts      = false;      // fantomes pour les contacts a travers la periode
+  svg.contactGap      = contactGap; // meme tolerance que les diagnostics
+  GP.saveSVG("packing.svg", svg);   // vue en perspective cavaliere pour verification rapide
 
   return 0;
 }

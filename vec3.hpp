@@ -1,3 +1,5 @@
+// STATUS: [x] STABLE  [ ] EXPERIMENTAL  [ ] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -490,19 +492,21 @@ public:
     }
   }
 
-  /// Normalize and return the normalized vector
-  vec3 normalized() {
-    this->normalize();
-    return *this;
+  /// Return a normalized vector (without changing 'this' vector)
+  vec3 normalized() const {
+    vec3 V = *this;
+    V.normalize();
+    return V;
   }
 
-  /// @brief Normalize the vector and return the normalized vector.
+  /// @brief Return a normalized copy of the vector using the tested algorithm.
   ///
-  /// This function normalizes the vector using the tested algorithm
-  /// and returns the normalized vector.
-  vec3 normalizedTested() {
-    this->normalizeTested();
-    return *this;
+  /// This function normalizes a copy of the vector using the tested algorithm
+  /// and returns it (without changing 'this' vector).
+  vec3 normalizedTested() const {
+    vec3 V = *this;
+    V.normalizeTested();
+    return V;
   }
 
   // Comparisons

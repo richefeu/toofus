@@ -1,3 +1,8 @@
+// STATUS:
+//   stable — interface figée
+//   experimental — peut changer
+// * draft — usage interne uniquement
+
 #pragma once
 
 #include <algorithm>

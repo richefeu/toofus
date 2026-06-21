@@ -1,8 +1,9 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Werror -I./doctest -I..
 
+OBJDIR = obj
 SRCS = $(wildcard *.cpp)
-OBJS = $(SRCS:.cpp=.o)
+OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 
 TEST_EXEC = test_app
 
@@ -11,11 +12,14 @@ all: $(TEST_EXEC)
 $(TEST_EXEC): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-%.o: %.cpp
+$(OBJDIR)/%.o: %.cpp | $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
 run: $(TEST_EXEC)
-	./$(TEST_EXEC) -s 
+	./$(TEST_EXEC) -s
 
 clean:
-	rm -f $(OBJS) $(TEST_EXEC)
+	rm -rf $(OBJDIR) $(TEST_EXEC)

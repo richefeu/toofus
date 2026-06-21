@@ -1,8 +1,66 @@
+# macOS
 .DS_Store
 **/.DS_Store
-./*.svg
+
+# IDE
+.vscode/
+
+# CMake build artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+/Makefile
+/build/
+
+# Compiled objects and static libs
+**/*.o
+**/*.a
+
+# Executables (root)
+a.out
+simple_gui_app
+
+# Executables (subdirectories)
 seeSpheres/seeSpheres
-catch_unit_tests/*.o
 catch_unit_tests/tests
-doctests/*.o
 doctests/test_app
+examples/fmtLog
+examples/termInterf
+examples/termMenu
+tabulate/test
+toofus-gate/termcolor/test
+toofus-gate/toml++/test
+toofus-gate/indicators/test
+toofus-script/scriptable
+visualbase/cube
+visualbase/myapp
+visualbase/hello/main
+
+# Large vendored dependency (not tracked)
+visualbase/wxWidgets-3.2.5/
+
+# Doxygen output
+DoxyDoc/
+
+# LaTeX doc build artifacts
+doc/*.aux
+doc/*.log
+doc/*.pdf
+doc/*.synctex.gz
+doc/*.toc
+
+# Generated SVGs (root only)
+/*.svg
+
+# Reference PDF (copyrighted, binary)
+Real-Time_Collision_Detection.pdf
+
+# Generated output files
+output.json
+obbs.txt
+
+# Personal notes
+Notes/
+
+# Local Claude Code guidance (not shared)
+CLAUDE.local.md

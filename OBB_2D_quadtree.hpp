@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 #ifndef OBB_2D_QUADTREE_HPP
 #define OBB_2D_QUADTREE_HPP
 

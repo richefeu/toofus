@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [x] EXPERIMENTAL  [ ] DRAFT
+
 #ifndef OBB_2D_HPP
 #define OBB_2D_HPP
 

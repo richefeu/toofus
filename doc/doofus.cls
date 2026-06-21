@@ -24,6 +24,8 @@
 %%======================================================
 %% Package setup
 %%======================================================
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
 \RequirePackage{listings}
 \RequirePackage{courier}
 \RequirePackage{xcolor}
@@ -46,18 +48,19 @@
 }
 
 %%======================================================
-%% Colors
+%% Colors — restricted palette for readability
 %%======================================================
-\definecolor{lightgrey}{RGB}{245,245,245}
-\definecolor{lightblue}{RGB}{191,239,255}
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
+% Code background (for listings only)
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-\definecolor{doofusblue}{RGB}{30,90,160}
-\definecolor{doofusred}{RGB}{170,40,40}
-\definecolor{doofusgreen}{RGB}{30,120,30}
+% Grey shades
 \definecolor{doofusgray}{gray}{0.3}
+\definecolor{doofusgraylight}{gray}{0.6}
+% Blue shades
+\definecolor{doofusblue}{RGB}{30,90,160}
+\definecolor{doofusbluelight}{RGB}{100,160,240}
+% Red shades
+\definecolor{doofusred}{RGB}{170,40,40}
+\definecolor{doofusredlight}{RGB}{220,100,100}
 
 %%======================================================
 %% Item symbols
@@ -74,28 +77,25 @@
   basicstyle=\small\ttfamily,
   columns=fullflexible,
   breaklines=true,
-  frame=single,
-  framesep=5pt,
-  framerule=0.4pt,
-  backgroundcolor=\color{backcolour},
+  frame=none,
+  framesep=3pt,
+  framerule=0pt,
 }
 
 %%======================================================
 %% Custom listing style: mystyle
 %%======================================================
 \lstdefinestyle{mystyle}{
-  basicstyle=\small\ttfamily,
+  basicstyle=\ttfamily\footnotesize,
   columns=fullflexible,
   breaklines=true,
-  frame=single,
-  framesep=5pt,
-  framerule=0.4pt,
-  backgroundcolor=\color{backcolour},
-  commentstyle=\color{codegreen},
-  keywordstyle=\color{magenta},
-  numberstyle=\tiny\color{codegray},
-  stringstyle=\color{codepurple},
-  basicstyle=\ttfamily\footnotesize,
+  frame=none,
+  framesep=3pt,
+  framerule=0pt,
+  commentstyle=\color{doofusgray}\itshape,
+  keywordstyle=\color{doofusred}\bfseries,
+  numberstyle=\tiny\color{doofusgraylight},
+  stringstyle=\color{doofusredlight},
   breakatwhitespace=false,
   captionpos=b,
   keepspaces=true,
@@ -109,35 +109,26 @@
 
 %%------------------------------------------------------
 %% C++ syntax highlighting style for listings
+%% Uses restricted color palette: greys, blues, reds
 %%------------------------------------------------------
-\definecolor{cppkeyword}{RGB}{0,0,180}
-\definecolor{cppcomment}{RGB}{0,128,0}
-\definecolor{cppstring}{RGB}{163,21,21}
-\definecolor{cppnumber}{RGB}{128,0,128}
-%\definecolor{cppbackground}{RGB}{245,245,255}
-
 \lstdefinestyle{cppstyle}{
-  language=C++,                   % enable C++ syntax rules
-  backgroundcolor=\color{backcolour},
+  language=C++,
   basicstyle=\ttfamily\footnotesize,
-  keywordstyle=\color{cppkeyword}\bfseries,
-  commentstyle=\color{cppcomment}\itshape,
-  stringstyle=\color{cppstring},
-  numberstyle=\tiny\color{cppnumber},
+  keywordstyle=\color{doofusred}\bfseries,
+  commentstyle=\color{doofusgray}\itshape,
+  stringstyle=\color{doofusredlight},
+  numberstyle=\tiny\color{doofusgraylight},
   numbers=left,
   stepnumber=1,
   numbersep=5pt,
   showstringspaces=false,
   breaklines=true,
-  frame=single,
-  framerule=0.4pt,
-  framesep=5pt,
+  frame=none,
+  framerule=0pt,
+  framesep=3pt,
   tabsize=2,
   columns=fullflexible
 }
-
-% Make cppstyle the default for all lstlisting environments
-%\lstset{style=cppstyle}
 
 %%------------------------------------------------------
 %% Title page customization
@@ -191,18 +182,20 @@
 %%------------------------------------------------------
 %% Syntax presentation commands
 %%------------------------------------------------------
+%% \syntax{...}: monospace text with semantic coloring, no background.
+%% Uses \parbox to allow line wrapping without the colored box.
+\newlength{\@syntaxw}
 \newcommand{\syntax}[1]{%
-  %\vspace{0.5em}%
-  \noindent%
-  \colorbox{backcolour}{\ttfamily\small #1}%
-  %\vspace{0.5em}%
+  \setlength{\@syntaxw}{\dimexpr\linewidth-2pt\relax}%
+  \leavevmode%
+  \parbox{\@syntaxw}{\ttfamily\small\raggedright #1}%
+  \endgraf\noindent%
 }
 
-
 % Syntax component commands
-\newcommand{\return}[1]{{\color{doofusblue}{\scriptsize #1}}}
+\newcommand{\return}[1]{{\color{doofusblue}#1}}
 \newcommand{\keyword}[1]{{\color{doofusred}\textbf{#1}}}
-\newcommand{\type}[1]{{\color{doofusgreen}{\scriptsize #1}}}
+\newcommand{\type}[1]{{\color{doofusbluelight}#1}}
 \newcommand{\param}[1]{{\color{doofusgray}\textit{\textbf{#1}}}}
 
 %%======================================================

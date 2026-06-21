@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 #ifndef NR3_THINGS_HPP
 #define NR3_THINGS_HPP
 

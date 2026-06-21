@@ -4,7 +4,19 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
   CXX = clang++
   CXXFLAGS = -O3 -Wall -std=c++11
-  GLFLAGS = `pkg-config --cflags --libs glut` -framework OpenGL 
+  
+	#GLFLAGS = `pkg-config --cflags --libs glut` -framework OpenGL 
+	
+	# on apple, compile freeglut from source with this configuration:
+	# mkdir build
+	# cd build
+	# cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DFREEGLUT_COCOA=ON -DFREEGLUT_BUILD_DEMOS=OFF -DCMAKE_BUILD_TYPE=Release
+  # make
+	# sudo make install
+	
+  GLLINK = /usr/local/lib/libglut.a -framework Cocoa -framework CoreVideo -framework OpenGL -framework IOKit
+	GLFLAGS = -I/usr/local/include
+	
 else
   CXX = g++
   CXXFLAGS = -O3 -Wall -std=c++0x
@@ -17,4 +29,6 @@ clean:
 	rm -f *.o seeSpheres
 
 seeSpheres: seeSpheres.cpp
-	$(CXX) $(CXXFLAGS) -Wno-deprecated $(GLFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -Wno-deprecated $(GLFLAGS) $(GLLINK) -o $@ $<
+	#$(CXX) $(CXXFLAGS) -c $< -o seeSpheres.o $(GLFLAGS)
+	#$(CXX) -o $@ seeSpheres.o $(GLLINK)

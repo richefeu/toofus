@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -47,7 +49,7 @@ namespace {
 
 /// @see    https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain
 /// @brief  Returns a list of points on the convex hull in counter-clockwise order.
-/// @note   The last point in the returned list is the same than the first one.
+/// @note   The hull vertices are returned without repeating the first point at the end.
 std::vector<vec2r> convexHull(std::vector<vec2r> &P) {
   int n = P.size(), k = 0;
   if (n == 1) { return P; }

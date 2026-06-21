@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [x] EXPERIMENTAL  [ ] DRAFT
+
 // This file is part of TOOFUS (TOols OFten USued)
 //
 // It can not be copied and/or distributed without the express

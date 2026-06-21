@@ -1,3 +1,5 @@
+// STATUS: [x] STABLE  [ ] EXPERIMENTAL  [ ] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -402,6 +404,12 @@ public:
 
   bool operator!=(const vec2<T> &other) const {
     return !(*this == other);
+  }
+
+  /// Lexicographic ordering (by x, then y). Lets vec2 be used with std::less, std::sort, std::set, std::map.
+  bool operator<(const vec2<T> &other) const {
+    if (this->x != other.x) { return this->x < other.x; }
+    return this->y < other.y;
   }
 
   // input/output

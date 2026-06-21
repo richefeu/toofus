@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [x] EXPERIMENTAL  [ ] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)

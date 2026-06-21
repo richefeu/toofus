@@ -1,5 +1,5 @@
 #define ENABLE_PROFILING
-#include "../profiler_serie.hpp"
+#include "../profiler_serial.hpp"
 #include <cmath>
 
 void heavy_work(int n) {

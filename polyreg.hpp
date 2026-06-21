@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -30,7 +32,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
   int N = (int)(x.size());
   a.resize(n + 1, 0.0); // values of the final coefficients
 
-  double X[2 * n + 1]; // Array that will store the values of sigma(xi),sigma(xi^2),sigma(xi^3)....sigma(xi^2n)
+  std::vector<double> X(2 * n + 1); // store the values of sigma(xi),sigma(xi^2),sigma(xi^3)....sigma(xi^2n)
   for (int i = 0; i < 2 * n + 1; i++) {
     X[i] = 0.0;
     for (int j = 0; j < N; j++) {
@@ -39,7 +41,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
     }
   }
 
-  double B[n + 1][n + 2]; // B is the Normal matrix(augmented) that will store the equations
+  std::vector<std::vector<double>> B(n + 1, std::vector<double>(n + 2)); // augmented Normal matrix of the equations
   for (int i = 0; i <= n; i++) {
     for (int j = 0; j <= n; j++) {
       B[i][j] = X[i + j];
@@ -48,7 +50,7 @@ void polyreg(std::vector<double> &x, std::vector<double> &y, int n, std::vector<
     }
   }
 
-  double Y[n + 1]; // Array to store the values of sigma(yi),sigma(xi*yi),sigma(xi^2*yi)...sigma(xi^n*yi)
+  std::vector<double> Y(n + 1); // store sigma(yi),sigma(xi*yi),sigma(xi^2*yi)...sigma(xi^n*yi)
   for (int i = 0; i < n + 1; i++) {
     Y[i] = 0.0;
     for (int j = 0; j < N; j++) {

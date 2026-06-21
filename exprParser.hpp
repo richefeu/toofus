@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 /*
  * exprParser  —  single-header mathematical expression parser/compiler
  * =========================================================================

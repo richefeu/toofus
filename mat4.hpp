@@ -1,3 +1,5 @@
+// STATUS: [x] STABLE  [ ] EXPERIMENTAL  [ ] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -46,7 +48,7 @@ public:
     return mat4(1, 0, 0, 1);
   }
   static mat4 zero() {
-    return mat4(1, 1, 1, 1);
+    return mat4(0, 0, 0, 0);
   }
   static mat4 one() {
     return mat4(1, 1, 1, 1);

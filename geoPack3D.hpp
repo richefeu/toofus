@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [x] EXPERIMENTAL  [ ] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -14,6 +16,7 @@
 #ifndef GEOPACK3D_HPP
 #define GEOPACK3D_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -45,13 +48,13 @@ public:
   size_t max;          // maximum number of spheres placed
   size_t k;            // number of placement attempts around a placed sphere before removing it from the asset list
 
-  size_t limitLocalNumberNeighbors;
-  size_t localNumberNeighborsMax;
-  double distProbingConnectivity;
+  size_t limitLocalNumberNeighbors{0};
+  size_t localNumberNeighborsMax{12};
+  double distProbingConnectivity{0.0};
 
-  size_t limitLocalSolidFraction;
-  double distProbingSolidFraction;
-  double localSolidFractionMax;
+  size_t limitLocalSolidFraction{0};
+  double distProbingSolidFraction{0.0};
+  double localSolidFractionMax{0.0};
 
   std::vector<Sphere> sample;            // the packed spheres
   std::vector<std::vector<size_t>> prox; // each sphere has a list of neighbors
@@ -117,6 +120,91 @@ public:
     return Vs / Vtot;
   }
 
+  // --- Diagnostics for static stability ------------------------------------
+  // Two spheres are considered in contact when their (periodic) gap is <= contactGap.
+  // A small positive contactGap (e.g. a fraction of rmin) tolerates the near-tangencies
+  // produced by the geometric packing.
+
+  // Mean coordination number over the whole sample (periodic, rattlers included).
+  // For frictional spheres, static rigidity requires z >~ 4 (z = 6 frictionless),
+  // so the loose tangent packing (z ~ 2) is far below the isostatic threshold.
+  double getCoordinationNumber(double contactGap = 0.0) {
+    if (sample.empty()) return 0.0;
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+    size_t nbContacts = 0;
+    for (size_t i = 0; i < sample.size(); i++) {
+      for (size_t n = 0; n < prox[i].size(); n++) {
+        size_t j = prox[i][n];
+        if (j <= i) continue; // count each undirected pair once
+        double dx = sample[j].x - sample[i].x;
+        double dy = sample[j].y - sample[i].y;
+        double dz = sample[j].z - sample[i].z;
+        dx -= floor(dx / Lx + 0.5) * Lx;
+        dy -= floor(dy / Ly + 0.5) * Ly;
+        dz -= floor(dz / Lz + 0.5) * Lz;
+        double d = sqrt(dx * dx + dy * dy + dz * dz);
+        if (d <= sample[i].r + sample[j].r + contactGap) { nbContacts++; }
+      }
+    }
+    return 2.0 * static_cast<double>(nbContacts) / static_cast<double>(sample.size());
+  }
+
+  // Number of connected components of the (periodic) contact graph: 1 means the
+  // whole assembly is a single connected cluster, > 1 means there are floating
+  // islands / isolated spheres that the DEM cannot hold in place.
+  size_t getNumberOfConnectedComponents(double contactGap = 0.0) {
+    size_t N = sample.size();
+    if (N == 0) return 0;
+    std::vector<size_t> parent(N);
+    for (size_t i = 0; i < N; i++) { parent[i] = i; }
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+    for (size_t i = 0; i < N; i++) {
+      for (size_t n = 0; n < prox[i].size(); n++) {
+        size_t j = prox[i][n];
+        if (j <= i) continue;
+        double dx = sample[j].x - sample[i].x;
+        double dy = sample[j].y - sample[i].y;
+        double dz = sample[j].z - sample[i].z;
+        dx -= floor(dx / Lx + 0.5) * Lx;
+        dy -= floor(dy / Ly + 0.5) * Ly;
+        dz -= floor(dz / Lz + 0.5) * Lz;
+        double d = sqrt(dx * dx + dy * dy + dz * dz);
+        if (d <= sample[i].r + sample[j].r + contactGap) {
+          size_t ri = i;
+          while (parent[ri] != ri) { ri = parent[ri]; }
+          size_t rj = j;
+          while (parent[rj] != rj) { rj = parent[rj]; }
+          if (ri != rj) { parent[ri] = rj; }
+        }
+      }
+    }
+    size_t comps = 0;
+    for (size_t i = 0; i < N; i++) {
+      if (parent[i] == i) { comps++; }
+    }
+    return comps;
+  }
+
+  // --- Densification helpers ------------------------------------------------
+  // Scale all radii by a common factor, centers unchanged. With factor > 1 this
+  // turns the near-tangencies into overlaps, building a dense and highly
+  // connected initial state to be relaxed by a periodic DEM compression.
+  void inflateRadii(double factor) {
+    for (size_t i = 0; i < sample.size(); i++) { sample[i].r *= factor; }
+  }
+
+  // Inflate radii to reach a target overall solid fraction (no-overlap formula).
+  // Returns the applied factor. After inflation, getSolidFraction() reports
+  // ~phiTarget but the true (overlap-corrected) fraction is slightly lower; the
+  // DEM removes the overlaps at nearly constant volume.
+  double inflateToSolidFraction(double phiTarget) {
+    double phi = getSolidFraction();
+    if (phi <= 0.0) return 1.0;
+    double factor = std::cbrt(phiTarget / phi);
+    inflateRadii(factor);
+    return factor;
+  }
+
   double sphereLensVolume(double R1, double R2, double dist) {
     if (dist > R1 + R2) return 0.0;
 
@@ -160,13 +248,59 @@ public:
     limitLocalNumberNeighbors = 1;
     distProbingConnectivity   = dst;
     localNumberNeighborsMax   = value;
-    std::cout << "localNumberNeighborsMax = " << localNumberNeighborsMax << '\n';
+    if (verbose == true) { std::cout << "localNumberNeighborsMax = " << localNumberNeighborsMax << '\n'; }
+  }
+
+  // Hard caps evaluated on a candidate sphere (cx, cy, cz, cr) BEFORE it is accepted, by scanning
+  // ALL spheres (periodic minimum image if periodic == true). Returns false when accepting the
+  // candidate would violate an active hard cap:
+  //   - coordination: the candidate would get more than localNumberNeighborsMax contacts, or it
+  //     would push an already-saturated neighbor above the limit. Combined with this test applied
+  //     to every placement, it guarantees the invariant z_i <= localNumberNeighborsMax for all i;
+  //   - local solid fraction: the candidate's shell (width distProbingSolidFraction) would be
+  //     filled above localSolidFractionMax by the already-placed neighbors. This is enforced at
+  //     the candidate's placement; the shell of a neighbor may still grow as the packing fills.
+  bool candidateRespectsHardCaps(double cx, double cy, double cz, double cr, bool periodic) {
+    bool checkZ   = (limitLocalNumberNeighbors == 1);
+    bool checkPhi = (limitLocalSolidFraction == 1);
+    if (checkZ == false && checkPhi == false) { return true; }
+
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+    double Rprob      = cr + distProbingSolidFraction;
+    double Vprob      = 4.0 * M_PI * (Rprob * Rprob * Rprob - cr * cr * cr) / 3.0;
+    double Vs         = 0.0;
+    size_t nbContacts = 0;
+
+    for (size_t i = 0; i < sample.size(); i++) {
+      double dx = sample[i].x - cx;
+      double dy = sample[i].y - cy;
+      double dz = sample[i].z - cz;
+      if (periodic == true) {
+        dx -= floor(dx / Lx + 0.5) * Lx;
+        dy -= floor(dy / Ly + 0.5) * Ly;
+        dz -= floor(dz / Lz + 0.5) * Lz;
+      }
+      double d = sqrt(dx * dx + dy * dy + dz * dz);
+      if (checkZ == true && d <= sample[i].r + cr + distProbingConnectivity) {
+        nbContacts++;
+        if (sample[i].nbNeighbors >= localNumberNeighborsMax) { return false; } // neighbor would exceed
+      }
+      if (checkPhi == true) { Vs += sphereLensVolume(Rprob, sample[i].r, d); }
+    }
+
+    if (checkZ == true && nbContacts > localNumberNeighborsMax) { return false; }
+    if (checkPhi == true && Vprob > 0.0 && Vs / Vprob > localSolidFractionMax) { return false; }
+    return true;
   }
 
   void limit_localSolidFraction(double dst, double value) {
     limitLocalSolidFraction  = 1;
     distProbingSolidFraction = dst;
     localSolidFractionMax    = value;
+    // The prox lists must reach at least as far as the probing shell, otherwise
+    // neighbors located between distNeighbor and distProbingSolidFraction are
+    // missed and the local solid fraction is underestimated.
+    if (distProbingSolidFraction > distNeighbor) { distNeighbor = distProbingSolidFraction; }
   }
 
   void seedTime() {
@@ -204,11 +338,6 @@ public:
         deActivate(randIndex);
         continue;
       }
-      if (limitLocalSolidFraction == 1 &&
-          localSolidFraction(active[randIndex], distProbingSolidFraction) > localSolidFractionMax) {
-        deActivate(randIndex);
-        continue;
-      }
       size_t currentSphere = active[randIndex];
 
       bool found = false;
@@ -216,12 +345,12 @@ public:
       for (size_t n = 0; n < k; n++) {
         double testr  = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
-        double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
+        double uz     = ran(-1.0, 1.0); // cos(theta) uniform => isotropic directions on the unit sphere
+        double sxy    = sqrt(1.0 - uz * uz);
         double m  = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
-        double ux = cos(angle1);
-        double uy = sin(angle1);
-        double uz = sin(angle2);
-        double sc = 1.0f / sqrt(ux * ux + uy * uy + uz * uz);
+        double ux = sxy * cos(angle1);
+        double uy = sxy * sin(angle1);
+        double sc = 1.0; // (ux, uy, uz) is already a unit vector
         double testx = sample[currentSphere].x + m * sc * ux;
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
@@ -251,6 +380,9 @@ public:
             }
           }
         }
+
+        // hard caps on the candidate (coordination and/or local solid fraction)
+        if (ok == true && candidateRespectsHardCaps(testx, testy, testz, testr, false) == false) { ok = false; }
 
         // add if ok
         if (ok == true) {
@@ -322,11 +454,6 @@ public:
         continue;
       }
 
-      if (limitLocalSolidFraction == 1 &&
-          localSolidFraction(active[randIndex], distProbingSolidFraction, true) > localSolidFractionMax) {
-        deActivate(randIndex);
-        continue;
-      }
       size_t currentSphere = active[randIndex];
 
       bool found = false;
@@ -337,12 +464,12 @@ public:
         // an attempt of positionning
         double testr  = ran(rmin, rmax);
         double angle1 = ran(0, 2.0 * M_PI);
-        double angle2 = ran(-0.5 * M_PI, 0.5 * M_PI);
+        double uz     = ran(-1.0, 1.0); // cos(theta) uniform => isotropic directions on the unit sphere
+        double sxy    = sqrt(1.0 - uz * uz);
         double m  = ran(testr + sample[currentSphere].r + distMin, testr + sample[currentSphere].r + distMin + gapTol);
-        double ux = cos(angle1);
-        double uy = sin(angle1);
-        double uz = sin(angle2);
-        double sc = 1.0f / sqrt(ux * ux + uy * uy + uz * uz);
+        double ux = sxy * cos(angle1);
+        double uy = sxy * sin(angle1);
+        double sc = 1.0; // (ux, uy, uz) is already a unit vector
         double testx = sample[currentSphere].x + m * sc * ux;
         double testy = sample[currentSphere].y + m * sc * uy;
         double testz = sample[currentSphere].z + m * sc * uz;
@@ -407,6 +534,9 @@ public:
             }
           }
         }
+
+        // hard caps on the candidate (coordination and/or local solid fraction)
+        if (ok == true && candidateRespectsHardCaps(testx, testy, testz, testr, true) == false) { ok = false; }
 
         if (ok == true) {
           found = true;
@@ -493,13 +623,228 @@ public:
     }
   }
 
+  // Options for the cavalier-perspective SVG export (see saveSVG).
+  struct SvgOptions {
+    double alphaDeg   = 30.0; // angle of the receding z-axis, in degrees (typically 30 or 45)
+    double depthScale = 0.5;  // foreshortening factor along z (typically 0.5)
+    double ppl        = 60.0; // pixels per unit length
+
+    bool drawCell        = true;  // edges of the periodic cell
+    bool drawParticles   = true;  // the spheres, as disks
+    bool drawConnections = false; // the contact network (segments between touching spheres)
+    bool drawGhosts      = false; // periodic duplicates of the boundary particles (context layer)
+    double contactGap    = 0.0;   // gap tolerance defining a contact for the network
+  };
+
+  // Cavalier-perspective SVG of the packing for quick visual checks.
+  // Projection: Xscreen = x + depthScale*z*cos(alpha), Yscreen = y + depthScale*z*sin(alpha).
+  // Particles are drawn back-to-front (painter's algorithm) and shaded by depth (near = light,
+  // far = dark). Disk radii are kept true (cavalier preserves lengths in the x-y plane), so
+  // Rmin/Rmax are read directly on the figure.
+  // Layers are independent (like seeSpheres: 'l' cell, 'k' connections, 'i' ghosts):
+  //  - the contact network is anchored on the REAL particle positions: an internal contact is a
+  //    solid segment, a contact crossing the period is drawn as two short stubs, one from each
+  //    real particle toward its partner's image, clipped at the cell wall (no duplicate is used);
+  //  - ghosts are periodic duplicates of the boundary particles, drawn for context only and
+  //    never used as connection endpoints.
+  void saveSVG(const char *name) {
+    saveSVG(name, SvgOptions());
+  }
+
+  void saveSVG(const char *name, const SvgOptions &opt) {
+    double ca         = cos(opt.alphaDeg * M_PI / 180.0);
+    double sa         = sin(opt.alphaDeg * M_PI / 180.0);
+    double ppl        = opt.ppl;
+    double depthScale = opt.depthScale;
+
+    // cavalier projection of a 3D point onto the drawing plane (world units, origin at min corner)
+    auto projX = [&](double x, double z) { return (x - xmin) + depthScale * (z - zmin) * ca; };
+    auto projY = [&](double y, double z) { return (y - ymin) + depthScale * (z - zmin) * sa; };
+
+    // drawing bounds from the 8 corners of the cell, with the largest radius as margin
+    double cx[2] = {xmin, xmax}, cy[2] = {ymin, ymax}, cz[2] = {zmin, zmax};
+    double sxmin = 1e30, sxmax = -1e30, symin = 1e30, symax = -1e30;
+    for (int ix = 0; ix < 2; ix++) {
+      for (int iy = 0; iy < 2; iy++) {
+        for (int iz = 0; iz < 2; iz++) {
+          double sx = projX(cx[ix], cz[iz]);
+          double sy = projY(cy[iy], cz[iz]);
+          sxmin     = std::min(sxmin, sx);
+          sxmax     = std::max(sxmax, sx);
+          symin     = std::min(symin, sy);
+          symax     = std::max(symax, sy);
+        }
+      }
+    }
+    sxmin -= rmax;
+    symin -= rmax;
+    sxmax += rmax;
+    symax += rmax;
+
+    double W = (sxmax - sxmin) * ppl;
+    double H = (symax - symin) * ppl;
+
+    // map a world-projected point to SVG pixels (y flipped: SVG y grows downward)
+    auto px = [&](double sx) { return (sx - sxmin) * ppl; };
+    auto py = [&](double sy) { return H - (sy - symin) * ppl; };
+    auto PX = [&](double x, double z) { return px(projX(x, z)); }; // 3D point -> pixel x
+    auto PY = [&](double y, double z) { return py(projY(y, z)); }; // 3D point -> pixel y
+
+    double Lx = (xmax - xmin), Ly = (ymax - ymin), Lz = (zmax - zmin);
+
+    std::ofstream file(name);
+    file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    file << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" << W << "\" height=\"" << H << "\" viewBox=\"0 0 " << W
+         << ' ' << H << "\">\n";
+    file << "<rect width=\"" << W << "\" height=\"" << H << "\" fill=\"white\"/>\n";
+
+    // edges of the periodic cell (corner index = ix + 2*iy + 4*iz)
+    if (opt.drawCell == true) {
+      double X[8], Y[8];
+      int c = 0;
+      for (int iz = 0; iz < 2; iz++) {
+        for (int iy = 0; iy < 2; iy++) {
+          for (int ix = 0; ix < 2; ix++) {
+            X[c] = PX(cx[ix], cz[iz]);
+            Y[c] = PY(cy[iy], cz[iz]);
+            c++;
+          }
+        }
+      }
+      static const int edges[12][2] = {{0, 1}, {2, 3}, {4, 5}, {6, 7},  // along x
+                                       {0, 2}, {1, 3}, {4, 6}, {5, 7},  // along y
+                                       {0, 4}, {1, 5}, {2, 6}, {3, 7}}; // along z
+      for (int e = 0; e < 12; e++) {
+        file << "<line x1=\"" << X[edges[e][0]] << "\" y1=\"" << Y[edges[e][0]] << "\" x2=\"" << X[edges[e][1]]
+             << "\" y2=\"" << Y[edges[e][1]] << "\" stroke=\"#bbbbbb\" stroke-width=\"1\"/>\n";
+      }
+    }
+
+    // periodic ghost particles: independent context layer (like seeSpheres key 'i').
+    // Boundary particles are duplicated on the adjacent side(s); ghosts are NEVER used as
+    // connection endpoints.
+    if (opt.drawGhosts == true) {
+      for (size_t i = 0; i < sample.size(); i++) {
+        for (int sx = -1; sx <= 1; sx++) {
+          for (int sy = -1; sy <= 1; sy++) {
+            for (int sz = -1; sz <= 1; sz++) {
+              if (sx == 0 && sy == 0 && sz == 0) continue;
+              double gx = sample[i].x + sx * Lx;
+              double gy = sample[i].y + sy * Ly;
+              double gz = sample[i].z + sz * Lz;
+              // keep only the duplicates adjacent to the cell (within the rmax margin of the view)
+              if (gx < xmin - rmax || gx > xmax + rmax || gy < ymin - rmax || gy > ymax + rmax || gz < zmin - rmax ||
+                  gz > zmax + rmax) {
+                continue;
+              }
+              drawGhostDisk_SVG(file, PX(gx, gz), PY(gy, gz), sample[i].r * ppl);
+            }
+          }
+        }
+      }
+    }
+
+    // contact network, always anchored on the REAL particle positions.
+    // An internal contact is a solid segment between the two centers. A contact crossing the
+    // period is drawn as two short stubs: from each real particle toward its partner's image,
+    // each clipped at the cell wall it exits (no duplicated-particle position is ever used).
+    if (opt.drawConnections == true) {
+      for (size_t i = 0; i < sample.size(); i++) {
+        for (size_t n = 0; n < prox[i].size(); n++) {
+          size_t j = prox[i][n];
+          if (j <= i) continue; // each undirected pair once
+          double dx  = sample[j].x - sample[i].x;
+          double dy  = sample[j].y - sample[i].y;
+          double dz  = sample[j].z - sample[i].z;
+          double shx = floor(dx / Lx + 0.5) * Lx; // periodic shift removed to get the minimum image
+          double shy = floor(dy / Ly + 0.5) * Ly;
+          double shz = floor(dz / Lz + 0.5) * Lz;
+          double dxm = dx - shx, dym = dy - shy, dzm = dz - shz;
+          double d = sqrt(dxm * dxm + dym * dym + dzm * dzm);
+          if (d > sample[i].r + sample[j].r + opt.contactGap) continue;
+
+          bool wrap = (shx != 0.0 || shy != 0.0 || shz != 0.0);
+          if (wrap == false) {
+            // internal contact: full segment between the two real centers
+            file << "<line x1=\"" << PX(sample[i].x, sample[i].z) << "\" y1=\"" << PY(sample[i].y, sample[i].z)
+                 << "\" x2=\"" << PX(sample[j].x, sample[j].z) << "\" y2=\"" << PY(sample[j].y, sample[j].z)
+                 << "\" stroke=\"#cc0000\" stroke-width=\"1.2\"/>\n";
+          } else {
+            // stub from i toward the image of j, clipped at the cell wall
+            double ex, ey, ez;
+            clipToCell_SVG(sample[i].x, sample[i].y, sample[i].z, sample[i].x + dxm, sample[i].y + dym,
+                           sample[i].z + dzm, ex, ey, ez);
+            file << "<line x1=\"" << PX(sample[i].x, sample[i].z) << "\" y1=\"" << PY(sample[i].y, sample[i].z)
+                 << "\" x2=\"" << PX(ex, ez) << "\" y2=\"" << PY(ey, ez)
+                 << "\" stroke=\"#cc0000\" stroke-width=\"1.2\"/>\n";
+            // stub from j toward the image of i, clipped at the cell wall
+            clipToCell_SVG(sample[j].x, sample[j].y, sample[j].z, sample[j].x - dxm, sample[j].y - dym,
+                           sample[j].z - dzm, ex, ey, ez);
+            file << "<line x1=\"" << PX(sample[j].x, sample[j].z) << "\" y1=\"" << PY(sample[j].y, sample[j].z)
+                 << "\" x2=\"" << PX(ex, ez) << "\" y2=\"" << PY(ey, ez)
+                 << "\" stroke=\"#cc0000\" stroke-width=\"1.2\"/>\n";
+          }
+        }
+      }
+    }
+
+    // particles, back-to-front (painter's algorithm), shaded by depth
+    if (opt.drawParticles == true) {
+      std::vector<size_t> idx(sample.size());
+      for (size_t i = 0; i < sample.size(); i++) { idx[i] = i; }
+      std::sort(idx.begin(), idx.end(), [&](size_t a, size_t b) { return sample[a].z > sample[b].z; });
+
+      for (size_t n = 0; n < idx.size(); n++) {
+        size_t i = idx[n];
+        double t = (Lz > 0.0) ? (sample[i].z - zmin) / Lz : 0.0; // 0 = near, 1 = far
+        int g    = static_cast<int>(220.0 - 120.0 * t);
+        file << "<circle cx=\"" << PX(sample[i].x, sample[i].z) << "\" cy=\"" << PY(sample[i].y, sample[i].z)
+             << "\" r=\"" << sample[i].r * ppl << "\" fill=\"rgb(" << g << ',' << g << ",255)\" stroke=\"#333333\" "
+             << "stroke-width=\"0.6\"/>\n";
+      }
+    }
+
+    file << "</svg>\n";
+  }
+
 protected:
   double ran(double min_, double max_) {
     return min_ + (rand() / (double)RAND_MAX) * (max_ - min_);
   }
+
+  // a ghost (periodic image) disk: dashed gray outline, light fill
+  void drawGhostDisk_SVG(std::ofstream &file, double cx, double cy, double r) {
+    file << "<circle cx=\"" << cx << "\" cy=\"" << cy << "\" r=\"" << r
+         << "\" fill=\"#f0f0f5\" stroke=\"#999999\" stroke-width=\"0.6\" stroke-dasharray=\"3,2\"/>\n";
+  }
+
+  // exit point where the segment (p -> q) crosses the cell AABB, assuming p is inside the cell.
+  void clipToCell_SVG(double p0, double p1, double p2, double q0, double q1, double q2, double &e0, double &e1,
+                      double &e2) {
+    double d0 = q0 - p0, d1 = q1 - p1, d2 = q2 - p2;
+    double t = 1.0;
+    if (d0 > 1e-12) {
+      t = std::min(t, (xmax - p0) / d0);
+    } else if (d0 < -1e-12) {
+      t = std::min(t, (xmin - p0) / d0);
+    }
+    if (d1 > 1e-12) {
+      t = std::min(t, (ymax - p1) / d1);
+    } else if (d1 < -1e-12) {
+      t = std::min(t, (ymin - p1) / d1);
+    }
+    if (d2 > 1e-12) {
+      t = std::min(t, (zmax - p2) / d2);
+    } else if (d2 < -1e-12) {
+      t = std::min(t, (zmin - p2) / d2);
+    }
+    e0 = p0 + t * d0;
+    e1 = p1 + t * d1;
+    e2 = p2 + t * d2;
+  }
 };
 
-#endif /* end of include guard: GEOPACK2D_HPP */
+#endif /* end of include guard: GEOPACK3D_HPP */
 
 #if 0
 

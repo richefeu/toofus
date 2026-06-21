@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 // COTD Entry submitted by John W. Ratcliff [jratcliff@verant.com]
 
 //  THIS IS A CODE SNIPPET WHICH WILL EFFICIEINTLY TRIANGULATE ANY

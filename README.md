@@ -73,6 +73,20 @@ if(NOT toofus_POPULATED)
 endif()
 ```
 
+# Header status
+
+Each header file starts with a one-line status banner that tells you how much you can rely on its interface:
+
+```c++
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+```
+
+The checked box indicates the current maturity of the file:
+
+- **STABLE** — the interface is frozen. You can depend on it; breaking changes are avoided.
+- **EXPERIMENTAL** — usable, but the interface may still change.
+- **DRAFT** — internal use only, no guarantee on the interface nor the behaviour.
+
 # Avaiblable tools
 
 Not all tools are documented here. These tools are so simple that the best documentation is the code itself. However, the following list allows you to know about what exists. 
@@ -116,6 +130,52 @@ They are in the file `histo.hpp`
 
 # Some other useful header-only libraries
 
+`toofus` likes to use a number of third-party header-only libraries. For some of them a copy is bundled
+in the repository (so they can be included without any dependency management); for the others only the
+upstream link is given below. The **Bundled copy** column tells you whether a local copy is available and,
+if so, where it lives.
 
-https://github.com/delfrrr/delaunator-cpp
+| Library | URL | Purpose | Bundled copy |
+| --- | --- | --- | --- |
+| tclap | <https://tclap.github.io/tclap/> | Command-line argument parsing | `toofus-gate/tclap` |
+| nlohmann/json | <https://github.com/nlohmann/json> | JSON parsing and serialization | `toofus-gate/nlohmann` |
+| fmt | <https://fmt.dev/> | Modern string formatting | `toofus-gate/fmt` |
+| toml++ | <https://marzer.github.io/tomlplusplus/> | TOML parsing | `toofus-gate/toml++` |
+| exprtk | <https://www.partow.net/programming/exprtk/> | Mathematical expression parsing and evaluation | `toofus-gate/exprtk` |
+| glm | <https://github.com/g-truc/glm> | OpenGL mathematics (vectors, matrices) | `toofus-gate/glm` |
+| CImg | <https://cimg.eu/> | Image processing | `toofus-gate/CImg` |
+| stb | <https://github.com/nothings/stb> | Image loading/writing (`stb_image`, `stb_image_write`) | `toofus-gate/stb` |
+| termcolor | <https://github.com/ikalnytskyi/termcolor> | Colored terminal output | `toofus-gate/termcolor` |
+| indicators | <https://github.com/p-ranav/indicators> | Progress bars and spinners | `toofus-gate/indicators` |
+| CppConsoleTable | <https://github.com/DenisSamilton/CppConsoleTable> | Tabular console output | `toofus-gate/CppConsoleTable` |
+| TextTable | <https://github.com/haarcuba/cpp-text-table> | Tabular text output | `toofus-gate/TextTable` |
+| tuix | unknown (upstream not found) | Terminal UI widgets | `toofus-gate/tuix` |
+| tabulate | <https://github.com/p-ranav/tabulate> | Pretty-printed tables | `tabulate/` |
+| delaunator-cpp | <https://github.com/delfrrr/delaunator-cpp> | Fast 2D Delaunay triangulation | not bundled — fetch from URL |
+
+These libraries are kept as a convenient gateway to stable, ready-to-use versions and are not part of
+`toofus` proper; refer to each project's own documentation and license for details.
+
+## Other libraries worth knowing about
+
+These are **not** bundled in `toofus`, but are good, modern C++ libraries in the same spirit
+(lightweight, easy to drop in) that are worth considering for this kind of work. Most are header-only;
+a few require a small build but remain very easy to integrate.
+
+| Library | URL | Purpose | Header-only |
+| --- | --- | --- | --- |
+| Eigen | <https://eigen.tuxfamily.org/> | Linear algebra (dense & sparse), the reference for scientific C++ | yes |
+| nanoflann | <https://github.com/jlblancoc/nanoflann> | KD-tree nearest-neighbour search (relevant to the proximity-search tools) | yes |
+| earcut.hpp | <https://github.com/mapbox/earcut.hpp> | Fast, robust polygon triangulation | yes |
+| CLI11 | <https://github.com/CLIUtils/CLI11> | Command-line parsing (modern alternative to tclap) | yes |
+| cxxopts | <https://github.com/jarro2783/cxxopts> | Lightweight command-line parsing | yes |
+| spdlog | <https://github.com/gabime/spdlog> | Fast logging (header-only mode available) | yes |
+| magic_enum | <https://github.com/Neargye/magic_enum> | Static reflection for enums | yes |
+| doctest | <https://github.com/doctest/doctest> | Single-header unit testing (already used in `doctests/`) | yes |
+| Catch2 | <https://github.com/catchorg/Catch2> | Unit testing framework | yes (v2) |
+| happly | <https://github.com/nmwsharp/happly> | Reading/writing PLY mesh files | yes |
+| tinyobjloader | <https://github.com/tinyobjloader/tinyobjloader> | Loading Wavefront OBJ meshes | yes |
+| FTXUI | <https://github.com/ArthurSonzogni/FTXUI> | Terminal user interfaces (functional style) | no (small build) |
+| TermOx | <https://github.com/a-n-t-h-o-n-y/TermOx> | Terminal UI widget toolkit | no (small build) |
+
 

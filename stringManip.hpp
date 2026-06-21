@@ -1,3 +1,5 @@
+// STATUS: [ ] STABLE  [ ] EXPERIMENTAL  [x] DRAFT
+
 // Copyright (C) <vincent.richefeu@3sr-grenoble.fr>
 //
 // This file is part of TOOFUS (TOols OFten USued)
@@ -20,8 +22,8 @@
 
 #include <algorithm>
 #include <cctype>
-#include <codecvt>
-#include <locale>
+// #include <codecvt>
+// #include <locale>
 #include <unordered_set>
 #include <vector>
 
@@ -65,7 +67,8 @@ inline std::string readQuotedString(std::istream &is) {
   return result;
 }
 
-// Function to remove accents from a string
+/*
+// not ok for c++17 (some functions are deprecated)
 inline std::string removeAccents(const std::string &str) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
   std::u32string utf32 = converter.from_bytes(str);
@@ -77,6 +80,29 @@ inline std::string removeAccents(const std::string &str) {
   }
 
   return converter.to_bytes(utf32);
+}
+*/
+
+// Function to remove accents from a string (compatible with c++17)
+inline std::string removeAccents(const std::string &str) {
+  // Mapping of UTF-8 accented characters to their ASCII base
+  static const std::vector<std::pair<std::string, std::string>> accentMap = {
+      {"à", "a"}, {"á", "a"}, {"â", "a"}, {"ã", "a"}, {"ä", "a"}, {"å", "a"}, {"è", "e"}, {"é", "e"}, {"ê", "e"},
+      {"ë", "e"}, {"ì", "i"}, {"í", "i"}, {"î", "i"}, {"ï", "i"}, {"ò", "o"}, {"ó", "o"}, {"ô", "o"}, {"õ", "o"},
+      {"ö", "o"}, {"ù", "u"}, {"ú", "u"}, {"û", "u"}, {"ü", "u"}, {"ý", "y"}, {"ÿ", "y"}, {"ñ", "n"}, {"ç", "c"},
+      {"À", "A"}, {"Á", "A"}, {"Â", "A"}, {"Ã", "A"}, {"Ä", "A"}, {"Å", "A"}, {"È", "E"}, {"É", "E"}, {"Ê", "E"},
+      {"Ë", "E"}, {"Ì", "I"}, {"Í", "I"}, {"Î", "I"}, {"Ï", "I"}, {"Ò", "O"}, {"Ó", "O"}, {"Ô", "O"}, {"Õ", "O"},
+      {"Ö", "O"}, {"Ù", "U"}, {"Ú", "U"}, {"Û", "U"}, {"Ü", "U"}, {"Ý", "Y"}, {"Ñ", "N"}, {"Ç", "C"}};
+
+  std::string result = str;
+  for (const auto &[accented, base] : accentMap) {
+    size_t pos = 0;
+    while ((pos = result.find(accented, pos)) != std::string::npos) {
+      result.replace(pos, accented.size(), base);
+      pos += base.size();
+    }
+  }
+  return result;
 }
 
 // Function to normalize the string
